@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="BookWarehouse.Application/BookWarehouse.Application.csproj" />
+    <Project Path="BookWarehouse.Domain/BookWarehouse.Domain.csproj" />
+    <Project Path="BookWarehouse.Infrastructure/BookWarehouse.Infrastructure.csproj" />
+    <Project Path="BookWarehouse.Presentation/BookWarehouse.Presentation.csproj" />
+  </Folder>
+</Solution>
