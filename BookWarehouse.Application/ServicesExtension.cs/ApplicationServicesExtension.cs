@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Comman;
+using BookWarehouse.Application.Services;
+using Mapster;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,8 +13,14 @@ namespace BookWarehouse.Application.ServicesExtension.cs
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            // Register application services here
-            // e.g., services.AddScoped<IBookService, BookService>();
+            
+            services.AddScoped<ICategoryService, CategoryService>();
+
+            // Mapster
+            services.AddMapster();
+            var config = TypeAdapterConfig.GlobalSettings;
+            config.Scan(typeof(AssemblyMarker).Assembly);
+
             return services;
         }
     }
