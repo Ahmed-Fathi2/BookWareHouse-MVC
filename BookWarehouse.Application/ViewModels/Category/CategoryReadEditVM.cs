@@ -20,5 +20,7 @@ namespace BookWarehouse.Application.ViewModels.Category
         [Required(ErrorMessage = "Display order is required.")]
         [Range(1, 100, ErrorMessage = "Display order must be between 1 and 100.")]
         public int DisplayOrder { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }

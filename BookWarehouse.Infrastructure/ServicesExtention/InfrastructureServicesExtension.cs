@@ -26,6 +26,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<ICategorySeeder, CategorySeeder>();
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }

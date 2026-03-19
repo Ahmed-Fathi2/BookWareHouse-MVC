@@ -31,6 +31,15 @@ html {
     font-size: 14px;
 }
 
+:root {
+    --bw-primary: #192E2F;
+    --bw-secondary: #134b5f;
+    --bw-muted: #6b7a76;
+    --bw-accent: #BD7418;
+    --bw-surface: #ffffff;
+    --bw-border: #e5e5e5;
+}
+
 @media (min-width: 768px) {
     html {
         font-size: 16px;
@@ -395,6 +404,141 @@ bg-success {
         background-color: #1a6985;
         border-color: #1a6985;
     }
+
+
+/* Product / Form page enhancements to match Category styles */
+.form-card .card-body {
+    padding: 1.25rem;
+}
+
+.form-section {
+    margin-bottom: 1rem;
+}
+
+.form-label-custom {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #192E2F; /* primary text color */
+}
+
+.form-control-custom {
+    width: 100%;
+    padding: .55rem .7rem;
+    border-radius: .375rem;
+    border: 1px solid #e5e5e5;
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.form-control-custom:focus {
+    outline: none;
+    border-color: #192E2F;
+    box-shadow: 0 0 0 .15rem rgba(25,46,47,0.12);
+}
+
+.form-actions {
+    display: flex;
+    gap: .5rem;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.mb-5 {
+    margin-bottom: 3rem !important;
+}
+
+/* Align labels on medium+ screens */
+@media (min-width: 768px) {
+    .form-row .col-form-label {
+        text-align: right;
+    }
+}
+
+.btn-primary:focus, .btn-outline-primary:focus {
+    box-shadow: 0 0 0 0.25rem rgba(25,46,47,0.12);
+}
+
+/* Global button refinements */
+.btn {
+    transition: background-color .12s ease, color .12s ease, box-shadow .12s ease, transform .08s ease;
+    border-radius: .375rem;
+}
+.btn:active { transform: translateY(0.5px); }
+
+.form-divider {
+    height: 1px;
+    background-color: #f1f1f1;
+    margin: 1rem 0;
+}
+
+/* Category page: table/list styling matching Product page */
+.table.table-bordered.table-striped {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    font-size: 0.95rem;
+}
+
+.table.table-bordered.table-striped thead th {
+    background-color: #f7f9f8;
+    color: #192E2F;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding: .75rem .9rem;
+    vertical-align: middle;
+}
+
+.table.table-bordered.table-striped tbody td {
+    padding: .65rem .9rem;
+    vertical-align: middle;
+    color: #2b3b39;
+}
+
+.table.table-bordered.table-striped tbody tr:hover {
+    background-color: #fbfcfc;
+}
+
+/* Visual treatment for soft-deleted rows */
+.table.table-bordered.table-striped tbody tr.table-secondary.text-muted {
+    opacity: 0.75;
+    background-color: #f8f9fa;
+    filter: grayscale(10%);
+}
+
+.table .badge {
+    font-size: .75rem;
+    padding: .35rem .5rem;
+    border-radius: .375rem;
+}
+
+/* Action buttons alignment and spacing */
+.w-75.btn-group {
+    display: flex !important;
+    gap: .4rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.w-75.btn-group .btn {
+    padding: .4rem .6rem;
+    min-width: 3.2rem;
+}
+
+.action-cell { text-align: center; }
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .table.table-bordered.table-striped thead th,
+    .table.table-bordered.table-striped tbody td {
+        padding: .5rem .6rem;
+    }
+
+    .form-label-custom { font-size: .92rem; }
+}
+
+/* Keep filter controls compact and consistent */
+.btn-group a.btn {
+    min-width: 72px;
+}
 
 
 

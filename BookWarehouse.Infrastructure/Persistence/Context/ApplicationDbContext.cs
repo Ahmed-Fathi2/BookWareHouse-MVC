@@ -17,7 +17,8 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
         public DbSet<Category> Categories =>Set<Category>(); // Local Container for Category entities --->> To Prevent Null Reference Exception
-
+        public DbSet<Product> Products => Set<Product>();
+        //public DbSet<ProductImage> ProductImages => Set<ProductImage>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
@@ -25,19 +26,20 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
             base.OnModelCreating(modelBuilder);
         }
 
-        public override int SaveChanges()
-        { 
-            foreach(var entry in ChangeTracker.Entries<IAuditableEntity>())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
             {
-                
                 switch (entry.State)
                 {
                     case EntityState.Added:
                         entry.Entity.CreatedAt = DateTime.UtcNow;
                         break;
+
                     case EntityState.Modified:
                         entry.Entity.UpdatedAt = DateTime.UtcNow;
                         break;
+
                     case EntityState.Deleted:
                         entry.Entity.DeletedAt = DateTime.UtcNow;
                         entry.Entity.IsDeleted = true;
@@ -46,7 +48,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
                 }
             }
 
-            return base.SaveChanges();
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
     }

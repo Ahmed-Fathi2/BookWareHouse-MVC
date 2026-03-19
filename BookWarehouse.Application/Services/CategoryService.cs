@@ -24,7 +24,7 @@ namespace BookWarehouse.Application.Services
 
         public async Task<Result<IEnumerable<CategoryReadEditVM>>> GetAllCategories()
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAllAsync();
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync(filter:x=>!x.IsDeleted);
 
             var response= categories.Adapt<IEnumerable<CategoryReadEditVM>>();
 

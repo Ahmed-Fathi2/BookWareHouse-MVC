@@ -5,8 +5,7 @@ using System.Text;
 
 namespace BookWarehouse.Domain.Repositories
 {
-    public interface ICategoryRepository:IGenericRepository<Category,Guid>
+    public interface IProductRepository: IGenericRepository<Product, Guid> 
     {
-        
     }
 }

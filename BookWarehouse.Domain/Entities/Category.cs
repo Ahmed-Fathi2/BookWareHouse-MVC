@@ -18,5 +18,9 @@ namespace BookWarehouse.Domain.Entities
         public DateTime? UpdatedAt {  get; set; }
         public DateTime? DeletedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+
+
+        public ICollection<Product> Products { get; set; } = new HashSet<Product>();
     }
 }

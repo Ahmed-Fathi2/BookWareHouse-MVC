@@ -9,10 +9,17 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
 
         public ICategoryRepository CategoryRepository { get; }
 
-        public UnitOfWork(ApplicationDbContext dbContext , ICategoryRepository categoryRepository)
+        public IProductRepository ProductRepository {  get; }
+
+        public UnitOfWork(
+            ApplicationDbContext dbContext ,
+            ICategoryRepository categoryRepository ,
+            IProductRepository productRepository
+            )
         {
             this.dbContext = dbContext;
             CategoryRepository = categoryRepository;
+            ProductRepository = productRepository;
         }
 
         public async Task SaveChangesAsync()

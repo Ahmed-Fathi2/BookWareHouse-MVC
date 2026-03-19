@@ -14,9 +14,11 @@ namespace BookWarehouse.Infrastructure.Persistence.Configurations
                 .HasMaxLength(256)
                 .IsRequired();
 
-     
+           
 
-          
+
+
+
         }
 
      

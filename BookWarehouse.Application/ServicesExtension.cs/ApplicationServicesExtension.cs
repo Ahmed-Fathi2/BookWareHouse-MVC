@@ -15,6 +15,7 @@ namespace BookWarehouse.Application.ServicesExtension.cs
         {
             
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
 
             // Mapster
             services.AddMapster();

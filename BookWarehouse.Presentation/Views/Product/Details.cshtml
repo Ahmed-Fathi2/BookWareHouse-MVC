@@ -1,0 +1,82 @@
+﻿@model ProductReadDetailsVM
+
+<div class="card form-card shadow border-0 mt-4 mb-5">
+    <div class="card-header bg-secondary bg-gradient py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Product Details</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-4">
+            <dt class="col-md-3">
+                <label asp-for="Title" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Title" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="Description" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Description" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="ISBN" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="ISBN" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="Author" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Author" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="ListPrice" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="ListPrice" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="Price" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Price" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="Price50" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Price50" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="Price100" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="Price100" class="form-control form-control-custom" readonly />
+            </dd>
+
+            <dt class="col-md-3">
+                <label asp-for="CategoryName" class="form-label-custom"></label>
+            </dt>
+            <dd class="col-md-9">
+                <input asp-for="CategoryName" class="form-control form-control-custom" readonly />
+            </dd>
+        </dl>
+
+        <div class="d-flex gap-2">
+            @* <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a> *@
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
