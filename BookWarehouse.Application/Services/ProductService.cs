@@ -1,5 +1,6 @@
 ﻿using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman;
+using BookWarehouse.Application.Comman.Errors.Category;
 using BookWarehouse.Application.Comman.Errors.Product;
 using BookWarehouse.Application.ViewModels.Category;
 using BookWarehouse.Application.ViewModels.Product;
@@ -22,22 +23,6 @@ namespace BookWarehouse.Application.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<Result> CreateProduct(ProductCreateVM productCreateVM)
-        {
-            var product = productCreateVM.Adapt<Product>();
-
-            _unitOfWork.ProductRepository.Add(product);
-
-            await _unitOfWork.SaveChangesAsync();
-
-            return Result.Success();
-        }
-
-        public Task<Result> DeleteProduct(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts()
         {
             var products = await _unitOfWork.ProductRepository.GetAllAsync(
@@ -48,6 +33,17 @@ namespace BookWarehouse.Application.Services
             var response = products.Adapt<IEnumerable<ProductReadVM>>();
 
             return Result.Success(response);
+        }
+
+        public async Task<Result> CreateProduct(ProductCreateVM productCreateVM)
+        {
+            var product = productCreateVM.Adapt<Product>();
+
+            _unitOfWork.ProductRepository.Add(product);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
         }
 
         public async Task<Result<ProductReadDetailsVM>> GetProductById(Guid id)
@@ -69,9 +65,47 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public Task<Result> UpdateProduct(ProductReadVM productReadVM)
+        public async Task<Result<ProductEditVM>> GetProductForEdit(Guid id)
         {
-            throw new NotImplementedException();
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+
+            if (product is null)
+                return Result.Failure<ProductEditVM>(ProductErrors.NotFound);
+
+            var response = product.Adapt<ProductEditVM>();
+
+            return Result.Success(response);
         }
+
+        public async Task<Result> UpdateProduct(ProductEditVM productEditVM)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(productEditVM.Id);
+            if (product is null)
+                return Result.Failure(ProductErrors.NotFound);
+
+            productEditVM.Adapt(product);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
+
+        }
+
+        public async Task<Result> DeleteProduct(Guid id)
+        {
+            var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
+
+            if (product is null)
+                return Result.Failure(ProductErrors.NotFound);
+
+
+            _unitOfWork.ProductRepository.Delete(product);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
+        }
+
+
     }
 }

@@ -9,73 +9,88 @@
         </div>
     </div>
     <div class="card-body">
-        <dl class="row mb-4">
-            <dt class="col-md-3">
-                <label asp-for="Title" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Title" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Title" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="Description" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Description" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Description" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="ISBN" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="ISBN" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="ISBN" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="Author" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Author" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Author" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="ListPrice" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="ListPrice" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="ListPrice" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="Price" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Price" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Price" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="Price50" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Price50" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Price50" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="Price100" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="Price100" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="Price100" class="form-control form-control-custom" readonly />
-            </dd>
+            </div>
+        </div>
 
-            <dt class="col-md-3">
-                <label asp-for="CategoryName" class="form-label-custom"></label>
-            </dt>
-            <dd class="col-md-9">
+        <div class="row mb-4">
+            <div class="col-md-3 d-flex align-items-center">
+                <label asp-for="CategoryName" class="col-form-label form-label-custom"></label>
+            </div>
+            <div class="col-md-9">
                 <input asp-for="CategoryName" class="form-control form-control-custom" readonly />
-            </dd>
-        </dl>
+            </div>
+        </div>
 
         <div class="d-flex gap-2">
-            @* <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a> *@
             <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
         </div>
     </div>

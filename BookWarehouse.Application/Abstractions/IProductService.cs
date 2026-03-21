@@ -11,9 +11,10 @@ namespace BookWarehouse.Application.Abstractions
     {
         Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts();
         Task<Result<ProductReadDetailsVM>> GetProductById(Guid id);
+        Task<Result<ProductEditVM>> GetProductForEdit(Guid id);
         Task<Result> CreateProduct(ProductCreateVM productCreateVM);
 
-        Task<Result> UpdateProduct(ProductReadVM productReadVM);
+        Task<Result> UpdateProduct(ProductEditVM productEditVM);
 
         Task<Result> DeleteProduct(Guid id);
     }
