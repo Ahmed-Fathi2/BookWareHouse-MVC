@@ -1,101 +1,95 @@
-﻿@model BookWarehouse.Application.ViewModels.Product.ProductEditVM
+@model BookWarehouse.Application.ViewModels.Product.ProductEditVM
 
-<div class="card form-card shadow border-0 mt-4 mb-5">
-    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Delete Product</h2>
+<div class="container mt-5 mb-5 pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden mb-4">
+                <div class="card-header bg-danger text-white py-4 border-0 text-center">
+                    <h2 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle-fill fs-3 me-2"></i>Delete Book</h2>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="alert alert-warning border-0 shadow-sm rounded-3 mb-5 p-4 d-flex align-items-center">
+                        <i class="bi bi-info-circle-fill me-4 fs-1 text-warning"></i>
+                        <div>
+                            <h4 class="alert-heading fw-bold mb-1 text-dark">Warning: Permanent Deletion</h4>
+                            <p class="mb-0 text-dark">You are about to permanently delete <strong>@Model.Title</strong>. This action cannot be undone and all associated data will be removed.</p>
+                        </div>
+                    </div>
+
+                    <form method="post" asp-controller="Product" asp-action="SaveDelete" asp-route-id="@Model.Id">
+                        
+                        <h4 class="section-title"><i class="bi bi-file-earmark-text"></i> Product Summary</h4>
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label asp-for="Title" class="form-label"></label>
+                                <input asp-for="Title" class="form-control form-control-lg bg-light text-muted border-0 shadow-none" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ISBN" class="form-label"></label>
+                                <input asp-for="ISBN" class="form-control form-control-lg bg-light text-muted border-0 shadow-none" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Author" class="form-label"></label>
+                                <input asp-for="Author" class="form-control form-control-lg bg-light text-muted border-0 shadow-none" disabled />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Category Name</label>
+                                <input type="text" value="@ViewBag.CategoryName" class="form-control form-control-lg bg-light text-muted border-0 shadow-none" disabled />
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control bg-light text-muted border-0 shadow-none" rows="3" disabled></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-3">
+                                <label asp-for="ListPrice" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="ListPrice" class="form-control bg-light text-muted border-0 shadow-none ps-0" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Price" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="Price" class="form-control bg-light text-muted border-0 shadow-none ps-0" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Price50" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="Price50" class="form-control bg-light text-muted border-0 shadow-none ps-0" disabled />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <label asp-for="Price100" class="form-label"></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="bi bi-currency-dollar"></i></span>
+                                    <input asp-for="Price100" class="form-control bg-light text-muted border-0 shadow-none ps-0" disabled />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 mt-4 pt-4 border-top">
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4 fw-semibold shadow-sm">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg px-5 fw-bold shadow">
+                                <i class="bi bi-trash-fill me-2"></i>Delete Product
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="card-body">
-        <form method="post" asp-controller="Product" asp-action="SaveDelete" asp-route-id="@Model.Id">
-            <div class="row form-section">
-            <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Title" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Title" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Description" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Description" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="ISBN" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="ISBN" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Author" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Author" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="ListPrice" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="ListPrice" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Price" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Price" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Price50" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Price50" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-            <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                    <label asp-for="Price100" class="col-form-label form-label-custom"></label>
-                </div>
-                <div class="col-md-9">
-                    <input asp-for="Price100" disabled class="form-control form-control-custom" />
-                </div>
-            </div>
-
-             <div class="row form-section">
-                <div class="col-md-3 d-flex align-items-center">
-                  
-                    <label class="col-form-label form-label-custom">Category Name</label>
-                </div>
-                <div class="col-md-9">
-                    <input type="text" value="@ViewBag.CategoryName" disabled class="form-control form-control-custom" />
-                </div>
-            </div> 
-
-            <div class="form-actions">
-                <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
-                <button type="submit" class="btn btn-danger"><i class="bi bi-trash-fill"></i> Delete</button>
-            </div>
-        </form>
     </div>
 </div>

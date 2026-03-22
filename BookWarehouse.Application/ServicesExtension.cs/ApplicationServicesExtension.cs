@@ -1,5 +1,6 @@
 ﻿using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman;
+using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.Services;
 using Mapster;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,9 @@ namespace BookWarehouse.Application.ServicesExtension.cs
             services.AddMapster();
             var config = TypeAdapterConfig.GlobalSettings;
             config.Scan(typeof(AssemblyMarker).Assembly);
+
+
+        
 
             return services;
         }

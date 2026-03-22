@@ -1,97 +1,105 @@
-﻿@model ProductReadDetailsVM
+@model BookWarehouse.Application.ViewModels.Product.ProductReadDetailsVM
 
-<div class="card form-card shadow border-0 mt-4 mb-5">
-    <div class="card-header bg-secondary bg-gradient py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Product Details</h2>
-            </div>
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Title" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="Title" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
+<div class="container mt-5 mb-5 pb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-11">
+            <div class="card shadow-lg border-0 mb-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4 px-5 border-0 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <h2 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Book Details</h2>
+                    <span class="badge bg-white text-primary px-3 py-2 fs-6 rounded-pill shadow-sm">@Model.CategoryName</span>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="row gx-5">
+                        
+                        <!-- Left Pillar: Image Frame -->
+                        <div class="col-md-5 mb-4 mb-md-0">
+                            <div class="p-3 bg-light rounded-4 border d-flex justify-content-center align-items-center shadow-sm h-100" style="min-height: 400px;">
+                                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                                {
+                                    <img src="~/@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded shadow-sm" style="max-height: 450px; object-fit: contain;" />
+                                }
+                                else
+                                {
+                                    <div class="text-center text-muted p-5">
+                                        <i class="bi bi-image" style="font-size: 6rem; opacity: 0.2;"></i>
+                                        <p class="mt-3 fw-semibold fs-5">No Image Provided</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
 
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Description" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="Description" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
+                        <!-- Right Pillar: Deep Info -->
+                        <div class="col-md-7 d-flex flex-column justify-content-center">
+                            
+                            <h1 class="fw-bold text-primary mb-2">@Model.Title</h1>
+                            <p class="fs-5 text-muted mb-4 border-bottom pb-3"><i class="bi bi-pen me-2"></i>Written By <strong>@Model.Author</strong></p>
 
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="ISBN" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="ISBN" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
+                            <div class="mb-5">
+                                <h5 class="fw-bold text-secondary text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;"><i class="bi bi-card-text me-2"></i>Description</h5>
+                                <p class="text-dark fs-6" style="line-height: 1.8;">
+                                    @(string.IsNullOrEmpty(Model.Description) ? Html.Raw("<span class='fst-italic text-muted'>No description available for this product.</span>") : Model.Description)
+                                </p>
+                            </div>
 
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Author" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="Author" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
+                            <div class="row g-4 mb-5">
+                                <div class="col-sm-6">
+                                    <div class="info-card bg-light border-0 shadow-sm h-100">
+                                        <div class="info-label"><i class="bi bi-upc-scan me-2"></i>ISBN</div>
+                                        <div class="info-value">@Model.ISBN</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="info-card bg-primary text-white border-0 shadow-sm h-100" style="background: linear-gradient(135deg, var(--nvy-primary) 0%, #1e3a8a 100%);">
+                                        <div class="info-label text-white-50"><i class="bi bi-tag-fill me-2"></i>Standard Price</div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="text-decoration-line-through text-white-50 small">@Model.ListPrice.ToString("C")</span>
+                                            <span class="fw-bold fs-3 text-white">@Model.Price.ToString("C")</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="ListPrice" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="ListPrice" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
+                            <div class="card border border-light shadow-sm">
+                                <div class="card-header bg-light border-bottom-0 py-3">
+                                    <h6 class="mb-0 fw-bold text-secondary text-uppercase" style="font-size: 0.85rem; letter-spacing: 1px;"><i class="bi bi-boxes me-2"></i>Bulk Commercial Discounts</h6>
+                                </div>
+                                <div class="card-body p-0 border-top">
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless table-striped text-center mb-0 align-middle">
+                                            <thead>
+                                                <tr>
+                                                    <th class="py-3 text-muted">Quantity</th>
+                                                    <th class="py-3">1 - 50</th>
+                                                    <th class="py-3">51 - 100</th>
+                                                    <th class="py-3">100+</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr class="fw-semibold">
+                                                    <td class="text-secondary py-3">Unit Price</td>
+                                                    <td class="py-3">@Model.Price.ToString("C")</td>
+                                                    <td class="text-success py-3 fs-5">@Model.Price50.ToString("C")</td>
+                                                    <td class="text-danger py-3 fs-5">@Model.Price100.ToString("C")</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Price" class="col-form-label form-label-custom"></label>
+                            <div class="d-flex align-items-center justify-content-end gap-3 mt-5 pt-4 border-top">
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg px-4">
+                                    <i class="bi bi-arrow-left me-2"></i> Back to Catalog
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg px-5 shadow">
+                                    <i class="bi bi-pencil-square me-2"></i> Edit Product
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-9">
-                <input asp-for="Price" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Price50" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="Price50" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="Price100" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="Price100" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
-
-        <div class="row mb-4">
-            <div class="col-md-3 d-flex align-items-center">
-                <label asp-for="CategoryName" class="col-form-label form-label-custom"></label>
-            </div>
-            <div class="col-md-9">
-                <input asp-for="CategoryName" class="form-control form-control-custom" readonly />
-            </div>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
         </div>
     </div>
 </div>

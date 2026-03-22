@@ -31,25 +31,32 @@ namespace BookWarehouse.Application.ViewModels.Product
         [Required]
         [Display(Name = "List Price")]
         [DataType(DataType.Currency)]
+        [Range(1, int.MaxValue, ErrorMessage = "Value must be at least 1.")]
         public decimal ListPrice { get; set; } // Price Before Discount
 
         [Required]
         [Display(Name = "Price for 1-50 units")]
         [DataType(DataType.Currency)]
+        [Range(1, int.MaxValue, ErrorMessage = "Value must be at least 1.")]
         public decimal Price { get; set; } // Price for 1-50 units
 
         [Required]
         [Display(Name = "Price for 51-100 units")]
         [DataType(DataType.Currency)]
+        [Range(1, int.MaxValue, ErrorMessage = "Value must be at least 1.")]
         public decimal Price50 { get; set; } // Price for 51-100 units
 
         [Required]
         [Display(Name = "Price for 100+ units")]
         [DataType(DataType.Currency)]
+        [Range(1, int.MaxValue, ErrorMessage = "Value must be at least 1.")]
         public decimal Price100 { get; set; } // Price for more than 100  units
 
         [Required]
         [Display(Name ="Category Name")]
         public Guid CategoryId { get; set; }
+
+        //[Display(Name ="Product Image")]
+        public string? ImageUrl { get; set; }
     }
 }

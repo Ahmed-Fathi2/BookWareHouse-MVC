@@ -55,5 +55,9 @@ namespace BookWarehouse.Application.ViewModels.Product
         [Display(Name = "Category Name")]
         public Guid CategoryId { get; set; }
 
+        [Display(Name ="Book Image")]
+        public string? ImageUrl { get; set; }
+
+
     }
 }

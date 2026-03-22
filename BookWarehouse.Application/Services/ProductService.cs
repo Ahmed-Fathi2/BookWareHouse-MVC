@@ -18,10 +18,12 @@ namespace BookWarehouse.Application.Services
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileService _fileService;
 
-        public ProductService(IUnitOfWork unitOfWork)
+        public ProductService(IUnitOfWork unitOfWork,IFileService fileService)
         {
             _unitOfWork = unitOfWork;
+            _fileService = fileService;
         }
         public async Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts()
         {
@@ -77,14 +79,31 @@ namespace BookWarehouse.Application.Services
             return Result.Success(response);
         }
 
-        public async Task<Result> UpdateProduct(ProductEditVM productEditVM)
+        public async Task<Result> UpdateProduct(ProductEditVM productEditVM,string webRootPath, string? newImageName, Stream? imageStream)
         {
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(productEditVM.Id);
             if (product is null)
                 return Result.Failure(ProductErrors.NotFound);
 
+
+            if(imageStream is not null)
+            {
+                //upload new image
+                var uploadResult = await _fileService.Upload(webRootPath, newImageName!, imageStream);
+
+                if (!uploadResult.IsSuccess)
+                    return Result.Failure(new Error("Error during Uploading","Error uploading image"));
+
+                // delete old image
+                _fileService.Delete(webRootPath, productEditVM.ImageUrl!);
+
+                productEditVM.ImageUrl = uploadResult.Value;
+
+            }
+
             productEditVM.Adapt(product);
 
+            // update product
             await _unitOfWork.SaveChangesAsync();
 
             return Result.Success();

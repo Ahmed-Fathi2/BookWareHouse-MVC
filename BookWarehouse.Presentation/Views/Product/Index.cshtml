@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ProductReadVM>
+@model IEnumerable<ProductReadVM>
 
 @{
     ViewData["Title"] = "Products";
@@ -8,7 +8,7 @@
     <div class="card-header bg-secondary bg-gradient py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2">Products List</h2>
+                <h2 class="text-white py-2">Books List</h2>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
             </div>
             <div>
                 <a asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New Product
+                    <i class="bi bi-plus-circle"></i> Create New Book
                 </a>
             </div>
         </div>
@@ -29,7 +29,6 @@
                     <tr>
                         <th>Title</th>
                         <th>Description</th>
-                        <th>ISBN</th>
                         <th>Author</th>
                         <th>Category</th>
                         <th class="text-center">Actions</th>
@@ -41,18 +40,17 @@
                         <tr>
                             <td class="align-middle">@item.Title</td>
                             <td class="align-middle">@item.Description</td>
-                            <td class="align-middle">@item.ISBN</td>
                             <td class="align-middle">@item.Author</td>
                             <td class="align-middle">@item.CategoryName</td>
-                            <td class="align-middle text-center">
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info px-3">
-                                    <i class="bi bi-pencil-square me-1"></i> Edit
+                            <td class="align-middle text-center" style="white-space: nowrap;">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info m-1 text-white">
+                                    <i class="bi bi-pencil-square"></i> Edit
                                 </a>
-                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary px-3">
-                                    <i class="bi bi-info-circle me-1"></i> Details
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary m-1">
+                                    <i class="bi bi-info-circle"></i> Details
                                 </a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger px-3">
-                                    <i class="bi bi-trash-fill me-1"></i> Delete
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger m-1">
+                                    <i class="bi bi-trash-fill"></i> Delete
                                 </a>
                             </td>
                         </tr>

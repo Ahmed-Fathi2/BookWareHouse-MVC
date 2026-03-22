@@ -1,56 +1,55 @@
-﻿@model IEnumerable<CategoryReadEditVM>
+@model IEnumerable<CategoryReadEditVM>
 
-<div class="card form-card shadow border-0 mt-4 mb-5">
-    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="text-white py-2">Category List</h2>
-            </div>
+<div class="container-fluid mt-5 mb-5 pb-5 px-md-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-tags-fill me-2"></i>Categories</h2>
+            <p class="text-muted mb-0">Organize your book collection by defining categories and genres.</p>
         </div>
+        <a asp-controller="Category" asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+            <i class="bi bi-plus-circle-fill"></i> Create Category
+        </a>
     </div>
 
-    <div class="card-body">
-        <div class="row pb-3 align-items-center">
-            <div class="col-6">
-                <!-- optional filters / search could go here -->
-            </div>
-            <div class="col-6 text-end">
-                <a asp-controller="Category" asp-action="Create" class="btn btn-primary">
-                    <i class="bi bi-plus-circle"></i> Create New Category
-                </a>
-            </div>
-        </div>
-
+    <div class="table-container">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
-                        <th class="align-middle">Category Name</th>
-                        <th class="align-middle">Display Order</th>
-                        <th class="text-center align-middle">Actions</th>
+                        <th class="ps-4">Category Name</th>
+                        <th>Display Order</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model.OrderBy(u => u.DisplayOrder))
+                    @foreach (var item in Model)
                     {
                         <tr>
-                            <td class="align-middle">@item.Name</td>
-                            <td class="align-middle">@item.DisplayOrder</td>
-                            <td class="align-middle text-center">
-                                <div class="w-75 btn-group" role="group">
-                                    <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-info px-3">
+                            <td class="ps-4 fw-semibold text-primary fs-5">@item.Name</td>
+                            <td><span class="badge bg-light text-dark border p-2 fs-6">@item.DisplayOrder</span></td>
+                            <td>
+                                <div class="table-action-buttons">
+                                    <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info shadow-sm text-white">
                                         <i class="bi bi-pencil-square"></i> Edit
                                     </a>
-                                    <a asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger px-3">
+                                    <a asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger shadow-sm">
                                         <i class="bi bi-trash-fill"></i> Delete
                                     </a>
                                 </div>
                             </td>
                         </tr>
                     }
+                    @if(!Model.Any()) {
+                        <tr>
+                            <td colspan="3" class="text-center py-5 text-muted">
+                                <i class="bi bi-collection fs-1 d-block mb-3"></i>
+                                <h5>No Categories Added</h5>
+                                <p>Start by creating categories to organize your store.</p>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>

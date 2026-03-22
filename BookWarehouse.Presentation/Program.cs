@@ -1,3 +1,4 @@
+using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.ServicesExtension.cs;
 using BookWarehouse.Infrastructure.Persistence.Seeders;
 using BookWarehouse.Infrastructure.ServicesExtention;
@@ -11,6 +12,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddApplicationServices()
                 .AddInfrastructureServices(builder.Configuration);
+
+builder.Services.Configure<UploadImageSetting>(builder.Configuration.GetSection(nameof(UploadImageSetting)));
 
 var app = builder.Build();
 

@@ -14,7 +14,7 @@ namespace BookWarehouse.Application.Abstractions
         Task<Result<ProductEditVM>> GetProductForEdit(Guid id);
         Task<Result> CreateProduct(ProductCreateVM productCreateVM);
 
-        Task<Result> UpdateProduct(ProductEditVM productEditVM);
+        Task<Result> UpdateProduct(ProductEditVM productEditVM, string webRootPath, string? newImageName, Stream? imageStream);
 
         Task<Result> DeleteProduct(Guid id);
     }
