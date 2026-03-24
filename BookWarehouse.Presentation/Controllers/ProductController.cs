@@ -137,42 +137,50 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
 
-        [HttpGet]
+        //[HttpGet]
+        //public async Task<IActionResult> Delete(Guid id)
+        //{
+
+        //    var result = await _productService.GetProductForEdit(id);
+
+        //    if (!result.IsSuccess)
+        //        return NotFound();
+
+        //    var category = await _productService.GetProductById(id);
+        //    ViewBag.CategoryName = category.Value.CategoryName;
+
+
+        //    var categoryReadEditVM = result.Value;
+
+        //    return View(categoryReadEditVM);
+
+        //}
+
+        [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
 
-            var result = await _productService.GetProductForEdit(id);
+            var webRootPath = _environment.WebRootPath;
+
+            var result = await _productService.DeleteProduct(id, webRootPath);
 
             if (!result.IsSuccess)
                 return NotFound();
 
-            var category = await _productService.GetProductById(id);
-            ViewBag.CategoryName = category.Value.CategoryName;
+            //TempData["success"] = "Book Deleted successfully.";
 
 
-            var categoryReadEditVM = result.Value;
-
-            return View(categoryReadEditVM);
+            return Json(new { success = true, message = "Book Deleted successfully." });
 
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SaveDelete(Guid id)
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-
-
-            var result = await _productService.DeleteProduct(id);
-
-            if (!result.IsSuccess)
-                return NotFound();
-
-            TempData["success"] = "Book Deleted successfully.";
-
-
-            return RedirectToAction("Index");
-
+            var result = await _productService.GetAllProducts();
+            return Json(new {data=result.Value });
         }
-
         private async Task<IEnumerable<SelectListItem>> GetSelectListItemOfCategories()
         {
             var result = await _categoryService.GetAllCategories();

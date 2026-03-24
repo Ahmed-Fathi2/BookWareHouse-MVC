@@ -16,6 +16,6 @@ namespace BookWarehouse.Application.Abstractions
 
         Task<Result> UpdateProduct(ProductEditVM productEditVM, string webRootPath, string? newImageName, Stream? imageStream);
 
-        Task<Result> DeleteProduct(Guid id);
+        Task<Result> DeleteProduct(Guid id, string webRootPath);
     }
 }

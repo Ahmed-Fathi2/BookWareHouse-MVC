@@ -110,13 +110,14 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result> DeleteProduct(Guid id)
+        public async Task<Result> DeleteProduct(Guid id, string webRootPath)
         {
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
 
             if (product is null)
                 return Result.Failure(ProductErrors.NotFound);
 
+            _fileService.Delete(webRootPath, product.ImageUrl);
 
             _unitOfWork.ProductRepository.Delete(product);
 

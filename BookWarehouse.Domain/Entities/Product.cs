@@ -44,3 +44,5 @@ namespace BookWarehouse.Domain.Entities
         //public ICollection<ProductImage> Products { get; set; } = new HashSet<ProductImage>();
     }
 }
+
+
