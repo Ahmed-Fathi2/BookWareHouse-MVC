@@ -1,12 +1,28 @@
 @if (TempData["success"] != null)
 {
     <script >
-          toastr.success('@TempData["success"]');
+        toastr.options = 
+        {
+             closeButton: true,
+             progressBar: true,
+             timeOut: "2500",
+             showMethod: "slideDown",
+             hideMethod: "slideUp",                
+        };
+        toastr.success('@TempData["success"]');
     </script>
 }
 @if (TempData["error"] != null)
 {
     <script >
-          toastr.error('@TempData["error"]');
+        toastr.options =
+        {
+             closeButton: true,
+             progressBar: true,
+             timeOut: "2500",
+             showMethod: "slideDown",
+             hideMethod: "slideUp",
+        };
+        toastr.error('@TempData["error"]');
     </script>
 }

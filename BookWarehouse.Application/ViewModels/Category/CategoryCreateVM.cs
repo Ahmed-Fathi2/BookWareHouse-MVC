@@ -9,7 +9,7 @@ namespace BookWarehouse.Application.ViewModels.Category
     {
         [Display(Name = "Category Name")]
         [Required(ErrorMessage = "Category name is required.")]
-        [MinLength(5, ErrorMessage = "Category name must be at least 3 characters long.")]
+        [MinLength(3, ErrorMessage = "Category name must be at least 3 characters long.")]
         [MaxLength(20, ErrorMessage = "Category name cannot exceed 20 characters.")]
         public string Name { get; set; } = string.Empty;
 

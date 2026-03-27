@@ -9,7 +9,7 @@
                     <p class="mb-0 text-white-50 mt-1">Update the product information for @Model.Title</p>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <form method="post" asp-controller="Product" asp-action="SaveEdit" asp-route-id="@Model.Id" enctype="multipart/form-data">
+                    <form method="post" asp-controller="AdminProduct" asp-action="SaveEdit" asp-route-id="@Model.Id" enctype="multipart/form-data">
                         @* <input type="hidden" asp-for="Id" /> *@
                         <input type="hidden" asp-for="ImageUrl" />
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 rounded-3 border-0 shadow-sm"></div>

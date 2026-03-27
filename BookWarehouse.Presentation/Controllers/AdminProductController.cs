@@ -7,14 +7,14 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace BookWarehouse.Presentation.Controllers
 {
-    public class ProductController : Controller
+    public class AdminProductController : Controller
     {
         private readonly ICategoryService _categoryService;
         private readonly IProductService _productService;
         private readonly IFileService _fileService;
         private readonly IWebHostEnvironment _environment;
 
-        public ProductController(ICategoryService categoryService, IProductService productService,IFileService fileService,IWebHostEnvironment environment)
+        public AdminProductController(ICategoryService categoryService, IProductService productService,IFileService fileService,IWebHostEnvironment environment)
         {
             _categoryService = categoryService;
             _productService = productService;
@@ -24,8 +24,8 @@ namespace BookWarehouse.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var result = await _productService.GetAllProducts();
-            return View(result.Value);
+            //var result = await _productService.GetAllProducts();
+            return View();
         }
 
         [HttpGet]
@@ -137,24 +137,6 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> Delete(Guid id)
-        //{
-
-        //    var result = await _productService.GetProductForEdit(id);
-
-        //    if (!result.IsSuccess)
-        //        return NotFound();
-
-        //    var category = await _productService.GetProductById(id);
-        //    ViewBag.CategoryName = category.Value.CategoryName;
-
-
-        //    var categoryReadEditVM = result.Value;
-
-        //    return View(categoryReadEditVM);
-
-        //}
 
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)

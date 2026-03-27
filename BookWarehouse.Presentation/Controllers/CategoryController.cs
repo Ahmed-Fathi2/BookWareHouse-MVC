@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.ViewModels.Category;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,24 +81,24 @@ namespace BookWarehouse.Presentation.Controllers
 
         }
 
-        [HttpGet]
+        //[HttpGet]
 
+        //public async Task<IActionResult> Delete(Guid id)
+        //{
+
+        //    var result = await _categoryService.GetCategoryById(id);
+
+        //    if (!result.IsSuccess)
+        //        return NotFound();
+
+        //    var categoryReadEditVM = result.Value;
+
+        //    return View(categoryReadEditVM);
+
+        //}
+
+        [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
-        {
-
-            var result = await _categoryService.GetCategoryById(id);
-
-            if (!result.IsSuccess)
-                return NotFound();
-
-            var categoryReadEditVM = result.Value;
-
-            return View(categoryReadEditVM);
-
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> SaveDelete(Guid id)
         {
           
 
@@ -110,7 +110,7 @@ namespace BookWarehouse.Presentation.Controllers
             TempData["success"] = "Category Deleted successfully.";
 
 
-            return RedirectToAction("Index");
+            return Json(new { success = true });
 
         }
 

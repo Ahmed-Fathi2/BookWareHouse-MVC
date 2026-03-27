@@ -6,7 +6,7 @@ $(document).ready(function () {
 function loadDataTable() {
 
   dataTable=  $('#producttbl').DataTable({
-        "ajax": { url: '/Product/GetAll' },
+      "ajax": { url: '/AdminProduct/GetAll' },
         "columns": [
             { data: 'title', "width": "25%" },
             { data: 'isbn', "width": "25%" },
@@ -17,13 +17,13 @@ function loadDataTable() {
                 data: 'id',
                 render: function (data) {
                     return `<div class="align-middle text-center" style="white-space: nowrap;">
-                            <a href="/Product/Edit/${data}" class="btn btn-sm btn-info m-1 text-white">
+                            <a href="/AdminProduct/Edit/${data}" class="btn btn-sm btn-info m-1 text-white">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <a href="/Product/Details/${data}" class="btn btn-sm btn-secondary m-1">
+                            <a href="/AdminProduct/Details/${data}" class="btn btn-sm btn-secondary m-1">
                                 <i class="bi bi-info-circle"></i> Details
                             </a>
-                            <a onClick=Delete('/Product/Delete/${data}') class="btn btn-sm btn-danger m-1">
+                            <a onClick=Delete('/AdminProduct/Delete/${data}') class="btn btn-sm btn-danger m-1">
                                 <i class="bi bi-trash-fill"></i> Delete
                             </a>
                         </div>`;
@@ -51,6 +51,14 @@ function Delete(url) {
                 type: 'DELETE',
                 success: function (data) {
                     dataTable.ajax.reload();
+                    toastr.options =
+                    {
+                        closeButton: true,
+                        progressBar: true,
+                        timeOut: "2500",
+                        showMethod: "slideDown",
+                        hideMethod: "slideUp",
+                    };
                     toastr.success(data.message);
                 }
             })

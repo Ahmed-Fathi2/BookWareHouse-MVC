@@ -28,7 +28,7 @@ namespace BookWarehouse.Application.Services
         public async Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts()
         {
             var products = await _unitOfWork.ProductRepository.GetAllAsync(
-                filter: x => !x.IsDeleted,
+                filter: x => !x.IsDeleted && !x.Category.IsDeleted,
                 includes: [ p => p.Category ]
                 );
 

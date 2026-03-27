@@ -32,7 +32,12 @@
                                     <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info shadow-sm text-white">
                                         <i class="bi bi-pencil-square"></i> Edit
                                     </a>
-                                    <a asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger shadow-sm">
+                                    @* <a  asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id"  class="btn btn-danger shadow-sm">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </a> *@
+                                    <a href="javascript:void(0);"
+                                           onclick="Delete('/Category/Delete/@item.Id')"
+                                           class="btn btn-danger shadow-sm">
                                         <i class="bi bi-trash-fill"></i> Delete
                                     </a>
                                 </div>
@@ -53,3 +58,39 @@
         </div>
     </div>
 </div>
+
+@section Scripts{
+    <script>
+
+        function Delete(url) {
+            Swal.fire({
+                title: 'Are you sure?',
+                html: `
+                    <p>You won't be able to revert this!</p>
+                    <p style="color:red; font-weight:bold;">
+                        ⚠️ Deleting this category will also delete ALL related products!
+                    </p>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33', 
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete everything!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: url,
+                        type: 'DELETE',
+                        success: function (data) {
+                                 location.reload();
+                        },
+                        error: function () {
+                            toastr.error("Something went wrong");
+                        }
+                    });
+                }
+            });
+        
+        }
+    </script>
+}
