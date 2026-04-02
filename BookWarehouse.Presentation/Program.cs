@@ -1,7 +1,11 @@
 using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.ServicesExtension.cs;
+using BookWarehouse.Domain.Entities;
+using BookWarehouse.Infrastructure.Persistence.Context;
 using BookWarehouse.Infrastructure.Persistence.Seeders;
 using BookWarehouse.Infrastructure.ServicesExtention;
+using BookWarehouse.Presentation.ServicesExtention;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,10 +14,10 @@ builder.Services.AddControllersWithViews();
 
 
 
-builder.Services.AddApplicationServices()
+builder.Services.AddPresentationServices()
+                .AddApplicationServices()
                 .AddInfrastructureServices(builder.Configuration);
 
-builder.Services.Configure<UploadImageSetting>(builder.Configuration.GetSection(nameof(UploadImageSetting)));
 
 var app = builder.Build();
 
@@ -36,7 +40,7 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
+    pattern: "{controller=Auth}/{action=Register}/{id?}")
     .WithStaticAssets();
 
 

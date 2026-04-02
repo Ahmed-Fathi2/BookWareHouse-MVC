@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BookWarehouse.Application.Comman
+namespace BookWarehouse.Application.Comman.Results
 {
     public class Result
     {

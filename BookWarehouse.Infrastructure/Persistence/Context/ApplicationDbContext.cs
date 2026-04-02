@@ -1,14 +1,12 @@
 ﻿using BookWarehouse.Domain.Common;
 using BookWarehouse.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace BookWarehouse.Infrastructure.Persistence.Context
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
 
         public ApplicationDbContext() { }
@@ -16,9 +14,9 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
 
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
-        public DbSet<Category> Categories =>Set<Category>(); // Local Container for Category entities --->> To Prevent Null Reference Exception
+        public DbSet<Category> Categories => Set<Category>(); // Local Container for Category entities --->> To Prevent Null Reference Exception
         public DbSet<Product> Products => Set<Product>();
-        //public DbSet<ProductImage> ProductImages => Set<ProductImage>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
