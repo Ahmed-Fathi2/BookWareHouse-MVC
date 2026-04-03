@@ -5,7 +5,9 @@ using BookWarehouse.Domain.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using BookWarehouse.Infrastructure.Persistence.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Seeders;
-using BookWarehouse.Infrastructure.Services;
+using BookWarehouse.Infrastructure.Services.Auth;
+using BookWarehouse.Infrastructure.Services.File;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,8 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<ICategorySeeder, CategorySeeder>();
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IAuthService, AuthService>();
+
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -40,38 +44,57 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
                 (configuration.GetSection(nameof(UploadImageSetting)));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                    .AddEntityFrameworkStores<ApplicationDbContext>();
+                    .AddEntityFrameworkStores<ApplicationDbContext>()
+                    .AddSignInManager();
 
 
 
-           services.Configure<IdentityOptions>(options =>
+
+
+            services.Configure<IdentityOptions>(options =>
+             {
+
+                 // Default SignIn settings.
+                 options.SignIn.RequireConfirmedEmail = true;
+                 options.SignIn.RequireConfirmedPhoneNumber = false;
+
+                 //Password settings.
+                 options.Password.RequireDigit = false;
+                 options.Password.RequireLowercase = false;
+                 options.Password.RequireNonAlphanumeric = false;
+                 options.Password.RequireUppercase = false;
+                 options.Password.RequiredLength = 8;
+                 options.Password.RequiredUniqueChars = 0;
+
+
+
+                 // Lockout settings.
+                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                 options.Lockout.MaxFailedAccessAttempts = 3;
+                 options.Lockout.AllowedForNewUsers = true;
+
+                 // User settings.
+                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                 options.User.RequireUniqueEmail = true;  /*********************************************************************/
+             });
+
+            services.ConfigureApplicationCookie(options =>
             {
+                // Cookie settings
+                options.Cookie.Name = "BookWarehouse.Auth";
+                options.Cookie.HttpOnly = true; // Mitigate XSS attacks by preventing client-side scripts from accessing the cookie
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are only sent over HTTPS
+                options.Cookie.SameSite = SameSiteMode.Strict; // Prevent the browser from sending the cookie along with cross-site requests, mitigating CSRF attacks
 
-                // Default SignIn settings.
-                options.SignIn.RequireConfirmedEmail = false;
-                options.SignIn.RequireConfirmedPhoneNumber = false;
+                // Expiration
+                options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a reasonable expiration time for the authentication cookie
+                options.SlidingExpiration = true; // Renew the cookie on each request to keep the user logged in
 
-                //Password settings.
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 8;
-                options.Password.RequiredUniqueChars = 0;
-
-                
-
-                // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
-                options.Lockout.AllowedForNewUsers = true;
-
-                // User settings.
-                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-                options.User.RequireUniqueEmail = true;  /*********************************************************************/
+                // Redirects
+                options.LoginPath = "/Auth/Login"; // Redirect to the login page when an unauthenticated user tries to access a protected resource
+                options.LogoutPath = "/Auth/Logout"; // Redirect to the logout page when the user logs out
+                options.AccessDeniedPath = "/Auth/AccessDenied"; // Redirect to an access denied page when the user tries to access a resource they don't have permission for
             });
-
-
 
             return services;
         }

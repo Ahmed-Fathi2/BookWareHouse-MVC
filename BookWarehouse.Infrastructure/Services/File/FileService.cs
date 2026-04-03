@@ -1,10 +1,9 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.Comman.Settings;
 using Microsoft.Extensions.Options;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace BookWarehouse.Infrastructure.Services
+namespace BookWarehouse.Infrastructure.Services.File
 {
     public class FileService : IFileService
     {
@@ -14,21 +13,22 @@ namespace BookWarehouse.Infrastructure.Services
         {
             _options = options.Value;
         }
-        public  Result Delete(string webRootPath, string relativePath)
+        public Result Delete(string webRootPath, string relativePath)
         {
             var filePath = Path.Combine(webRootPath, relativePath);
 
-            if (!File.Exists(filePath))
+            if (!System.IO.File.Exists(filePath))
             {
                 return Result.Failure(new Error("File not found.", "File NotFound"));
             }
 
-            File.Delete(filePath);
+            System.IO.File.Delete(filePath);
             return Result.Success();
+           
 
         }
 
-        public async Task<Result<string>> Upload(string webRootPath,string fileName , Stream imageStream)
+        public async Task<Result<string>> Upload(string webRootPath, string fileName, Stream imageStream)
         {
             //1- Create Folder Path
             var folderPath = Path.Combine(webRootPath, _options.ImageFolderPath);

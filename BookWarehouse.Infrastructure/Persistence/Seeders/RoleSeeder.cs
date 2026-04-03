@@ -10,7 +10,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Seeders
 
         public async Task SeedAsync()
         {
-            var roles = new[] { "Admin", "User" };
+            var roles = new[] { "Admin", "Customer" };
             if (await _dbContext.Database.CanConnectAsync())
             {
                 if (!_dbContext.Roles.Any())

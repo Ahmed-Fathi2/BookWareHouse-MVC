@@ -46,8 +46,8 @@ body > .container {
     flex-shrink: 0;
     background-color: var(--nvy-primary) !important;
     color: white !important;
-    padding: 1.25rem 0;
-    font-size: 0.95rem;
+    padding: 0.8rem 0;
+    font-size: 0.85rem;
 }
 
 /* Global Navbar overrides */

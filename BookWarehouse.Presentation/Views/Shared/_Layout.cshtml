@@ -44,6 +44,9 @@
                                 <li class="nav-item">
                                     <a class="dropdown-item" asp-controller="AdminProduct" asp-action="Index">Product</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-controller="Auth" asp-action="Logout">logout</a>
+                                </li>
                             </ul>
                         </li>
 
@@ -60,9 +63,9 @@
     </div>
 
   
-    <footer class="border-top footer bg-primary text-muted ">
-        <div class="text-center">
-            Made with <i class="bi bi-heart-fill"></i> by Ahmed Fathi
+    <footer class="border-top footer">
+        <div class="container text-center">
+            <span class="opacity-75">Made with <i class="bi bi-heart-fill text-danger"></i> by Ahmed Fathi &copy; @DateTime.Now.Year</span>
         </div>
     </footer>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

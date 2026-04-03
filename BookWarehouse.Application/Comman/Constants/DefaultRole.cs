@@ -7,6 +7,6 @@ namespace BookWarehouse.Application.Comman.Constants
     public class DefaultRole
     {
         public const string Admin = "Admin";
-        public const string User = "User";
+        public const string Customer = "Customer";
     }
 }

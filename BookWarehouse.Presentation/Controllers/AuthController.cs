@@ -1,4 +1,5 @@
 ﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.ViewModels.Auth;
 using Ecom.BLL.ViewModel.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
@@ -20,14 +21,14 @@ namespace BookWarehouse.Presentation.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Index",registerVM);
+                return View(registerVM);
             }
 
             var result = await _authService.RegisterAsync(registerVM);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.Error.Description);
-                return View("Index", registerVM);
+                return View(registerVM);
             }
 
             return RedirectToAction("Login");
@@ -37,5 +38,30 @@ namespace BookWarehouse.Presentation.Controllers
         {
             return View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginVM loginVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(loginVM);
+            }
+
+
+            var result = await _authService.LoginAsync(loginVM);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.Error.Description);
+                return View(loginVM);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.LogoutAsync();
+            return RedirectToAction("Login");
+        }
+
     }
 }
