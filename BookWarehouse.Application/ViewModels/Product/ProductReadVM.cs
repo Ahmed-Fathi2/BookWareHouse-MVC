@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace BookWarehouse.Application.ViewModels.Product
@@ -14,12 +15,18 @@ namespace BookWarehouse.Application.ViewModels.Product
 
         public string ISBN { get; set; } = string.Empty;
 
+
+        [Display(Name = "List Price")]
         public decimal Price { get; set; }
+
+        public decimal ListPrice { get; set; }
 
         public string Author { get; set; } = string.Empty;
 
 
         public string CategoryName { get; set; } = string.Empty;
+
+        public string ImageUrl { get; set; } = string.Empty;
 
     }
 }

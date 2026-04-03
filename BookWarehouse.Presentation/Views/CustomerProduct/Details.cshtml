@@ -1,0 +1,145 @@
+@model ProductReadDetailsVM
+
+<style>
+    #countInput::-webkit-outer-spin-button,
+    #countInput::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="container py-5 mt-2">
+    <div class="card border-0 shadow-lg" style="border-radius: 24px; overflow: hidden; max-width: 1000px; margin: 0 auto;">
+        <div class="row g-0">
+            <!-- Left Side: Cover Image -->
+            <div class="col-md-5 bg-white d-flex justify-content-center align-items-center position-relative p-4">
+                @if (string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <div class="bg-primary bg-gradient w-100 h-100 d-flex justify-content-center align-items-center rounded-4">
+                        <i class="bi bi-book-half text-white text-opacity-50" style="font-size: 8rem;"></i>
+                    </div>
+                }
+                else
+                {
+                    <img src="~/@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded-4" style="max-height: 500px; object-fit: contain;" />
+                }
+                <div class="position-absolute top-0 start-0 m-4">
+                    <span class="badge bg-primary text-white px-3 py-2 fs-6 shadow-sm border border-light" style="border-radius: 20px;">@Model.CategoryName</span>
+                </div>
+            </div>
+            
+            <!-- Right Side: Details -->
+            <div class="col-md-7 d-flex flex-column bg-white">
+                <div class="card-body p-4 p-xl-5 d-flex flex-column">
+                    
+                    <h1 class="fw-bolder text-primary mb-2 display-6">@Model.Title</h1>
+                    <p class="text-secondary mb-4 pb-3 border-bottom fs-5"><i class="bi bi-pen-fill me-2 text-primary"></i> <span class="fw-semibold">@Model.Author</span></p>
+                    
+                    <div class="row mb-4 pb-3 border-bottom g-4">
+                        <div class="col-6">
+                            <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2">ISBN Code</p>
+                            <p class="fs-5 fw-bold text-dark mb-0">@Model.ISBN</p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2">List Price</p>
+                            <p class="fs-5 fw-bold text-secondary text-decoration-line-through mb-0">$@Model.ListPrice</p>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Table -->
+                    <div class="mb-4">
+                        <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-3">Quantity Pricing</p>
+                        <div class="d-flex justify-content-between align-items-center border border-2 rounded-4 p-3 bg-light shadow-sm">
+                            <div class="text-center px-2 flex-fill">
+                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">1-50 units</div>
+                                <div class="text-primary fw-bolder fs-4">$@Model.Price</div>
+                            </div>
+                            <div class="border-end border-2" style="height: 50px;"></div>
+                            <div class="text-center px-2 flex-fill">
+                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">51-100 units</div>
+                                <div class="text-primary fw-bolder fs-4">$@Model.Price50</div>
+                            </div>
+                            <div class="border-end border-2" style="height: 50px;"></div>
+                            <div class="text-center px-2 flex-fill">
+                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">100+ units</div>
+                                <div class="text-primary fw-bolder fs-4">$@Model.Price100</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2">Description</p>
+                        <p class="text-secondary lh-lg fs-6" style="white-space: pre-line; margin-bottom: 0;">
+                            @(string.IsNullOrWhiteSpace(Model.Description) ? "No description available for this book." : Model.Description)
+                        </p>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons & Count Footer -->
+        <div class="bg-white border-top px-4 py-3 px-xl-5 pb-xl-4 pt-xl-3">
+            <form method="post"
+                  asp-controller="Cart"
+                  asp-action="AddToCart"
+                  asp-route-productId="@Model.Id"
+                  class="m-0">
+                
+                <div class="d-flex align-items-end justify-content-between flex-wrap gap-4">
+
+                    <!-- Back to list - far left -->
+                    <div class="d-flex align-items-center">
+                        <a href="javascript:history.back()"
+                           class="text-secondary text-decoration-none d-flex align-items-center transition-all border-0 bg-transparent"
+                           style="font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;"
+                           onmouseover="this.classList.replace('text-secondary', 'text-primary')"
+                           onmouseout="this.classList.replace('text-primary', 'text-secondary')">
+                            <i class="bi bi-arrow-left fw-bolder me-2" style="font-size: 1.4rem;"></i> BACK
+                        </a>
+                    </div>
+
+                    <!-- Right Controls: Quantity & Add to Cart -->
+                    <div class="d-flex align-items-end gap-4 gap-md-5 flex-wrap ms-auto">
+                        <!-- Quantity Counter -->
+                        <div>
+                            <label for="countInput" class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2 d-block ms-1">Quantity</label>
+                            <div class="d-flex align-items-center bg-light shadow-sm"
+                                 style="border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; height: 50px; width: 130px;">
+                                <button class="btn btn-light border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill"
+                                        type="button"
+                                        onclick="let el=document.getElementById('countInput'); if(el.value>1) el.value=parseInt(el.value)-1;"
+                                        style="font-size: 1.2rem; background: transparent;">
+                                    <i class="bi bi-dash fw-bold text-dark"></i>
+                                </button>
+                                <input type="number"
+                                       id="countInput"
+                                       name="count"
+                                       value="1"
+                                       min="1"
+                                       class="form-control border-0 text-center fw-bolder fs-5 h-100 p-0 bg-transparent text-dark"
+                                       style="box-shadow: none; width: 45px; -moz-appearance: textfield;" />
+                                <button class="btn btn-light border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill"
+                                        type="button"
+                                        onclick="let el=document.getElementById('countInput'); el.value=parseInt(el.value)+1;"
+                                        style="font-size: 1.2rem; background: transparent;">
+                                    <i class="bi bi-plus fw-bold text-dark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Add to Cart Button -->
+                        <div style="min-width: 200px;">
+                            <button type="submit"
+                                    class="btn btn-primary d-flex align-items-center justify-content-center px-4 w-100 shadow-sm text-uppercase"
+                                    style="border-radius: 12px; font-size: 1.1rem; font-weight: 800; height: 50px; letter-spacing: 1px;">
+                                <i class="bi bi-cart-plus-fill me-2 fs-4"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,26 +1,26 @@
 using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Comman.Constants;
 using BookWarehouse.Application.ViewModels.Product;
 using BookWarehouse.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace BookWarehouse.Presentation.Controllers
 {
-    public class AdminProductController : Controller
+    [Authorize(Roles =(DefaultRole.Admin))]
+    public class AdminProductController(
+        ICategoryService categoryService,
+        IProductService productService,
+        IFileService fileService, 
+        IWebHostEnvironment environment) : Controller
     {
-        private readonly ICategoryService _categoryService;
-        private readonly IProductService _productService;
-        private readonly IFileService _fileService;
-        private readonly IWebHostEnvironment _environment;
+        private readonly ICategoryService _categoryService = categoryService;
+        private readonly IProductService _productService = productService;
+        private readonly IFileService _fileService = fileService;
+        private readonly IWebHostEnvironment _environment = environment;
 
-        public AdminProductController(ICategoryService categoryService, IProductService productService,IFileService fileService,IWebHostEnvironment environment)
-        {
-            _categoryService = categoryService;
-            _productService = productService;
-            _fileService = fileService;
-            _environment = environment;
-        }
         [HttpGet]
         public async Task<IActionResult> Index()
         {

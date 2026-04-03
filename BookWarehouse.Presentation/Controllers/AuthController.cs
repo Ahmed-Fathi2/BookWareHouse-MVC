@@ -63,5 +63,9 @@ namespace BookWarehouse.Presentation.Controllers
             return RedirectToAction("Login");
         }
 
+        public async Task<IActionResult> AccessDenied()
+        {
+            return View();
+        }
     }
 }

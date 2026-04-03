@@ -1,18 +1,18 @@
-﻿var dataTable;
+var dataTable;
 $(document).ready(function () {
     loadDataTable();
 })
 
 function loadDataTable() {
 
-  dataTable=  $('#producttbl').DataTable({
-      "ajax": { url: '/AdminProduct/GetAll' },
+    dataTable = $('#producttbl').DataTable({
+        "ajax": { url: '/AdminProduct/GetAll' },
         "columns": [
             { data: 'title', "width": "25%" },
             { data: 'isbn', "width": "25%" },
-            { data: 'price', "width": "10%",className: "text-start" },
+            { data: 'price', "width": "10%", className: "text-start" },
             { data: 'author', "width": "15%" },
-            { data: 'categoryName',"width": "15%" },
+            { data: 'categoryName', "width": "15%" },
             {
                 data: 'id',
                 render: function (data) {
