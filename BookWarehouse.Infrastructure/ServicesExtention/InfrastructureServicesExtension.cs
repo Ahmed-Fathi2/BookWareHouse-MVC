@@ -38,6 +38,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICartRepository, CartRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.Configure<UploadImageSetting>

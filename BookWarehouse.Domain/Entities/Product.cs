@@ -40,7 +40,7 @@ namespace BookWarehouse.Domain.Entities
         public Guid CategoryId { get; set; }
         public Category Category { get; set; } = default!;
 
-
+        public ICollection<Cart> Carts { get; set; } = new HashSet<Cart>();
         //public ICollection<ProductImage> Products { get; set; } = new HashSet<ProductImage>();
     }
 }

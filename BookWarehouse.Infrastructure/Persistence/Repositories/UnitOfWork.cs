@@ -11,15 +11,19 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
 
         public IProductRepository ProductRepository {  get; }
 
+        public ICartRepository CartRepository{  get; }
+
         public UnitOfWork(
             ApplicationDbContext dbContext ,
             ICategoryRepository categoryRepository ,
-            IProductRepository productRepository
+            IProductRepository productRepository,
+            ICartRepository cartRepository
             )
         {
             this.dbContext = dbContext;
             CategoryRepository = categoryRepository;
             ProductRepository = productRepository;
+            CartRepository = cartRepository;
         }
 
         public async Task SaveChangesAsync()

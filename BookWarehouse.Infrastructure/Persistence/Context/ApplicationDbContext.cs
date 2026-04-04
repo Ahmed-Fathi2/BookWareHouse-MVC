@@ -16,6 +16,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
 
         public DbSet<Category> Categories => Set<Category>(); // Local Container for Category entities --->> To Prevent Null Reference Exception
         public DbSet<Product> Products => Set<Product>();
+        public DbSet<Cart> Carts => Set<Cart>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
