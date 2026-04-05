@@ -1,0 +1,221 @@
+@model ShoppingCartVM
+
+
+<style>
+    body {
+        background-color: #fafafa;
+    }
+    .cart-item {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 12px;
+        padding: 15px;
+    }
+    .cart-item:hover {
+        background-color: #ffffff;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transform: translateY(-2px);
+    }
+    .img-cart {
+        object-fit: cover;
+        width: 100%;
+        height: 120px;
+        border-radius: 12px;
+        background-color: #f1f3f5;
+    }
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e9ecef;
+        border-radius: 30px;
+        background-color: #ffffff;
+        padding: 4px 8px;
+        width: max-content;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+    .btn-qty {
+        background: transparent;
+        border: none;
+        color: #495057;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0 10px;
+        transition: color 0.2s;
+    }
+    .btn-qty:hover {
+        color: #f76b3b;
+    }
+    .qty-val {
+        font-weight: 600;
+        min-width: 30px;
+        text-align: center;
+        color: #212529;
+    }
+    .btn-checkout {
+        background: linear-gradient(135deg, #f35e38, #ff7e5f);
+        color: white;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        box-shadow: 0 4px 15px rgba(243, 94, 56, 0.4);
+    }
+    .btn-checkout:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(243, 94, 56, 0.6);
+        color: white;
+    }
+    .summary-card {
+        border-radius: 16px;
+        border: 1px solid #f1f3f5;
+    }
+    .btn-delete {
+        color: #adb5bd;
+        transition: all 0.2s ease;
+    }
+    .btn-delete:hover {
+        color: #dc3545;
+        transform: scale(1.1);
+    }
+    .continue-shopping {
+        transition: transform 0.2s;
+        color: #6c757d;
+    }
+    .continue-shopping:hover {
+        transform: translateX(-5px);
+        color: #343a40;
+    }
+</style>
+
+<div class="container py-5">
+    <a asp-controller="CustomerProduct" asp-action="Index" class="text-decoration-none continue-shopping d-inline-flex align-items-center mb-4 text-muted fw-medium">
+        <i class="bi bi-arrow-left me-2"></i> Continue Shopping
+    </a>
+
+    <div class="row gx-5">
+        <!-- Left Column: Items -->
+        <div class="col-lg-8 mb-5 mb-lg-0">
+            <h1 class="fw-bolds mb-1 text-dark" style="font-weight: 800; font-family: 'Inter', sans-serif;">Your Cart</h1>
+            <p class="text-secondary mb-4 fs-5">@Model.TotalItems items</p>
+
+            <div class="d-flex flex-column gap-3">
+                @foreach (var item in Model.CartList)
+                {
+                    <div class="cart-item border-bottom pb-4 d-flex flex-column flex-md-row position-relative">
+                        <!-- Image -->
+                        <div class="me-md-4 mb-3 mb-md-0" style="width: 120px; flex-shrink: 0;">
+                            <img src="@item.ImageUrl" class="img-cart shadow-sm" alt="@item.Title" onerror="this.src='/images/placeholder.png';" />
+                        </div>
+                        
+                        <!-- Details -->
+                        <div class="d-flex flex-column justify-content-between flex-grow-1" >
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1">@item.Title</h5>
+                                    <p class="text-muted small mb-0">@item.Description</p>
+                                    @if (!string.IsNullOrEmpty(item.Author))
+                                    {
+                                        <p class="text-muted small mt-1"><i class="bi bi-pen"></i> @item.Author</p>
+                                    }
+                                </div>
+                                <div class="text-end ms-3">
+                                    <h5 class="fw-bold text-dark mb-0" id="item-price-@item.Id">@((@item.FinalPrice).ToString("c"))</h5>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-end mt-4">
+                                <div class="quantity-control">
+                                    <button class="btn-qty btn-minus" data-id="@item.Id"><i class="bi bi-dash"></i></button>
+                                    <span class="qty-val" id="qty-@item.Id">@item.Count</span>
+                                    <button class="btn-qty btn-plus" data-id="@item.Id"><i class="bi bi-plus"></i></button>
+                                </div>
+                                
+                                <a asp-action="DeleteFromCart" asp-controller="Cart" asp-route-Id="@item.Id" class="btn-delete fs-5 text-decoration-none">
+                                    <i class="bi bi-trash3"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (!Model.CartList.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-cart-x text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="mt-3 text-secondary">Your cart is empty</h4>
+                        <a asp-controller="CustomerProduct" asp-action="Index" class="btn btn-primary mt-3 px-4 py-2 rounded-pill shadow-sm">Discover Products</a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Right Column: Summary -->
+        <div class="col-lg-4">
+            <div class="summary-card card shadow-sm p-4 bg-white sticky-top" style="top: 2rem;">
+                <h4 class="fw-bold mb-4 text-dark">Order Summary</h4>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted fs-6">Subtotal</span>
+                    <span class="text-dark fw-bold fs-6" id="order-total">@Model.OrderTotal.ToString("c")</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="text-muted fs-6">Shipping</span>
+                    <span class="text-dark fw-bold fs-6 text-success">Free</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4 pb-3 border-bottom">
+                    <span class="text-muted fs-6">Tax</span>
+                    <span class="text-dark fw-bold fs-6">$0.00</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4 mt-2">
+                    <h5 class="fw-bold text-dark mb-0" style="font-size: 1.3rem;">Total</h5>
+                    <h5 class="fw-bold text-dark mb-0" id="order-total-final" style="font-size: 1.3rem;">@Model.OrderTotal.ToString("c")</h5>
+                </div>
+
+                <a asp-action="Checkout" class="btn btn-checkout btn-lg w-100 py-3 mt-2">
+                    Checkout
+                </a>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-muted small mb-0"><i class="bi bi-shield-check text-success me-1"></i> Secure Checkout</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+@section Scripts {
+<script>
+    function updateQty(url, id) {
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { Id: id },
+            success: function (res) {
+                if (res.success) {
+                    $(`#qty-${id}`).text(res.newQty);
+                    
+                    const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+                    $('#order-total').text(formatter.format(res.newTotal));
+                    $('#order-total-final').text(formatter.format(res.newTotal));
+                    $(`#item-price-${id}`).text(formatter.format(res.newItemPrice));
+                }
+            }
+        });
+    }
+
+    $('.btn-plus').click(function () {
+        updateQty('/Cart/Plus', $(this).data('id'));
+    });
+
+    $('.btn-minus').click(function () {
+        var id = $(this).data('id');
+        var currentQty = parseInt($(`#qty-${id}`).text());
+        if (currentQty > 1) {
+            updateQty('/Cart/Minus', id);
+        }
+    });
+</script>
+}

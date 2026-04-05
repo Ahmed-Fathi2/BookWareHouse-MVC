@@ -4,7 +4,7 @@ namespace BookWarehouse.Application.ViewModels.Cart
 {
     public class ShoppingCartVM
     {
-        public IEnumerable<ProductReadDetailsVM> CartList { get; set; } = new List<ProductReadDetailsVM>();
+        public IEnumerable<CartDetailsVM> CartList { get; set; } = new List<CartDetailsVM>();
         public decimal OrderTotal { get; set; } // Total price of all items in the cart
         public int TotalItems { get; set; } // Total number of items in the cart
     }

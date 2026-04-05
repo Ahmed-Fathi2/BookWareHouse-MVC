@@ -10,7 +10,26 @@ namespace BookWarehouse.Presentation.Controllers
     {
         private readonly ICartService _cartService = cartService;
 
-   
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Index()
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var cartProductsResult = await _cartService.GetAllUserCartProducts(userId!);
+
+            var shoppingCartVM = new ShoppingCartVM()
+            {
+                CartList = cartProductsResult.Value,
+                OrderTotal = cartProductsResult.Value.Sum(p => GetPriceBasedOnQuantity(p)),
+                TotalItems = cartProductsResult.Value.Count()
+            };
+
+            return View(shoppingCartVM);
+
+        }
 
 
         [HttpPost]
@@ -25,6 +44,66 @@ namespace BookWarehouse.Presentation.Controllers
             TempData["success"] = "Added to cart successfully";
 
             return RedirectToAction("Index", "CustomerProduct");
+        }
+
+        public async Task<IActionResult> DeleteFromCart(Guid Id)
+        {
+            var result = await _cartService.DeleteFromCart(Id);
+
+            return result.IsSuccess ? RedirectToAction("Index") : NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Plus(Guid Id)
+        {
+            var result = await _cartService.IncreaseQuantity(Id);
+            if (!result.IsSuccess) return Json(new { success = false });
+
+            return await GetCartUpdateJsonResult(Id);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Minus(Guid Id)
+        {
+            var result = await _cartService.DecreaseQuantity(Id);
+            if (!result.IsSuccess) return Json(new { success = false });
+
+            return await GetCartUpdateJsonResult(Id);
+        }
+
+        private async Task<IActionResult> GetCartUpdateJsonResult(Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var cart = await _cartService.GetAllUserCartProducts(userId!);
+
+            var newTotal = cart.Value.Sum(p => GetPriceBasedOnQuantity(p));
+
+            var item = cart.Value.FirstOrDefault(p => p.Id == id);
+
+            var newQty = item?.Count ?? 0;
+
+            var newItemPrice = item != null ? GetPriceBasedOnQuantity(item) : 0;
+
+            return Json(new { success = true, newTotal, newQty, newItemPrice });
+        }
+
+        private decimal GetPriceBasedOnQuantity(CartDetailsVM cartProduct)
+        {
+
+            if (cartProduct.Count <= 50)
+            {
+                return cartProduct.Price * cartProduct.Count;
+            }
+            else if (cartProduct.Count <= 100)
+            {
+                return cartProduct.Price50 * cartProduct.Count;
+            }
+            else
+            {
+                return cartProduct.Price100 * cartProduct.Count;
+            }
+
         }
     }
 }
