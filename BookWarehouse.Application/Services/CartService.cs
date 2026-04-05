@@ -1,8 +1,50 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Comman.Results;
+using BookWarehouse.Application.ViewModels.Cart;
+using BookWarehouse.Application.ViewModels.Product;
+using BookWarehouse.Domain.Entities;
+using BookWarehouse.Domain.Repositories;
+using Mapster;
 
 namespace BookWarehouse.Application.Services
 {
-    internal class CartService: ICartService
+    public class CartService(IUnitOfWork unitOfWork) : ICartService
     {
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+
+
+        public async Task<Result<IEnumerable<ProductReadDetailsVM>>> GetAllUserCartProducts(string userId)
+        {
+
+            var cartProducts = await _unitOfWork.CartRepository
+                                        .GetAllAsync(c => c.ApplicationUserId == userId && !c.IsDeleted,
+                                          includes: [c => c.Product]);
+
+            var result = cartProducts.Adapt<IEnumerable<ProductReadDetailsVM>>();
+
+            return Result.Success(result);
+        }
+        public async Task AddToCart(CreateCartVM createCartVM)
+        {
+            // if cart already exists, update count
+
+            var existingCart = await _unitOfWork.CartRepository
+                                        .GetCartByFilter(c => c.ApplicationUserId == createCartVM.ApplicationUserId 
+                                                      && c.ProductId == createCartVM.ProductId
+                                                      && !c.IsDeleted);
+
+            if (existingCart is not null)
+            {
+                existingCart.Count = createCartVM.Count;
+            }
+            else
+            {
+                var cart = createCartVM.Adapt<Cart>();
+                _unitOfWork.CartRepository.Add(cart);
+            }
+
+            await _unitOfWork.SaveChangesAsync();   
+
+        }
     }
 }

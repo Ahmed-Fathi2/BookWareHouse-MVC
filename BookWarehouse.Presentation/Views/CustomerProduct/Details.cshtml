@@ -83,19 +83,19 @@
             <form method="post"
                   asp-controller="Cart"
                   asp-action="AddToCart"
-                  asp-route-productId="@Model.Id"
+                  asp-route-ProductId="@Model.Id"
                   class="m-0">
                 
                 <div class="d-flex align-items-end justify-content-between flex-wrap gap-4">
 
                     <!-- Back to list - far left -->
                     <div class="d-flex align-items-center">
-                        <a href="javascript:history.back()"
+                        <a asp-controller="CustomerProduct" asp-action="Index"
                            class="text-secondary text-decoration-none d-flex align-items-center transition-all border-0 bg-transparent"
                            style="font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;"
                            onmouseover="this.classList.replace('text-secondary', 'text-primary')"
                            onmouseout="this.classList.replace('text-primary', 'text-secondary')">
-                            <i class="bi bi-arrow-left fw-bolder me-2" style="font-size: 1.4rem;"></i> BACK
+                            <i class="bi bi-arrow-left fw-bolder me-2" style="font-size: 1.4rem;"></i> Back
                         </a>
                     </div>
 
@@ -117,6 +117,7 @@
                                        name="Count"
                                        value="1"
                                        min="1"
+                                       max="200"
                                        class="form-control border-0 text-center fw-bolder fs-5 h-100 p-0 bg-transparent text-dark"
                                        style="box-shadow: none; width: 45px; -moz-appearance: textfield;" />
                                 <button class="btn btn-light border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill"
@@ -133,7 +134,7 @@
                             <button type="submit"
                                     class="btn btn-primary d-flex align-items-center justify-content-center px-4 w-100 shadow-sm text-uppercase"
                                     style="border-radius: 12px; font-size: 1.1rem; font-weight: 800; height: 50px; letter-spacing: 1px;">
-                                <i class="bi bi-cart-plus-fill me-2 fs-4"></i> Add to Cart
+                                <i class="bi bi-cart-plus-fill me-2 fs-1"></i> Add to Cart
                             </button>
                         </div>
                     </div>

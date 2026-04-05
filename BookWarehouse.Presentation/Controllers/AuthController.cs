@@ -54,7 +54,7 @@ namespace BookWarehouse.Presentation.Controllers
                 ModelState.AddModelError(string.Empty, result.Error.Description);
                 return View(loginVM);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "CustomerProduct");
         }
 
         public async Task<IActionResult> Logout()

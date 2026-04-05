@@ -9,14 +9,10 @@ namespace BookWarehouse.Domain.Entities
 
         public int Count { get; set; }
 
-      
-
-
         public Guid ProductId { get; set; }
         public Product Product { get; set; } = default!;
 
         public string ApplicationUserId { get; set; }= string.Empty;
-
         public ApplicationUser ApplicationUser { get; set; }=default!;
 
 
