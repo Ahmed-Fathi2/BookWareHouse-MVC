@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Errors.Category;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Category;
@@ -31,7 +31,7 @@ namespace BookWarehouse.Application.Services
             return  Result.Success(response);
         }
 
-        public async Task<Result<CategoryReadEditVM>> GetCategoryById(Guid id)
+        public async Task<Result<CategoryReadEditVM>> GetCategoryById(int id)
         {
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
             if (category is null)
@@ -67,7 +67,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result> DeleteCategory(Guid id)
+        public async Task<Result> DeleteCategory(int id)
         {
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);
 

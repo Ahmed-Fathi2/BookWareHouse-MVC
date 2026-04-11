@@ -44,7 +44,7 @@ namespace BookWarehouse.Presentation.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(int id)
         {
 
             var result = await _categoryService.GetCategoryById(id);
@@ -83,7 +83,7 @@ namespace BookWarehouse.Presentation.Controllers
 
         //[HttpGet]
 
-        //public async Task<IActionResult> Delete(Guid id)
+        //public async Task<IActionResult> Delete(int id)
         //{
 
         //    var result = await _categoryService.GetCategoryById(id);
@@ -98,7 +98,7 @@ namespace BookWarehouse.Presentation.Controllers
         //}
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
           
 

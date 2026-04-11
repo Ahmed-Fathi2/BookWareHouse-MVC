@@ -9,6 +9,8 @@ namespace BookWarehouse.Domain.Repositories
         public ICategoryRepository CategoryRepository { get;}
         public IProductRepository  ProductRepository  { get;}
         public ICartRepository CartRepository { get; }
+        public IOrderRepository OrderRepository { get; }
+        public IOrderDetailsRepository OrderDetailsRepository { get; }
 
         Task SaveChangesAsync();
     }

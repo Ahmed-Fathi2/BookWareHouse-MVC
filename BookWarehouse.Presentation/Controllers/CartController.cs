@@ -6,9 +6,10 @@ using System.Security.Claims;
 
 namespace BookWarehouse.Presentation.Controllers
 {
-    public class CartController(ICartService cartService) : Controller
+    public class CartController(ICartService cartService,IOrderService orderService) : Controller
     {
         private readonly ICartService _cartService = cartService;
+        private readonly IOrderService _orderService = orderService;
 
 
         [HttpGet]
@@ -23,7 +24,8 @@ namespace BookWarehouse.Presentation.Controllers
             var shoppingCartVM = new ShoppingCartVM()
             {
                 CartList = cartProductsResult.Value,
-                OrderTotal = cartProductsResult.Value.Sum(p => GetPriceBasedOnQuantity(p)),
+                //OrderTotal = cartProductsResult.Value.Sum(p => GetPriceBasedOnQuantity(p)),
+                OrderTotal = cartProductsResult.Value.Sum(p =>p.FinalPrice),
                 TotalItems = cartProductsResult.Value.Count()
             };
 
@@ -46,15 +48,9 @@ namespace BookWarehouse.Presentation.Controllers
             return RedirectToAction("Index", "CustomerProduct");
         }
 
-        public async Task<IActionResult> DeleteFromCart(Guid Id)
-        {
-            var result = await _cartService.DeleteFromCart(Id);
-
-            return result.IsSuccess ? RedirectToAction("Index") : NotFound();
-        }
 
         [HttpPost]
-        public async Task<IActionResult> Plus(Guid Id)
+        public async Task<IActionResult> Plus(int Id)
         {
             var result = await _cartService.IncreaseQuantity(Id);
             if (!result.IsSuccess) return Json(new { success = false });
@@ -63,7 +59,7 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Minus(Guid Id)
+        public async Task<IActionResult> Minus(int Id)
         {
             var result = await _cartService.DecreaseQuantity(Id);
             if (!result.IsSuccess) return Json(new { success = false });
@@ -71,8 +67,15 @@ namespace BookWarehouse.Presentation.Controllers
             return await GetCartUpdateJsonResult(Id);
         }
 
+        public async Task<IActionResult> DeleteFromCart(int Id)
+        {
+            var result = await _cartService.DeleteFromCart(Id);
+
+            return result.IsSuccess ? RedirectToAction("Index") : NotFound();
+        }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Checkout()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -80,57 +83,60 @@ namespace BookWarehouse.Presentation.Controllers
             
             var checkoutVM = new CheckoutVM
             {
-                OrderTotal = cart.Value.Sum(p => GetPriceBasedOnQuantity(p))
+                OrderTotal = cart.Value.Sum(p => p.FinalPrice)
             };
             
             return View(checkoutVM);
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Checkout(CheckoutVM checkoutVM)
         {
             if (!ModelState.IsValid)
-            {
                 return View(checkoutVM);
-            }
             
-            // TODO: Process Order logic here
+
+            checkoutVM.ApplicationUserId= User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            await _orderService.PlaceOrderAsync(checkoutVM);
+
             return RedirectToAction("Index", "Home");
         }
 
-        private async Task<IActionResult> GetCartUpdateJsonResult(Guid id)
+        private async Task<IActionResult> GetCartUpdateJsonResult(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var cart = await _cartService.GetAllUserCartProducts(userId!);
 
-            var newTotal = cart.Value.Sum(p => GetPriceBasedOnQuantity(p));
+            var newTotal = cart.Value.Sum(p => p.FinalPrice);
 
             var item = cart.Value.FirstOrDefault(p => p.Id == id);
 
             var newQty = item?.Count ?? 0;
 
-            var newItemPrice = item != null ? GetPriceBasedOnQuantity(item) : 0;
+            var newItemPrice = item != null ? item.FinalPrice : 0;
 
             return Json(new { success = true, newTotal, newQty, newItemPrice });
         }
 
-        private decimal GetPriceBasedOnQuantity(CartDetailsVM cartProduct)
-        {
+        //private decimal GetPriceBasedOnQuantity(CartDetailsVM cartProduct)
+        //{
 
-            if (cartProduct.Count <= 50)
-            {
-                return cartProduct.Price * cartProduct.Count;
-            }
-            else if (cartProduct.Count <= 100)
-            {
-                return cartProduct.Price50 * cartProduct.Count;
-            }
-            else
-            {
-                return cartProduct.Price100 * cartProduct.Count;
-            }
+        //    if (cartProduct.Count <= 50)
+        //    {
+        //        return cartProduct.Price * cartProduct.Count;
+        //    }
+        //    else if (cartProduct.Count <= 100)
+        //    {
+        //        return cartProduct.Price50 * cartProduct.Count;
+        //    }
+        //    else
+        //    {
+        //        return cartProduct.Price100 * cartProduct.Count;
+        //    }
 
-        }
+        //}
     }
 }

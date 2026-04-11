@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Comman.Results;
+using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Category;
 using System;
 using System.Collections.Generic;
@@ -10,12 +10,12 @@ namespace BookWarehouse.Application.Abstractions
     {
 
         Task<Result<IEnumerable<CategoryReadEditVM>>> GetAllCategories();
-        Task<Result<CategoryReadEditVM>> GetCategoryById(Guid id);
+        Task<Result<CategoryReadEditVM>> GetCategoryById(int id);
         Task<Result>  CreateCategory(CategoryCreateVM categoryCreateVM);
 
         Task<Result> UpdateCategory( CategoryReadEditVM categoryReadEditVM);
 
-        Task<Result> DeleteCategory(Guid id);
+        Task<Result> DeleteCategory(int id);
 
     }
 }

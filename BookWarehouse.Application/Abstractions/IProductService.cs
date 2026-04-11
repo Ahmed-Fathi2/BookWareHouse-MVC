@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Comman.Results;
+using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Category;
 using BookWarehouse.Application.ViewModels.Product;
 using System;
@@ -10,12 +10,12 @@ namespace BookWarehouse.Application.Abstractions
     public interface IProductService
     {
         Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts();
-        Task<Result<ProductReadDetailsVM>> GetProductById(Guid id);
-        Task<Result<ProductEditVM>> GetProductForEdit(Guid id);
+        Task<Result<ProductReadDetailsVM>> GetProductById(int id);
+        Task<Result<ProductEditVM>> GetProductForEdit(int id);
         Task<Result> CreateProduct(ProductCreateVM productCreateVM);
 
         Task<Result> UpdateProduct(ProductEditVM productEditVM, string webRootPath, string? newImageName, Stream? imageStream);
 
-        Task<Result> DeleteProduct(Guid id, string webRootPath);
+        Task<Result> DeleteProduct(int id, string webRootPath);
     }
 }

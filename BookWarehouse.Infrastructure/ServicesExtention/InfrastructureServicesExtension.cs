@@ -39,6 +39,8 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICartRepository, CartRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderDetailsRepository, OrderDetailsRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.Configure<UploadImageSetting>
@@ -47,9 +49,6 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddSignInManager();
-
-
-
 
 
             services.Configure<IdentityOptions>(options =>

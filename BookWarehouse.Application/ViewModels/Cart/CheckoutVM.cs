@@ -11,7 +11,7 @@ namespace BookWarehouse.Application.ViewModels.Cart
 
 
         [Required(ErrorMessage = "Full name is required")]
-        [StringLength(100, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 100 characters")]
+        [StringLength(256, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 256 characters")]
         public string FullName { get; set; }
 
 
@@ -24,15 +24,19 @@ namespace BookWarehouse.Application.ViewModels.Cart
 
 
         [Required(ErrorMessage = "Address is required")]
-        [StringLength(200, ErrorMessage = "Address is too long")]
+        [StringLength(512, ErrorMessage = "Address is too long")]
         public string StreetAddress { get; set; } 
 
 
 
         [Required(ErrorMessage = "City is required")]
-        [StringLength(50, ErrorMessage = "City name is too long")]
+        [StringLength(100, ErrorMessage = "City name is too long")]
      
-        public string City { get; set; } 
+        public string City { get; set; }
+
+        public string ApplicationUserId { get; set; } = string.Empty;
+
+
     }
 
 

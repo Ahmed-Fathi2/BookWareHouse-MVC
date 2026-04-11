@@ -20,14 +20,14 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
         }
 
     
-        public void Add(TEntity category)
+        public void Add(TEntity entity)
         {
-            _dbContext.Add(category);
+            _dbContext.Add(entity);
         }
 
-        public void Delete(TEntity category)
+        public void Delete(TEntity entity)
         {
-            _dbContext.Remove(category);
+            _dbContext.Remove(entity);
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(
@@ -53,6 +53,11 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
 
             return await query.ToListAsync();
 
+        }
+
+        public void AddRange(IEnumerable<TEntity> entities)
+        {
+            _dbContext.AddRange(entities);
         }
     }
 }

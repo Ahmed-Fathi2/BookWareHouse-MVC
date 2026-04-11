@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Errors.Category;
 using BookWarehouse.Application.Comman.Errors.Product;
 using BookWarehouse.Application.Comman.Results;
@@ -48,7 +48,7 @@ namespace BookWarehouse.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result<ProductReadDetailsVM>> GetProductById(Guid id)
+        public async Task<Result<ProductReadDetailsVM>> GetProductById(int id)
         {
             var products = await _unitOfWork.ProductRepository.GetAllAsync(
                 filter: p => p.Id == id && !p.IsDeleted,
@@ -67,7 +67,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result<ProductEditVM>> GetProductForEdit(Guid id)
+        public async Task<Result<ProductEditVM>> GetProductForEdit(int id)
         {
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
 
@@ -110,7 +110,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result> DeleteProduct(Guid id, string webRootPath)
+        public async Task<Result> DeleteProduct(int id, string webRootPath)
         {
             var product = await _unitOfWork.ProductRepository.GetByIdAsync(id);
 

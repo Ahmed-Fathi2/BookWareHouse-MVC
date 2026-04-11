@@ -22,9 +22,10 @@ namespace BookWarehouse.Application.Comman.MappingConfiguration
                 .Map(dest => dest.Price100, src => src.Product.Price100)
                 .Map(dest => dest.ImageUrl, src => src.Product.ImageUrl)
                 .Map(dest => dest.Count, src => src.Count)
-
-
-                .Map(dest => dest.FinalPrice, src => src.Count <= 50
+                .Map(dest=> dest.ProductId, src => src.ProductId)
+                .Map(dest => dest.FinalPrice,
+                          src =>
+                          src.Count <= 50
                         ? src.Product.Price * src.Count
                         : (src.Count <= 100
                             ? src.Product.Price50 * src.Count

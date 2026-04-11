@@ -1,6 +1,6 @@
 ﻿using System.Reflection.Metadata.Ecma335;
 
-namespace BookWarehouse.Domain.Common
+namespace BookWarehouse.Domain.Common.BaseEntity
 {
     public interface IAuditableEntity
     {

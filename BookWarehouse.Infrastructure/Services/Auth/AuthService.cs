@@ -1,6 +1,4 @@
-﻿using Azure;
-using Azure.Core;
-using BookWarehouse.Application.Abstractions;
+﻿using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Constants;
 using BookWarehouse.Application.Comman.Errors.User;
 using BookWarehouse.Application.Comman.Results;
@@ -8,11 +6,7 @@ using BookWarehouse.Application.ViewModels.Auth;
 using BookWarehouse.Domain.Entities;
 using Ecom.BLL.ViewModel.Authentication;
 using Mapster;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using System.Security.Principal;
 
 namespace BookWarehouse.Infrastructure.Services.Auth
 {
@@ -24,14 +18,14 @@ namespace BookWarehouse.Infrastructure.Services.Auth
         public async Task<Result> RegisterAsync(RegisterVM registerVM)
         {
 
-            var user= await _userManager.FindByEmailAsync(registerVM.Email);
-            if(user is not null)
+            var user = await _userManager.FindByEmailAsync(registerVM.Email);
+            if (user is not null)
                 return Result.Failure(UserErrors.EmailAlreadyExists);
 
             var newUser = registerVM.Adapt<ApplicationUser>();
 
             var result = await _userManager.CreateAsync(newUser, registerVM.Password);
-            if(!result.Succeeded)
+            if (!result.Succeeded)
                 return Result.Failure(UserErrors.UserCreationFailed);
 
             result = await _userManager.AddToRoleAsync(newUser, DefaultRole.Customer);

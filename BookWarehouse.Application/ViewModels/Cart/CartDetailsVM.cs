@@ -4,7 +4,10 @@ namespace BookWarehouse.Application.ViewModels.Cart
 {
     public class CartDetailsVM
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; } // Cart Id
+
+
+        public int ProductId { get; set; }
 
         [Display(Name = "Product Title")]
         public string Title { get; set; } = string.Empty;
@@ -36,12 +39,10 @@ namespace BookWarehouse.Application.ViewModels.Cart
        
         public decimal FinalPrice { get; set; } // Final price based on quantity
 
-
-
-
-
         public string ImageUrl { get; set; } = string.Empty;
 
         public int Count { get; set; }
+
+  
     }
 }

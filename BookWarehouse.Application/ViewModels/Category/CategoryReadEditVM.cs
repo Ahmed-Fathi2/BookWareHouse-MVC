@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -8,7 +8,7 @@ namespace BookWarehouse.Application.ViewModels.Category
     public class CategoryReadEditVM
     {
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Display(Name = "Category Name")]
         [Required(ErrorMessage = "Category name is required.")]

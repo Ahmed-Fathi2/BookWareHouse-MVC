@@ -15,9 +15,11 @@ namespace BookWarehouse.Domain.Repositories
             bool tracked = false);
         Task<TEntity?> GetByIdAsync(TKey id);
 
-        void Add(TEntity category);
+        void Add(TEntity entity );
 
-       void  Delete (TEntity category);
+        void AddRange(IEnumerable<TEntity> entities);
+
+        void  Delete (TEntity entity);
 
     }
 }

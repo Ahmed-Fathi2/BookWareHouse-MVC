@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Domain.Entities;
+using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace BookWarehouse.Infrastructure.Persistence.Repositories
 {
-    public class CartRepository(ApplicationDbContext dbContext) : GenericRepository<Cart,Guid>(dbContext), ICartRepository
+    public class CartRepository(ApplicationDbContext dbContext) : GenericRepository<Cart,int>(dbContext), ICartRepository
     {
         private readonly ApplicationDbContext _dbContext = dbContext;
 

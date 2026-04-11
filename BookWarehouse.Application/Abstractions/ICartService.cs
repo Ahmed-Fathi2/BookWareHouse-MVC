@@ -9,11 +9,11 @@ namespace BookWarehouse.Application.Abstractions
         Task<Result<IEnumerable<CartDetailsVM>>> GetAllUserCartProducts (string userId);
         Task AddToCart(CreateCartVM createCartVM);
 
-        Task<Result> DeleteFromCart(Guid cartId);
+        Task<Result> DeleteFromCart(int cartId);
 
-        Task<Result> IncreaseQuantity(Guid cartId);
+        Task<Result> IncreaseQuantity(int cartId);
 
-        Task<Result> DecreaseQuantity(Guid cartId);
+        Task<Result> DecreaseQuantity(int cartId);
 
     }
 }

@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookWarehouse.Presentation.Controllers
@@ -17,7 +17,7 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(int id)
         {
             var result = await _productService.GetProductById(id);
 

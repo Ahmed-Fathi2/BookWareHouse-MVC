@@ -4,7 +4,7 @@ namespace BookWarehouse.Application.ViewModels.Product
 {
     public class ProductReadDetailsVM
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Display(Name = "Product Title")]
         public string Title { get; set; } = string.Empty;

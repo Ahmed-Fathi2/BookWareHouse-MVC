@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Domain.Common;
+﻿using BookWarehouse.Domain.Common.BaseEntity;
 using BookWarehouse.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +17,8 @@ namespace BookWarehouse.Infrastructure.Persistence.Context
         public DbSet<Category> Categories => Set<Category>(); // Local Container for Category entities --->> To Prevent Null Reference Exception
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderDetails> OrderDetails => Set<OrderDetails>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -47,7 +47,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result> IncreaseQuantity(Guid cartId)
+        public async Task<Result> IncreaseQuantity(int cartId)
         {
             var cart = await _unitOfWork.CartRepository.GetByIdAsync(cartId);
 
@@ -61,7 +61,7 @@ namespace BookWarehouse.Application.Services
             return Result.Success();
         }
 
-        public async Task<Result> DecreaseQuantity(Guid cartId)
+        public async Task<Result> DecreaseQuantity(int cartId)
         {
             var cart = await _unitOfWork.CartRepository.GetByIdAsync(cartId);
 
@@ -78,7 +78,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        public async Task<Result> DeleteFromCart(Guid cartId)
+        public async Task<Result> DeleteFromCart(int cartId)
         {
             var cart = await _unitOfWork.CartRepository.GetByIdAsync(cartId);
 

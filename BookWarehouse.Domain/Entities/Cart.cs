@@ -1,15 +1,15 @@
-﻿using BookWarehouse.Domain.Common;
+using BookWarehouse.Domain.Common.BaseEntity;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BookWarehouse.Domain.Entities
 {
     public class Cart : IAuditableEntity
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public int Count { get; set; }
 
-        public Guid ProductId { get; set; }
+        public int ProductId { get; set; }
         public Product Product { get; set; } = default!;
 
         public string ApplicationUserId { get; set; }= string.Empty;

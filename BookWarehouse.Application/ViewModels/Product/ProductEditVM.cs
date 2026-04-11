@@ -8,7 +8,7 @@ namespace BookWarehouse.Application.ViewModels.Product
     public class ProductEditVM
     {
 
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MinLength(3)]
@@ -53,7 +53,7 @@ namespace BookWarehouse.Application.ViewModels.Product
 
         [Required]
         [Display(Name = "Category Name")]
-        public Guid CategoryId { get; set; }
+        public int CategoryId { get; set; }
 
         [Display(Name ="Book Image")]
         public string? ImageUrl { get; set; }

@@ -1,4 +1,4 @@
-using BookWarehouse.Domain.Common;
+using BookWarehouse.Domain.Common.BaseEntity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +7,7 @@ namespace BookWarehouse.Domain.Entities
 {
     public class Product:IAuditableEntity
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public string Title { get; set; } = string.Empty;
 
@@ -37,10 +37,11 @@ namespace BookWarehouse.Domain.Entities
         public bool IsDeleted { get; set; } = false;
 
 
-        public Guid CategoryId { get; set; }
+        public int CategoryId { get; set; }
         public Category Category { get; set; } = default!;
 
         public ICollection<Cart> Carts { get; set; } = new HashSet<Cart>();
+        public ICollection<OrderDetails> OrderDetails { get; set; } = new HashSet<OrderDetails>();
         //public ICollection<ProductImage> Products { get; set; } = new HashSet<ProductImage>();
     }
 }

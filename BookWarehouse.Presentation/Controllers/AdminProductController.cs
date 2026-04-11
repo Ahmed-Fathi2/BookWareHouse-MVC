@@ -29,7 +29,7 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(int id)
         {
             var result = await _productService.GetProductById(id);
             if (!result.IsSuccess)
@@ -91,7 +91,7 @@ namespace BookWarehouse.Presentation.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(int id)
         {
 
 
@@ -139,7 +139,7 @@ namespace BookWarehouse.Presentation.Controllers
 
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
 
             var webRootPath = _environment.WebRootPath;

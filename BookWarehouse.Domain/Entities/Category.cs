@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Domain.Common;
+using BookWarehouse.Domain.Common.BaseEntity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,7 +7,7 @@ namespace BookWarehouse.Domain.Entities
 {
     public class Category:IAuditableEntity
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public string Name { get; set; }=string.Empty;
 
