@@ -71,6 +71,33 @@ namespace BookWarehouse.Presentation.Controllers
             return await GetCartUpdateJsonResult(Id);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cart = await _cartService.GetAllUserCartProducts(userId!);
+            
+            var checkoutVM = new CheckoutVM
+            {
+                OrderTotal = cart.Value.Sum(p => GetPriceBasedOnQuantity(p))
+            };
+            
+            return View(checkoutVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Checkout(CheckoutVM checkoutVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(checkoutVM);
+            }
+            
+            // TODO: Process Order logic here
+            return RedirectToAction("Index", "Home");
+        }
+
         private async Task<IActionResult> GetCartUpdateJsonResult(Guid id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
