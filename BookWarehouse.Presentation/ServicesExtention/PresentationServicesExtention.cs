@@ -2,6 +2,7 @@
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Identity;
+using Stripe;
 using System.Configuration;
 
 namespace BookWarehouse.Presentation.ServicesExtention
@@ -11,6 +12,7 @@ namespace BookWarehouse.Presentation.ServicesExtention
 
         public static IServiceCollection AddPresentationServices(this IServiceCollection services)
         {
+           
             return services;
         }
     }

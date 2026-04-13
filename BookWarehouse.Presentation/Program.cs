@@ -6,6 +6,7 @@ using BookWarehouse.Infrastructure.Persistence.Seeders;
 using BookWarehouse.Infrastructure.ServicesExtention;
 using BookWarehouse.Presentation.ServicesExtention;
 using Microsoft.AspNetCore.Identity;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddPresentationServices()
                 .AddApplicationServices()
                 .AddInfrastructureServices(builder.Configuration);
+
+StripeConfiguration.ApiKey=builder.Configuration.GetSection("Stripe:SecretKey").Get<string>()
+                                    ?? throw new InvalidOperationException("Stripe Secret Key not found in configuration.");
+
 
 
 var app = builder.Build();

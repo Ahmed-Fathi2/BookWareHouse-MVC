@@ -7,6 +7,7 @@ using BookWarehouse.Infrastructure.Persistence.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Seeders;
 using BookWarehouse.Infrastructure.Services.Auth;
 using BookWarehouse.Infrastructure.Services.File;
+using BookWarehouse.Infrastructure.Services.Payment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IStripePaymentService, StripePaymentService>();
 
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -45,6 +47,13 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
 
             services.Configure<UploadImageSetting>
                 (configuration.GetSection(nameof(UploadImageSetting)));
+
+            services.Configure<StripeSetting>
+                (configuration.GetSection(nameof(Stripe)));
+
+
+
+
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()

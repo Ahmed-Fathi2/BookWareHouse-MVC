@@ -5,18 +5,20 @@ using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Mapster;
+using Stripe.Checkout;
 
 namespace BookWarehouse.Application.Services
 {
-    public class OrderService(IUnitOfWork unitOfWork , ICartService cartService) : IOrderService
+    public class OrderService(IUnitOfWork unitOfWork , ICartService cartService, IStripePaymentService stripePaymentService) : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ICartService _cartService = cartService;
+        private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
 
-        public async Task<Result> PlaceOrderAsync(CheckoutVM checkoutVM)
+        public async Task<Result<string>> PlaceOrderAsync(string origin,CheckoutVM checkoutVM)
         {
 
-        
+
             var order = checkoutVM.Adapt<Order>();
             _unitOfWork.OrderRepository.Add(order);
 
@@ -30,16 +32,18 @@ namespace BookWarehouse.Application.Services
                 OrderId = order.Id,
                 ProductId = item.ProductId,
                 Quantity = item.Count,
-                Price = item.FinalPrice/ item.Count 
+                Price = item.FinalPrice / item.Count
 
             }).ToList();
 
 
             _unitOfWork.OrderDetailsRepository.AddRange(orderDetailsList);
 
-            await _unitOfWork.SaveChangesAsync();  
+            await _unitOfWork.SaveChangesAsync();
 
-            return Result.Success();
+            var sesionUrlResult = await _stripePaymentService.CreateCheckoutSessionAsync(origin, cartItemsResult.Value, order);
+
+            return Result.Success(sesionUrlResult.Value);
 
 
         }

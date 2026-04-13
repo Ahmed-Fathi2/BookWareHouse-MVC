@@ -1,10 +1,11 @@
 ﻿using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Cart;
+using Stripe.Checkout;
 
 namespace BookWarehouse.Application.Abstractions
 {
     public interface IOrderService
     {
-        Task<Result> PlaceOrderAsync(CheckoutVM checkoutVM);
+        Task<Result<string>> PlaceOrderAsync(string origin, CheckoutVM checkoutVM);
     }
 }

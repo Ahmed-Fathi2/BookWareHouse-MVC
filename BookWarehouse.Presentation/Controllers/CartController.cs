@@ -93,15 +93,29 @@ namespace BookWarehouse.Presentation.Controllers
         [Authorize]
         public async Task<IActionResult> Checkout(CheckoutVM checkoutVM)
         {
+            // Dont Forget To Delete Cart After Placing Order
+
             if (!ModelState.IsValid)
                 return View(checkoutVM);
             
 
             checkoutVM.ApplicationUserId= User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-            await _orderService.PlaceOrderAsync(checkoutVM);
+             var origin = $"{Request.Scheme}://{Request.Host}";
 
-            return RedirectToAction("Index", "Home");
+            var sessionUrlResult = await _orderService.PlaceOrderAsync(origin,checkoutVM);
+
+          
+            Response.Headers.Append("Location", sessionUrlResult.Value);
+
+            return new StatusCodeResult(303);
+
+            //return RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult OrderConfirmation(int id)
+        {
+            return Content($"Order with id {id} has been placed successfully!");
         }
 
         private async Task<IActionResult> GetCartUpdateJsonResult(int id)
