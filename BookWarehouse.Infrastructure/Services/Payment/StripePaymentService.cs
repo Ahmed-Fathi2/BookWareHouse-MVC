@@ -1,19 +1,22 @@
 using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
+using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.ViewModels.Cart;
 using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 
 namespace BookWarehouse.Infrastructure.Services.Payment
 {
-    public class StripePaymentService(ILogger<StripePaymentService> logger, IUnitOfWork unitOfWork) : IStripePaymentService
+    public class StripePaymentService(ILogger<StripePaymentService> logger, IUnitOfWork unitOfWork,IOptions<StripeSetting> options) : IStripePaymentService
     {
         private readonly ILogger<StripePaymentService> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly StripeSetting _options = options.Value;
 
         public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, IEnumerable<CartDetailsVM> cartDetailsVMs, int orderId)
         {
@@ -78,7 +81,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
         {
 
             //var webhookSecret = _config["Stripe:WebhookSecret"];
-            var webhookSecret = "whsec_0325ee89f2fb4ec57e243b68fe0e4919201bee74ba59739756190d32e70d6d27";
+            var webhookSecret = _options.WebhookSecret;
 
             Event stripeEvent;
 
