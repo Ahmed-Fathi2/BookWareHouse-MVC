@@ -15,24 +15,43 @@ namespace BookWarehouse.Application.Services
         private readonly ICartService _cartService = cartService;
         private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
 
-   
 
-        public async Task<Result<string>> PlaceOrderAsync(string origin,CheckoutVM checkoutVM)
+
+        public async Task<Result<string>> PlaceOrderAsync(string origin, CheckoutVM checkoutVM)
         {
-            // implement Transaction here if your database supports it, to ensure atomicity of order creation and session generation
+            // 1. Get Cart
+            var cartItemsResult = await _cartService.GetAllUserCartProducts(checkoutVM.ApplicationUserId);
 
-            var cartItems = await _cartService.GetAllUserCartProducts(checkoutVM.ApplicationUserId);
-
-            if (!cartItems.Value.Any())
+            if (!cartItemsResult.IsSuccess || !cartItemsResult.Value.Any())
                 return Result.Failure<string>(new Error("Cart is empty", "Cart.Empty"));
 
-            var order = await GetOrCreateOrderAsync(checkoutVM, cartItems.Value);
+            var cartItems = cartItemsResult.Value;
 
-            var sesionUrlResult = await _stripePaymentService.CreateCheckoutSessionAsync(origin, cartItems.Value, order);
+            Order order;
 
-            return Result.Success(sesionUrlResult.Value);
+            // 2. DB Transaction (ONLY DB)
+            await _unitOfWork.BeginTransactionAsync();
 
+            try
+            {
+                order = await GetOrCreateOrderAsync(checkoutVM, cartItems);
 
+                await _unitOfWork.CommitAsync(); 
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackAsync();
+                return Result.Failure<string>(new Error(ex.Message, "Order.Failed"));
+            }
+
+            // 3. External Call (Stripe) — OUTSIDE transaction
+            var sessionResult = await _stripePaymentService
+                .CreateCheckoutSessionAsync(origin, cartItems, order.Id);
+
+            if (!sessionResult.IsSuccess)
+                return Result.Failure<string>(sessionResult.Error);
+
+            return Result.Success(sessionResult.Value);
         }
 
 
@@ -67,10 +86,7 @@ namespace BookWarehouse.Application.Services
 
             //3- If order exists but cart has changed, cancel old order and create new one
             order.OrderStatus = OrderStatus.Cancelled;
-
-
             await _unitOfWork.SaveChangesAsync();
-
             return await CreateNewOrder(checkoutVM, cartItems, cartSignature);
         }
 

@@ -7,8 +7,7 @@ namespace BookWarehouse.Application.Abstractions
 {
     public interface IStripePaymentService
     {
-        Task<Result<string>> CreateCheckoutSessionAsync(string origin,IEnumerable<CartDetailsVM> cartDetailsVMs , Order order);
-        //Task<Result<string>> CreateNewSessionForOrderAsync(int orderId, string origin);
+        Task<Result<string>> CreateCheckoutSessionAsync(string origin,IEnumerable<CartDetailsVM> cartDetailsVMs , int orderId);
         Task<Result> HandleStripeWebhookAsync(string json, string signature);
     }
 }

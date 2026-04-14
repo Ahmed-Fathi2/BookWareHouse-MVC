@@ -4,13 +4,18 @@ using System.Text;
 
 namespace BookWarehouse.Domain.Repositories
 {
-    public interface IUnitOfWork
+    public interface IUnitOfWork: IDisposable
     {
         public ICategoryRepository CategoryRepository { get;}
         public IProductRepository  ProductRepository  { get;}
         public ICartRepository CartRepository { get; }
         public IOrderRepository OrderRepository { get; }
         public IOrderDetailsRepository OrderDetailsRepository { get; }
+
+        Task BeginTransactionAsync();
+        Task CommitAsync();
+        Task RollbackAsync();
+
 
         Task SaveChangesAsync();
     }

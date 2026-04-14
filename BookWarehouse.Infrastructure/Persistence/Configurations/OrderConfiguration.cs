@@ -44,6 +44,11 @@ namespace BookWarehouse.Infrastructure.Persistence.Configurations
                 .HasMaxLength(50);
 
 
+            builder.Property(x => x.OrderTotal)
+                .HasColumnType("decimal(18,2)");
+
+
+
             builder.HasOne(x => x.ApplicationUser)
                    .WithMany(ApplicationUser => ApplicationUser.Orders)
                    .HasForeignKey(x => x.ApplicationUserId);

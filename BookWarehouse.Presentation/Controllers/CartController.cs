@@ -116,13 +116,14 @@ namespace BookWarehouse.Presentation.Controllers
              var origin = $"{Request.Scheme}://{Request.Host}";
 
             var sessionUrlResult = await _orderService.PlaceOrderAsync(origin,checkoutVM);
+            if (!sessionUrlResult.IsSuccess)
+                return BadRequest(sessionUrlResult.Error.Description);
+           
 
-          
             Response.Headers.Append("Location", sessionUrlResult.Value);
-
             return new StatusCodeResult(303);
 
-            //return RedirectToAction("Index", "Home");
+
         }
 
         // Case 1: User completes payment successfully and is redirected to this action via the SuccessUrl defined in Stripe session

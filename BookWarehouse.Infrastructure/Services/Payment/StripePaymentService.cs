@@ -15,17 +15,17 @@ namespace BookWarehouse.Infrastructure.Services.Payment
         private readonly ILogger<StripePaymentService> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, IEnumerable<CartDetailsVM> cartDetailsVMs, Order order)
+        public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, IEnumerable<CartDetailsVM> cartDetailsVMs, int orderId)
         {
 
             var metadata = new Dictionary<string, string>
             {
-                { "order_id", order.Id.ToString() }
+                { "order_id", orderId.ToString() }
             };
 
             var options = new SessionCreateOptions
             {
-                SuccessUrl = $"{origin}/Cart/OrderConfirmation?orderId={order.Id}",
+                SuccessUrl = $"{origin}/Cart/OrderConfirmation?orderId={orderId}",
                 CancelUrl = $"{origin}/Cart/Index",
                 //CancelUrl = $"{origin}/Cart/Index",
                 LineItems = new List<SessionLineItemOptions>(),
@@ -58,9 +58,9 @@ namespace BookWarehouse.Infrastructure.Services.Payment
             }
 
 
-            var customerOrder = await _unitOfWork.OrderRepository.GetByIdAsync(order.Id);
+            var customerOrder = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
             if (customerOrder == null)
-                throw new Exception($"Order with ID {order.Id} not found.");
+                return Result.Failure<string>(new Error("OrderNotFound", $"Order with ID {orderId} not found."));
 
             var service = new SessionService();
             Session session = await service.CreateAsync(options);
@@ -69,34 +69,10 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
             await _unitOfWork.SaveChangesAsync();
 
-
             return Result.Success(session.Url);
 
 
         }
-
-        /*
-        public async Task<Result<string>> CreateNewSessionForOrderAsync(int orderId, string origin)
-        {
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if (order == null)
-                return Result.Failure<string>(new Error("OrderNotFound", "Order not found."));
-
-            var orderDetails = await _unitOfWork.OrderDetailsRepository.GetAllAsync(
-                od => od.OrderId == orderId,
-                new System.Linq.Expressions.Expression<Func<OrderDetails, object>>[] { od => od.Product }
-            );
-
-            var cartDetailsVMs = orderDetails.Select(od => new CartDetailsVM
-            {
-                Title = od.Product.Title,
-                FinalPrice = od.Price * od.Quantity,
-                Count = od.Quantity
-            }).ToList();
-
-            return await CreateCheckoutSessionAsync(origin, cartDetailsVMs, order);
-        }
-        */
 
         public async Task<Result> HandleStripeWebhookAsync(string json, string signature)
         {
