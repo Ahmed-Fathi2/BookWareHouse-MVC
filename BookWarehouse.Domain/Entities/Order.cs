@@ -7,10 +7,14 @@ namespace BookWarehouse.Domain.Entities
     {
         public int Id { get; set; }
 
+
+
         //Order Details
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public OrderStatus OrderStatus { get; set; }= OrderStatus.Pending;
-        public double OrderTotal { get; set; }
+        public decimal OrderTotal { get; set; }
+
+        public string ApplicationUserId { get; set; } = string.Empty;
 
         //Shipping Details
         public DateTime ShippingDate { get; set; }
@@ -24,16 +28,14 @@ namespace BookWarehouse.Domain.Entities
         //Payment Details
         public PaymentStatus PaymentStatus { get; set; }= PaymentStatus.Pending;
         public DateTime PaymentDate { get; set; }
-        public DateTime PaymentDueDate { get; set; }
         public string? SessionId { get; set; }
         public string? PaymentIntentId { get; set; }
 
-        public string ApplicationUserId { get; set; } = string.Empty;
+        public string CartSignature { get; set; } = string.Empty; 
+        // A hash of the cart contents at the time of order placement, used to verify cart integrity during payment processing
+
         public ApplicationUser ApplicationUser { get; set; } = default!;
-
-
         public ICollection<OrderDetails> OrderDetails { get; set; } = new HashSet<OrderDetails>();
-
 
 
 

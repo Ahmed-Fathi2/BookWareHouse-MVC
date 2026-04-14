@@ -21,5 +21,7 @@ namespace BookWarehouse.Domain.Repositories
 
         void  Delete (TEntity entity);
 
+        void DeleteAll(IEnumerable<TEntity> entities);
+
     }
 }

@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.ViewModels.Product;
+using BookWarehouse.Application.ViewModels.Product;
 
 namespace BookWarehouse.Application.ViewModels.Cart
 {

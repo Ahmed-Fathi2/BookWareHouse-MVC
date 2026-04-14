@@ -1,40 +1,42 @@
-﻿using Azure;
-using Azure.Core;
 using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Cart;
+using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Stripe;
 using Stripe.Checkout;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BookWarehouse.Infrastructure.Services.Payment
 {
-    public class StripePaymentService : IStripePaymentService
+    public class StripePaymentService(ILogger<StripePaymentService> logger, IUnitOfWork unitOfWork) : IStripePaymentService
     {
-        private readonly ILogger<StripePaymentService> _logger;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<StripePaymentService> _logger = logger;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public StripePaymentService(ILogger<StripePaymentService> logger , IUnitOfWork unitOfWork)
-        {
-            _logger = logger;
-            _unitOfWork = unitOfWork;
-        }
         public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, IEnumerable<CartDetailsVM> cartDetailsVMs, Order order)
         {
 
+            var metadata = new Dictionary<string, string>
+            {
+                { "order_id", order.Id.ToString() }
+            };
+
             var options = new SessionCreateOptions
             {
-                SuccessUrl = $"{origin}/Cart/OrderConfirmation?id={order.Id}",
+                SuccessUrl = $"{origin}/Cart/OrderConfirmation?orderId={order.Id}",
                 CancelUrl = $"{origin}/Cart/Index",
+                //CancelUrl = $"{origin}/Cart/Index",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
+
+                Metadata = metadata,  //  on Session
+
+                PaymentIntentData = new SessionPaymentIntentDataOptions
+                {
+                    Metadata = metadata  //  on PaymentIntent 
+                }
             };
 
             foreach (var item in cartDetailsVMs)
@@ -56,127 +58,166 @@ namespace BookWarehouse.Infrastructure.Services.Payment
             }
 
 
-           var customerOrder= await _unitOfWork.OrderRepository.GetByIdAsync(order.Id);
+            var customerOrder = await _unitOfWork.OrderRepository.GetByIdAsync(order.Id);
             if (customerOrder == null)
                 throw new Exception($"Order with ID {order.Id} not found.");
 
             var service = new SessionService();
-            Session session = service.Create(options);
+            Session session = await service.CreateAsync(options);
 
-            customerOrder.SessionId= session.Id;
+            customerOrder.SessionId = session.Id;
 
-           await _unitOfWork.SaveChangesAsync();
-      
+            await _unitOfWork.SaveChangesAsync();
+
 
             return Result.Success(session.Url);
 
 
         }
 
-      
+        /*
+        public async Task<Result<string>> CreateNewSessionForOrderAsync(int orderId, string origin)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null)
+                return Result.Failure<string>(new Error("OrderNotFound", "Order not found."));
 
-        //public async Task<Result> HandleStripeWebhookAsync(string json, string signature)
-        //{
+            var orderDetails = await _unitOfWork.OrderDetailsRepository.GetAllAsync(
+                od => od.OrderId == orderId,
+                new System.Linq.Expressions.Expression<Func<OrderDetails, object>>[] { od => od.Product }
+            );
 
+            var cartDetailsVMs = orderDetails.Select(od => new CartDetailsVM
+            {
+                Title = od.Product.Title,
+                FinalPrice = od.Price * od.Quantity,
+                Count = od.Quantity
+            }).ToList();
 
-        //    // 3. Get your webhook secret from config
+            return await CreateCheckoutSessionAsync(origin, cartDetailsVMs, order);
+        }
+        */
 
-        //    //var webhookSecret = _config["Stripe:WebhookSecret"];
-        //    var webhookSecret = "";
+        public async Task<Result> HandleStripeWebhookAsync(string json, string signature)
+        {
 
-        //    Event stripeEvent;
+            //var webhookSecret = _config["Stripe:WebhookSecret"];
+            var webhookSecret = "whsec_0325ee89f2fb4ec57e243b68fe0e4919201bee74ba59739756190d32e70d6d27";
 
-        //    try
-        //    {
-        //        // 4. Verify the event came from Stripe (not a fake request)
-        //        stripeEvent = EventUtility.ConstructEvent(
-        //            json,
-        //            signature,
-        //            webhookSecret
-        //        );
-        //    }
-        //    catch (StripeException ex)
-        //    {
-        //        _logger.LogError(ex, "Stripe webhook signature verification failed");
-        //        //return BadRequest("Invalid signature");
-        //        return Result.Failure(new Error("Invalid signature", "StripeWebhook"));
-        //    }
+            Event stripeEvent;
 
-        //    // 5. Handle the event type
-        //    switch (stripeEvent.Type)
-        //    {
-        //        case Events.CheckoutSessionCompleted:
-        //            await HandleCheckoutSessionCompleted(stripeEvent);
-        //            break;
+            try
+            {
+                // 4. Verify the event came from Stripe (not a fake request)
+                stripeEvent = EventUtility.ConstructEvent(
+                    json,
+                    signature,
+                    webhookSecret
+                );
+            }
+            catch (StripeException ex)
+            {
+                _logger.LogError(ex, "Stripe webhook signature verification failed");
+                //return BadRequest("Invalid signature");
+                return Result.Failure(new Error("Invalid signature", "StripeWebhook"));
+            }
 
-        //        case Events.PaymentIntentPaymentFailed:
-        //            await HandlePaymentFailed(stripeEvent);
-        //            break;
+            // 5. Handle the event type
+            switch (stripeEvent.Type)
+            {
+                case EventTypes.CheckoutSessionCompleted:
+                    await HandleCheckoutSessionCompleted(stripeEvent);
+                    break;
 
-        //        default:
-        //            _logger.LogInformation("Unhandled Stripe event: {Type}", stripeEvent.Type);
-        //            break;
-        //    }
+                case EventTypes.PaymentIntentPaymentFailed:
+                    await HandlePaymentFailed(stripeEvent);
+                    break;
 
-        //    // 6. Always return 200 to Stripe — otherwise it retries
-        //  return  Result.Success();
-        //}
+                default:
+                    _logger.LogInformation("Unhandled Stripe event: {Type}", stripeEvent.Type);
+                    break;
+            }
 
-        //private async Task HandleCheckoutSessionCompleted(Event stripeEvent)
-        //{
-        //    var session = stripeEvent.Data.Object as Session;
+            // 6. Always return 200 to Stripe — otherwise it retries
+            return Result.Success();
+        }
 
-        //    if (session == null) return;
+        private async Task HandleCheckoutSessionCompleted(Event stripeEvent)
+        {
+            
+            var session = stripeEvent.Data.Object as Session;
+            if (session == null) return;
 
-        //    // Find the order by SessionId
-        //    var orderHeader = _unitOfWork.OrderHeader
-        //        .Get(o => o.SessionId == session.Id, includeProperties: "ApplicationUser");
+            // ✅ Read from Session metadata
+            if (!session.Metadata.TryGetValue("order_id", out var orderIdStr))
+            {
+                _logger.LogWarning("order_id missing from session metadata");
+                return;
+            }
 
-        //    if (orderHeader == null)
-        //    {
-        //        _logger.LogWarning("Order not found for session {SessionId}", session.Id);
-        //        return;
-        //    }
+            if (!int.TryParse(orderIdStr, out var orderId)) return;
 
-        //    // Avoid processing the same event twice (idempotency)
-        //    if (orderHeader.PaymentStatus == SD.PaymentStatusApproved)
-        //    {
-        //        _logger.LogInformation("Order {Id} already approved, skipping", orderHeader.Id);
-        //        return;
-        //    }
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null) return;
 
-        //    if (session.PaymentStatus == "paid")
-        //    {
-        //        _unitOfWork.OrderHeader.UpdateStripePaymentID(
-        //            orderHeader.Id, session.Id, session.PaymentIntentId);
+            // Idempotency check
+            if (order.PaymentStatus == PaymentStatus.Paid)
+            {
+                _logger.LogInformation("Order {Id} already marked as Paid. Skipping duplicate webhook event.", order.Id);
+                return;
+            }
 
-        //        _unitOfWork.OrderHeader.UpdateStatus(
-        //            orderHeader.Id, SD.StatusApproved, SD.PaymentStatusApproved);
+            if (session.PaymentStatus == "paid")
+            {
+                order.SessionId = session.Id;
+                order.PaymentIntentId = session.PaymentIntentId;
+                order.PaymentDate = DateTime.UtcNow;
+                order.PaymentStatus = PaymentStatus.Paid;
+                order.OrderStatus = OrderStatus.Approved;
 
-        //        _unitOfWork.Save();
+                await _unitOfWork.SaveChangesAsync();
+                _logger.LogInformation("Order {Id} approved", orderId);
+            }
+        }
 
-        //        _logger.LogInformation("Order {Id} approved via webhook", orderHeader.Id);
-        //    }
-        //}
+        private async Task HandlePaymentFailed(Event stripeEvent)
+        {
+            // If Payment Failed , Stripe Sends PaymentIntent object in the event data, not Session
+            //PAymentIntent is Object in Stripe that represents a single payment attempt. It tracks the lifecycle of the payment, including any failures and their reasons.
+            var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            if (paymentIntent == null) return;
 
-        //private async Task HandlePaymentFailed(Event stripeEvent)
-        //{
-        //    var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
+            // ✅ Read from PaymentIntent metadata
+            if (!paymentIntent.Metadata.TryGetValue("order_id", out var orderIdStr))
+            {
+                _logger.LogWarning("order_id missing from PaymentIntent metadata");
+                return;
+            }
 
-        //    if (paymentIntent == null) return;
+            if (!int.TryParse(orderIdStr, out var orderId)) return;
+            // ✅ Idempotency (avoid duplicate processing)
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null) return;
 
-        //    var orderHeader = _unitOfWork.OrderHeader
-        //        .Get(o => o.PaymentIntentId == paymentIntent.Id);
+            if (order.PaymentStatus == PaymentStatus.Failed)
+            {
+                _logger.LogInformation("Order {Id} already marked as failed, skipping", orderId);
+                return;
+            }
 
-        //    if (orderHeader != null)
-        //    {
-        //        _unitOfWork.OrderHeader.UpdateStatus(
-        //            orderHeader.Id, SD.StatusCancelled, SD.PaymentStatusRejected);
+            order.PaymentIntentId = paymentIntent.Id;
+            order.PaymentStatus = PaymentStatus.Failed;
+            order.OrderStatus = OrderStatus.Pending;
 
-        //        _unitOfWork.Save();
-
-        //        _logger.LogWarning("Payment failed for Order {Id}", orderHeader.Id);
-        //    }
-        //}
+            await _unitOfWork.SaveChangesAsync();
+            // ✅ Logging
+            _logger.LogWarning(
+                "Payment failed for Order {Id}, Reason: {Reason}",
+                orderId,
+                paymentIntent.LastPaymentError?.Message
+            );
+        }
     }
-    }
+}
+
+

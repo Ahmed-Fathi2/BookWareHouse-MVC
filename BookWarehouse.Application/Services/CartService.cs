@@ -2,6 +2,7 @@ using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Cart;
 using BookWarehouse.Application.ViewModels.Product;
+using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Mapster;
@@ -90,5 +91,30 @@ namespace BookWarehouse.Application.Services
             return Result.Success();
 
         }
+
+        public async Task<Result> ClearCart(int orderId)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+
+            if (order is null)
+                return Result.Failure(new Error("Order not found", "Order.NotFound"));
+
+            if (order.PaymentStatus != PaymentStatus.Paid || order.OrderStatus != OrderStatus.Approved)
+                return Result.Success();
+
+            var carts = await _unitOfWork.CartRepository
+                .GetAllAsync(c => c.ApplicationUserId == order.ApplicationUserId && !c.IsDeleted);
+
+            if (!carts.Any())
+                return Result.Success();
+
+            _unitOfWork.CartRepository.DeleteAll(carts);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
+        }
+
+
     }
 }

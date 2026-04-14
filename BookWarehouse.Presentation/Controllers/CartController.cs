@@ -34,6 +34,18 @@ namespace BookWarehouse.Presentation.Controllers
         }
 
 
+
+        //[HttpGet]
+        //[Authorize]
+        //public async Task<IActionResult> PaymentCancel(int orderId)
+        //{
+
+        //   await _orderService.CancelOrderAsync(orderId);
+
+        //    return View(shoppingCartVM);
+
+        //}
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddToCart(CreateCartVM createCartVM)
@@ -113,9 +125,22 @@ namespace BookWarehouse.Presentation.Controllers
             //return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult OrderConfirmation(int id)
+        // Case 1: User completes payment successfully and is redirected to this action via the SuccessUrl defined in Stripe session
+        public async Task<IActionResult> OrderConfirmation(int orderId)
         {
-            return Content($"Order with id {id} has been placed successfully!");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var cartProductsResult = await _cartService.GetAllUserCartProducts(userId!);
+
+            var shoppingCartVM = new ShoppingCartVM()
+            {
+                CartList = cartProductsResult.Value,
+                OrderTotal = cartProductsResult.Value.Sum(p => p.FinalPrice),
+                TotalItems = cartProductsResult.Value.Count()
+            };
+            var result = await _cartService.ClearCart(orderId);
+
+            ViewBag.OrderId = orderId;
+            return result.IsSuccess? View(shoppingCartVM) : NotFound();
         }
 
         private async Task<IActionResult> GetCartUpdateJsonResult(int id)

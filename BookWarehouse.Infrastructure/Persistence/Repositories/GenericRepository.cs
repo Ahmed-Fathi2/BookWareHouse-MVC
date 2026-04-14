@@ -59,5 +59,10 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
         {
             _dbContext.AddRange(entities);
         }
+
+        public void DeleteAll(IEnumerable<TEntity> entities)
+        {
+            _dbContext.RemoveRange(entities);   
+        }
     }
 }

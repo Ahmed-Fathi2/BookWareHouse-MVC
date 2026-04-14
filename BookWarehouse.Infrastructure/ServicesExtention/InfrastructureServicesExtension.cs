@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 
 namespace BookWarehouse.Infrastructure.ServicesExtention
@@ -92,9 +93,10 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
                 // Cookie settings
                 options.Cookie.Name = "BookWarehouse.Auth";
                 options.Cookie.HttpOnly = true; // Mitigate XSS attacks by preventing client-side scripts from accessing the cookie
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are only sent over HTTPS
-                options.Cookie.SameSite = SameSiteMode.Strict; // Prevent the browser from sending the cookie along with cross-site requests, mitigating CSRF attacks
-
+                //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are only sent over HTTPS
+                //options.Cookie.SameSite = SameSiteMode.Lax; //** Prevent the browser from sending the cookie along with cross-site requests, mitigating CSRF attacks
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 // Expiration
                 options.ExpireTimeSpan = TimeSpan.FromDays(7); // Set a reasonable expiration time for the authentication cookie
                 options.SlidingExpiration = true; // Renew the cookie on each request to keep the user logged in
@@ -104,6 +106,9 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
                 options.LogoutPath = "/Auth/Logout"; // Redirect to the logout page when the user logs out
                 options.AccessDeniedPath = "/Auth/AccessDenied"; // Redirect to an access denied page when the user tries to access a resource they don't have permission for
             });
+
+            //options.Cookie.SameSite = SameSiteMode.None; // 🔥 مهم
+            //options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // لازم HTTPS
 
             return services;
         }
