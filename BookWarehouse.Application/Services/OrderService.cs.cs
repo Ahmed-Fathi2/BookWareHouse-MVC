@@ -9,13 +9,15 @@ using Stripe.Checkout;
 
 namespace BookWarehouse.Application.Services
 {
-    public class OrderService(IUnitOfWork unitOfWork , ICartService cartService, IStripePaymentService stripePaymentService) : IOrderService
+    public class OrderService(IUnitOfWork unitOfWork ,
+        ICartService cartService,
+        IStripePaymentService stripePaymentService,
+        IKashierPaymentService kashierPaymentService) : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ICartService _cartService = cartService;
         private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
-
-
+        private readonly IKashierPaymentService _kashierPaymentService = kashierPaymentService;
 
         public async Task<Result<string>> PlaceOrderAsync(string origin, CheckoutVM checkoutVM)
         {
@@ -36,7 +38,7 @@ namespace BookWarehouse.Application.Services
             {
                 order = await GetOrCreateOrderAsync(checkoutVM, cartItems);
 
-                await _unitOfWork.CommitAsync(); 
+                await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)
             {
@@ -45,8 +47,11 @@ namespace BookWarehouse.Application.Services
             }
 
             // 3. External Call (Stripe) — OUTSIDE transaction
-            var sessionResult = await _stripePaymentService
-                .CreateCheckoutSessionAsync(origin, cartItems, order.Id);
+            //var sessionResult = await _stripePaymentService
+            //    .CreateCheckoutSessionAsync(origin, cartItems, order.Id);
+
+
+            var sessionResult = await _kashierPaymentService.InitiatePaymentAsync(origin, order.Id);
 
             if (!sessionResult.IsSuccess)
                 return Result.Failure<string>(sessionResult.Error);

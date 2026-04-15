@@ -37,6 +37,8 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IStripePaymentService, StripePaymentService>();
+            //services.AddScoped<IKashierPaymentService, KashierPaymentService>();
+            services.AddHttpClient<IKashierPaymentService, KashierPaymentService>();
 
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -52,7 +54,10 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.Configure<StripeSetting>
                 (configuration.GetSection(nameof(Stripe)));
 
+            var Kashier = "Kashier";
 
+            services.Configure<KashierSettings>
+                (configuration.GetSection(nameof(Kashier)));
 
 
 
