@@ -8,13 +8,9 @@ namespace BookWarehouse.Presentation.Controllers
 {
     public class PaymentController : Controller
     {
-        /*
-         Card Number: 4111 1111 1111 1111
-        Expiry: أي تاريخ مستقبل
-        CVV: 123
-         */
-        // 🟢 1. Callback (GET)
-        // Kashier redirects user here after payment
+
+        // Kashier redirects user here after payment 
+        // Success URL: https://yourdomain.com/payment/callback?merchantOrderId=123&paymentStatus=SUCCESS
         [HttpGet("payment/callback")]
         public IActionResult Callback()
         {

@@ -7,8 +7,6 @@ namespace BookWarehouse.Domain.Entities
     {
         public int Id { get; set; }
 
-
-
         //Order Details
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public OrderStatus OrderStatus { get; set; }= OrderStatus.Pending;
@@ -17,7 +15,7 @@ namespace BookWarehouse.Domain.Entities
         public string ApplicationUserId { get; set; } = string.Empty;
 
         //Shipping Details
-        public DateTime ShippingDate { get; set; }
+        public DateTime? ShippingDate { get; set; }
         public string? TrackingNumber { get; set; }
         public string? Carrier { get; set; }
         public string FullName { get; set; }= string.Empty;
@@ -27,7 +25,7 @@ namespace BookWarehouse.Domain.Entities
 
         //Payment Details
         public PaymentStatus PaymentStatus { get; set; }= PaymentStatus.Pending;
-        public DateTime PaymentDate { get; set; }
+        public DateTime? PaymentDate { get; set; }
         public string? SessionId { get; set; }
         public string? PaymentIntentId { get; set; }
 

@@ -4,5 +4,6 @@ namespace BookWarehouse.Domain.Repositories
 {
     public interface IOrderRepository: IGenericRepository<Order,int>
     {
+        Task<Order?> GetOrderDetails(int  orderId); 
     }
 }
