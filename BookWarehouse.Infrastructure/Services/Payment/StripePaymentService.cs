@@ -2,6 +2,7 @@ using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.ViewModels.Cart;
+using BookWarehouse.Application.ViewModels.Payment;
 using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
@@ -12,13 +13,13 @@ using Stripe.Checkout;
 
 namespace BookWarehouse.Infrastructure.Services.Payment
 {
-    public class StripePaymentService(ILogger<StripePaymentService> logger, IUnitOfWork unitOfWork,IOptions<StripeSetting> options) : IStripePaymentService
+    public class StripePaymentService(ILogger<StripePaymentService> logger, IUnitOfWork unitOfWork,IOptions<StripeSetting> options) : IPaymentService
     {
         private readonly ILogger<StripePaymentService> _logger = logger;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly StripeSetting _options = options.Value;
 
-        public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, IEnumerable<CartDetailsVM> cartDetailsVMs, int orderId)
+        public async Task<Result<string>> CreateCheckoutSessionAsync(string origin, int orderId, IEnumerable<CartDetailsVM>? cartDetailsVMs)
         {
 
             var metadata = new Dictionary<string, string>
@@ -30,7 +31,6 @@ namespace BookWarehouse.Infrastructure.Services.Payment
             {
                 SuccessUrl = $"{origin}/Cart/OrderConfirmation?orderId={orderId}",
                 CancelUrl = $"{origin}/Cart/Index",
-                //CancelUrl = $"{origin}/Cart/Index",
                 LineItems = new List<SessionLineItemOptions>(),
                 Mode = "payment",
 
@@ -42,7 +42,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
                 }
             };
 
-            foreach (var item in cartDetailsVMs)
+            foreach (var item in cartDetailsVMs!)
             {
                 var sessionLineItem = new SessionLineItemOptions
                 {
@@ -77,19 +77,18 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
         }
 
-        public async Task<Result> HandleStripeWebhookAsync(string json, string signature)
+        public async Task<Result<WebHookVM>> HandleWebhookAsync(string body, string signature)
         {
 
-            //var webhookSecret = _config["Stripe:WebhookSecret"];
             var webhookSecret = _options.WebhookSecret;
 
             Event stripeEvent;
 
             try
             {
-                // 4. Verify the event came from Stripe (not a fake request)
+
                 stripeEvent = EventUtility.ConstructEvent(
-                    json,
+                    body,
                     signature,
                     webhookSecret
                 );
@@ -97,104 +96,100 @@ namespace BookWarehouse.Infrastructure.Services.Payment
             catch (StripeException ex)
             {
                 _logger.LogError(ex, "Stripe webhook signature verification failed");
-                //return BadRequest("Invalid signature");
-                return Result.Failure(new Error("Invalid signature", "StripeWebhook"));
+                return Result.Failure<WebHookVM>(new Error("InvalidSignature", "Stripe webhook signature verification failed"));
             }
 
-            // 5. Handle the event type
-            switch (stripeEvent.Type)
+
+            if (stripeEvent.Type == EventTypes.CheckoutSessionCompleted)
             {
-                case EventTypes.CheckoutSessionCompleted:
-                    await HandleCheckoutSessionCompleted(stripeEvent);
-                    break;
-
-                case EventTypes.PaymentIntentPaymentFailed:
-                    await HandlePaymentFailed(stripeEvent);
-                    break;
-
-                default:
-                    _logger.LogInformation("Unhandled Stripe event: {Type}", stripeEvent.Type);
-                    break;
+                var result = await HandleCheckoutSessionCompleted(stripeEvent);
+                if (result != null)
+                    return Result.Success(result);
+            }
+            else if (stripeEvent.Type == EventTypes.PaymentIntentPaymentFailed)
+            {
+                var result = await HandlePaymentFailed(stripeEvent);
+                if (result != null)
+                    return Result.Success(result);
             }
 
-            // 6. Always return 200 to Stripe — otherwise it retries
-            return Result.Success();
+            _logger.LogInformation("Unhandled Stripe event type: {Type}", stripeEvent.Type);
+            return Result.Failure<WebHookVM>(new Error("UnhandledEventType", $"No handler for Stripe event type {stripeEvent.Type}"));
+
+
         }
 
-        private async Task HandleCheckoutSessionCompleted(Event stripeEvent)
+        private async Task<WebHookVM?> HandleCheckoutSessionCompleted(Event stripeEvent)
         {
             
             var session = stripeEvent.Data.Object as Session;
-            if (session == null) return;
+            if (session == null) return null;
 
-            // ✅ Read from Session metadata
             if (!session.Metadata.TryGetValue("order_id", out var orderIdStr))
             {
                 _logger.LogWarning("order_id missing from session metadata");
-                return;
+                return null;
             }
 
-            if (!int.TryParse(orderIdStr, out var orderId)) return;
+            if (!int.TryParse(orderIdStr, out var orderId)) return null;
 
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if (order == null) return;
+            if (order == null) return null;
 
-            // Idempotency check
-            if (order.PaymentStatus == PaymentStatus.Paid)
+            var webHookVM = new WebHookVM
             {
-                _logger.LogInformation("Order {Id} already marked as Paid. Skipping duplicate webhook event.", order.Id);
-                return;
-            }
+                Status = PaymentWebhookStatus.SUCCESS.ToString(), 
+                TransactionId = session.PaymentIntentId,
+                OrderId = orderId
+            };
+            return webHookVM;
 
-            if (session.PaymentStatus == "paid")
-            {
-                order.SessionId = session.Id;
-                order.PaymentIntentId = session.PaymentIntentId;
-                order.PaymentDate = DateTime.UtcNow;
-                order.PaymentStatus = PaymentStatus.Paid;
-                order.OrderStatus = OrderStatus.Approved;
 
-                await _unitOfWork.SaveChangesAsync();
-                _logger.LogInformation("Order {Id} approved", orderId);
-            }
+          
         }
 
-        private async Task HandlePaymentFailed(Event stripeEvent)
+        private async Task<WebHookVM?> HandlePaymentFailed(Event stripeEvent)
         {
-            // If Payment Failed , Stripe Sends PaymentIntent object in the event data, not Session
-            //PAymentIntent is Object in Stripe that represents a single payment attempt. It tracks the lifecycle of the payment, including any failures and their reasons.
+         
             var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-            if (paymentIntent == null) return;
-
-            // ✅ Read from PaymentIntent metadata
+            if (paymentIntent == null) return null; 
+   
             if (!paymentIntent.Metadata.TryGetValue("order_id", out var orderIdStr))
             {
                 _logger.LogWarning("order_id missing from PaymentIntent metadata");
-                return;
+                return null;
             }
 
-            if (!int.TryParse(orderIdStr, out var orderId)) return;
-            // ✅ Idempotency (avoid duplicate processing)
+            if (!int.TryParse(orderIdStr, out var orderId)) return null;
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if (order == null) return;
+            if (order == null) return null;
 
-            if (order.PaymentStatus == PaymentStatus.Failed)
+            var webHookVM = new WebHookVM
             {
-                _logger.LogInformation("Order {Id} already marked as failed, skipping", orderId);
-                return;
-            }
+                OrderId = orderId,
+                TransactionId = paymentIntent.Id,
+                Status = PaymentWebhookStatus.FAILURE.ToString()    
+            };
+            return webHookVM;
 
-            order.PaymentIntentId = paymentIntent.Id;
-            order.PaymentStatus = PaymentStatus.Failed;
-            order.OrderStatus = OrderStatus.Pending;
+            ////  Idempotency check: If we already marked this order as failed, no need to do it again
+            //if (order.PaymentStatus == PaymentStatus.Failed)
+            //{
+            //    _logger.LogInformation("Order {Id} already marked as failed, skipping", orderId);
+            //    return;
+            //}
 
-            await _unitOfWork.SaveChangesAsync();
-            // ✅ Logging
-            _logger.LogWarning(
-                "Payment failed for Order {Id}, Reason: {Reason}",
-                orderId,
-                paymentIntent.LastPaymentError?.Message
-            );
+            //order.PaymentIntentId = paymentIntent.Id;
+            //order.PaymentStatus = PaymentStatus.Failed;
+            //order.OrderStatus = OrderStatus.Pending;
+
+            //await _unitOfWork.SaveChangesAsync();
+
+            //_logger.LogWarning(
+            //    "Payment failed for Order {Id}, Reason: {Reason}",
+            //    orderId,
+            //    paymentIntent.LastPaymentError?.Message
+            //);
         }
     }
 }

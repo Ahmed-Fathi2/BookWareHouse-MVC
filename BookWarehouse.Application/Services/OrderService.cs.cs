@@ -2,27 +2,29 @@ using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.ViewModels.Cart;
 using BookWarehouse.Application.ViewModels.Order;
+using BookWarehouse.Application.ViewModels.Payment;
 using BookWarehouse.Domain.Common.Enums;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Mapster;
-using Stripe.Checkout;
+using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace BookWarehouse.Application.Services
 {
     public class OrderService(IUnitOfWork unitOfWork,
         ICartService cartService,
-        IStripePaymentService stripePaymentService,
-        IKashierPaymentService kashierPaymentService) : IOrderService
+        IPaymentService PaymentService,
+        ILogger<OrderService> logger
+    ) : IOrderService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ICartService _cartService = cartService;
-        private readonly IStripePaymentService _stripePaymentService = stripePaymentService;
-        private readonly IKashierPaymentService _kashierPaymentService = kashierPaymentService;
+        private readonly IPaymentService _paymentService = PaymentService;
+        private readonly ILogger<OrderService> _logger = logger;
 
         public async Task<Result<string>> PlaceOrderAsync(string origin, CheckoutVM checkoutVM)
         {
-            // 1. Get Cart
             var cartItemsResult = await _cartService.GetAllUserCartProducts(checkoutVM.ApplicationUserId);
 
             if (!cartItemsResult.IsSuccess || !cartItemsResult.Value.Any())
@@ -30,9 +32,9 @@ namespace BookWarehouse.Application.Services
 
             var cartItems = cartItemsResult.Value;
 
-            Order order;
+            Domain.Entities.Order order;
 
-            // 2. DB Transaction (ONLY DB)
+            // DB Transaction (ONLY DB)
             await _unitOfWork.BeginTransactionAsync();
 
             try
@@ -47,21 +49,78 @@ namespace BookWarehouse.Application.Services
                 return Result.Failure<string>(new Error(ex.Message, "Order.Failed"));
             }
 
-            // 3. External Call (Stripe) — OUTSIDE transaction
-            var sessionResult = await _stripePaymentService
-                .CreateCheckoutSessionAsync(origin, cartItems, order.Id);
+            // Create Payment Session (External API Call)
+            var sessionResult = await _paymentService.CreateCheckoutSessionAsync(origin, order.Id, cartItems);
 
 
             //var sessionResult = await _kashierPaymentService.InitiatePaymentAsync(origin, order.Id);
 
-            //if (!sessionResult.IsSuccess)
-            //    return Result.Failure<string>(sessionResult.Error);
+            if (!sessionResult.IsSuccess)
+                return Result.Failure<string>(sessionResult.Error);
 
             return Result.Success(sessionResult.Value);
         }
 
+        public async Task<Result<IEnumerable<OrderReadVM>>> GetAllOrdersAsync(OrderStatus? orderStatus)
+        {
+            Expression<Func<Domain.Entities.Order, bool>>? filter = null;
 
-        private async Task<Order> GetOrCreateOrderAsync(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems)
+            if (orderStatus.HasValue)
+            {
+                filter = o => o.OrderStatus == orderStatus.Value;
+            }
+
+            var orders = await _unitOfWork.OrderRepository.GetAllAsync(filter: filter);
+
+            var orderReadVMs = orders.Adapt<IEnumerable<OrderReadVM>>();
+
+            return Result.Success(orderReadVMs);
+
+        }
+
+        public async Task<Result<OrderDetailsVM>> GetOrderDeatilsByIdAsync(int orderId)
+        {
+            var order = await _unitOfWork.OrderRepository.GetOrderDetails(orderId);
+            if (order == null)
+                return Result.Failure<OrderDetailsVM>(new Error("Order not found", "Order.NotFound"));
+
+            var result = order.Adapt<OrderDetailsVM>();
+
+            return Result.Success(result);
+        }
+        public async Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus status)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null)
+                return Result.Failure(new Error("Order not found", "Order.NotFound"));
+
+
+            if (status == OrderStatus.Shipped)
+                order.ShippingDate = DateTime.Now;
+
+
+            order.OrderStatus = status;
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
+
+        }
+
+        public async Task<Result> UpdateOrderDetailsAsync(int orderId, string carrier, string trackingNumber)
+        {
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null)
+                return Result.Failure(new Error("Order not found", "Order.NotFound"));
+
+            order.Carrier = carrier;
+            order.TrackingNumber = trackingNumber;
+
+
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success();
+        }
+
+        private async Task<Domain.Entities.Order> GetOrCreateOrderAsync(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems)
         {
             var cartSignature = GenerateCartSignature(cartItems);
 
@@ -96,9 +155,9 @@ namespace BookWarehouse.Application.Services
             return await CreateNewOrder(checkoutVM, cartItems, cartSignature);
         }
 
-        private async Task<Order> CreateNewOrder(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems, string signature)
+        private async Task<Domain.Entities.Order> CreateNewOrder(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems, string signature)
         {
-            var newOrder = checkoutVM.Adapt<Order>();
+            var newOrder = checkoutVM.Adapt<Domain.Entities.Order>();
             newOrder.CartSignature = signature;
 
             _unitOfWork.OrderRepository.Add(newOrder);
@@ -123,6 +182,63 @@ namespace BookWarehouse.Application.Services
             return newOrder;
         }
 
+
+        public async Task HandlePaymentResult(WebHookVM webHookVM)
+        {
+
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(webHookVM.OrderId);
+            if (order == null)
+            {
+                _logger.LogWarning("Received webhook for non-existent order with id {OrderId}", webHookVM.OrderId);
+                return;
+            }
+
+            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.SUCCESS.ToString(), StringComparison.OrdinalIgnoreCase))
+                await UpdateCompletedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
+
+            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.FAILURE.ToString(), StringComparison.OrdinalIgnoreCase))
+                await UpdateFailedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
+
+        }
+
+        private async Task UpdateCompletedOrder(string status, string transactionId, Domain.Entities.Order order)
+        {
+            if (order.PaymentStatus == PaymentStatus.Paid)
+            {
+                _logger.LogInformation("Order {Id} already marked as Paid. Skipping duplicate webhook event.", order.Id);
+                return;
+            }
+
+            order.PaymentIntentId = transactionId;
+            order.PaymentDate = DateTime.UtcNow;
+            order.PaymentStatus = PaymentStatus.Paid;
+            order.OrderStatus = OrderStatus.Approved;
+
+            await _cartService.ClearCart(order.Id);
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogInformation("Order {Id} approved", order.Id);
+
+        }
+
+        private async Task UpdateFailedOrder(string status, string transactionId, Domain.Entities.Order order)
+        {
+
+            if (order.PaymentStatus == PaymentStatus.Failed)
+            {
+                _logger.LogInformation("Order {Id} already marked as failed, skipping", order.Id);
+                return;
+            }
+
+            order.PaymentIntentId = transactionId;
+            order.PaymentStatus = PaymentStatus.Failed;
+            order.OrderStatus = OrderStatus.Pending;
+
+            await _unitOfWork.SaveChangesAsync();
+
+            _logger.LogWarning("Payment failed for Order {Id}", order.Id);
+        }
         private string GenerateCartSignature(IEnumerable<CartDetailsVM> cartItems)
         {
             return string.Join("|", cartItems
@@ -130,57 +246,6 @@ namespace BookWarehouse.Application.Services
                 .Select(x => $"{x.ProductId}-{x.Count}"));
         }
 
-        public async Task<Result<IEnumerable<OrderReadVM>>> GetAllOrdersAsync()
-        {
-            var orders = await _unitOfWork.OrderRepository.GetAllAsync();
-
-            var orderReadVMs = orders.Adapt<IEnumerable<OrderReadVM>>();
-
-            return Result.Success(orderReadVMs);
-
-        }
-
-        public async Task<Result<OrderDetailsVM>> GetOrderByIdAsync(int orderId)
-        {
-            var order = await _unitOfWork.OrderRepository.GetOrderDetails(orderId);
-            if (order == null)
-                return Result.Failure<OrderDetailsVM>(new Error("Order not found", "Order.NotFound"));
-
-            var result = order.Adapt<OrderDetailsVM>();
-
-            return Result.Success(result);
-        }
-        public async Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus status)
-        {
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if (order == null)
-                return Result.Failure(new Error("Order not found", "Order.NotFound"));
-
-   
-                if (status == OrderStatus.Shipped)
-                    order.ShippingDate = DateTime.Now;
-
-                
-                order.OrderStatus = status;
-
-                await _unitOfWork.SaveChangesAsync();
-                return Result.Success();
- 
-        }
-
-        public async Task<Result> UpdateOrderDetailsAsync(int orderId, string carrier, string trackingNumber)
-        {
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if (order == null)
-                return Result.Failure(new Error("Order not found", "Order.NotFound"));
-
-            order.Carrier = carrier;
-            order.TrackingNumber = trackingNumber;
-   
-
-            await _unitOfWork.SaveChangesAsync();
-            return Result.Success();
-        }
     }
 }
 

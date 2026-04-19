@@ -130,19 +130,14 @@ namespace BookWarehouse.Presentation.Controllers
         // Case 1: User completes payment successfully and is redirected to this action via the SuccessUrl defined in Stripe session
         public async Task<IActionResult> OrderConfirmation(int orderId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var cartProductsResult = await _cartService.GetAllUserCartProducts(userId!);
+            var result = await _orderService.GetOrderDeatilsByIdAsync(orderId);
 
-            var shoppingCartVM = new ShoppingCartVM()
+            if (!result.IsSuccess)
             {
-                CartList = cartProductsResult.Value,
-                OrderTotal = cartProductsResult.Value.Sum(p => p.FinalPrice),
-                TotalItems = cartProductsResult.Value.Count()
-            };
-            var result = await _cartService.ClearCart(orderId);
+                return NotFound();
+            }
 
-            ViewBag.OrderId = orderId;
-            return result.IsSuccess? View(shoppingCartVM) : NotFound();
+            return View(result.Value);
         }
 
         private async Task<IActionResult> GetCartUpdateJsonResult(int id)

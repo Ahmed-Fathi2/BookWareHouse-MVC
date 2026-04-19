@@ -272,19 +272,21 @@
                         <div class="d-grid gap-3 mt-4">
                             @if (Model.OrderStatus == "Approved")
                             {
-                                <button type="submit" asp-action="UpdateOrderStatus" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Processing" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase">
+ 
+                                <button type="submit" asp-action="StartProcessing" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Processing" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase">
                                     START PROCESSING
                                 </button>
                             }
                             @if (Model.OrderStatus == "Processing")
                             {
+
                                 <button type="submit" asp-action="StartShipping" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase" onclick="return validateShipping()">
                                     START SHIPPING
                                 </button>
                             }
                             @if (Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Shipped")
                             {
-                                <button type="submit" asp-action="UpdateOrderStatus" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Cancelled" class="btn btn-danger fw-bold py-2 shadow-sm text-uppercase" style="background-color: #e53e3e;">
+                                <button type="submit" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Cancelled" class="btn btn-danger fw-bold py-2 shadow-sm text-uppercase" style="background-color: #e53e3e;">
                                     CANCEL ORDER
                                 </button>
                             }

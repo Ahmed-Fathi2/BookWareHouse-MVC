@@ -36,9 +36,10 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IStripePaymentService, StripePaymentService>();
+            //services.AddScoped<IPaymentService, KashierPaymentService>();
+            services.AddScoped<IPaymentService, StripePaymentService>();
             //services.AddScoped<IKashierPaymentService, KashierPaymentService>();
-            services.AddHttpClient<IKashierPaymentService, KashierPaymentService>();
+            //services.AddHttpClient<IPaymentService, KashierPaymentService>();
 
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();

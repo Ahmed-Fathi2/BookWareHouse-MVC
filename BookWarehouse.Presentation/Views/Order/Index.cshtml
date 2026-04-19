@@ -1,33 +1,73 @@
-﻿
+
 <div class="container-fluid mt-5 mb-5 pb-5 px-md-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
         <div>
-            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-book-half me-2"></i>Orders List</h2>
-            <p class="text-muted mb-0">Manage Orders.</p>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-inboxes me-2"></i>Orders Management</h2>
+            <p class="text-muted mb-0">View, filter, and manage customer orders.</p>
+        </div>
+        
+        <div class="d-flex align-items-center">
+            <div class="btn-group shadow-sm bg-white rounded-pill overflow-hidden border" role="group" aria-label="Status filters">
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnAll" autocomplete="off" data-status="all" checked>
+                <label class="btn btn-outline-primary px-3 py-2 fw-semibold border-0" for="btnAll">All</label>
+
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnPending" autocomplete="off" data-status="Pending">
+                <label class="btn btn-outline-secondary px-3 py-2 fw-semibold border-0" for="btnPending">Pending</label>
+
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnApproved" autocomplete="off" data-status="Approved">
+                <label class="btn btn-outline-success px-3 py-2 fw-semibold border-0" for="btnApproved">Approved</label>
+
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnProcessing" autocomplete="off" data-status="Processing">
+                <label class="btn btn-outline-warning px-3 py-2 fw-semibold border-0" for="btnProcessing">Processing</label>
+
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnShipped" autocomplete="off" data-status="Shipped">
+                <label class="btn btn-outline-info px-3 py-2 fw-semibold border-0" for="btnShipped">Shipped</label>
+
+                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnCancelled" autocomplete="off" data-status="Cancelled">
+                <label class="btn btn-outline-danger px-3 py-2 fw-semibold border-0" for="btnCancelled">Cancelled</label>
+            </div>
         </div>
     </div>
 
-    <div class="table-container">
-        <div class="table-responsive">
-            <table id="orderTable" class="table table-bordered table-striped mb-0">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Phone</th>
-                        <th>Order Date</th>
-                        <th>Order Status</th>
-                        <th>Payment Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-               
-            </table>
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table id="orderTable" class="table table-hover table-striped table-bordered align-middle mb-0 w-100">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3 text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Order ID</th>
+                            <th class="py-3 text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Customer Name</th>
+                            <th class="py-3 text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Phone</th>
+                            <th class="py-3 text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Order Date</th>
+                            <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Order Status</th>
+                            <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Payment Status</th>
+                            <th class="py-3 text-center text-uppercase" style="font-size: 0.85rem; color: #000 !important; font-weight: 900 !important;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0" style="transition: opacity 0.3s ease-in-out;">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
-
 @section Scripts {
     <script src="~/js/order.js"></script>
+    <style>
+        .btn-group .btn-check:checked + .btn-outline-primary { color: #fff; background-color: #0d6efd; }
+        /* .btn-group .btn-check:checked + .btn-outline-secondary { color: #fff; background-color: #6c757d; } */
+        .btn-group .btn-check:checked + .btn-outline-success { color: #fff; background-color: #198754; }
+        .btn-group .btn-check:checked + .btn-outline-warning { color: #000; background-color: #ffc107; }
+        .btn-group .btn-check:checked + .btn-outline-info { color: #000; background-color: #0dcaf0; }
+        .btn-group .btn-check:checked + .btn-outline-danger { color: #fff; background-color: #dc3545; }
+        
+        table.dataTable tbody tr td {
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .table-hover tbody tr:hover td {
+            background-color: #f8fafc;
+        }
+    </style>
 }

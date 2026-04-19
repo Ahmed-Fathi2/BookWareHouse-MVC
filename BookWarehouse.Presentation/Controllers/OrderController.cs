@@ -13,16 +13,16 @@ namespace BookWarehouse.Presentation.Controllers
             return View();
         }
 
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(OrderStatus? status)
         {
-            var orders = await _orderService.GetAllOrdersAsync();
+            var orders = await _orderService.GetAllOrdersAsync(status);
 
             return Json(new { data = orders.Value });
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var order = await _orderService.GetOrderByIdAsync(id);
+            var order = await _orderService.GetOrderDeatilsByIdAsync(id);
             if (!order.IsSuccess)
                 return NotFound("Order not found");
 
@@ -40,16 +40,17 @@ namespace BookWarehouse.Presentation.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        public async Task<IActionResult> UpdateOrderStatus(int id, OrderStatus orderStatus)
+        public async Task<IActionResult> StartProcessing(int id)
         {
-            var result = await _orderService.UpdateOrderStatusAsync(id, orderStatus);
+            var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Processing);
             if (!result.IsSuccess)
                 TempData["Error"] = "Failed to update order status.";
             else
-                TempData["Success"] = $"Order is now {orderStatus}.";
-
+                TempData["Success"] = "Order is now Processing.";
             return RedirectToAction(nameof(Details), new { id });
         }
+      
+     
 
         [HttpPost]
         public async Task<IActionResult> StartShipping(int id, string carrier, string trackingNumber)
@@ -71,6 +72,20 @@ namespace BookWarehouse.Presentation.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-       
+
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Cancelled);
+            if (!result.IsSuccess)
+                TempData["Error"] = "Failed to update order status.";
+            else
+            {
+                // implement refund logic here if necessary
+                TempData["Success"] = "Order is now Cancelled.";
+
+            }
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
     }
 }
