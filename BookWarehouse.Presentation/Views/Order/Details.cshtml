@@ -37,182 +37,235 @@
                 <div class="row">
                     <!-- Left Column: PickUp Details -->
                     <div class="col-md-7 border-end pe-md-4">
-                        <h4 class="fw-bold mb-4">PickUp Details:</h4>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Name</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="FullName" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="FullName" class="form-control" />
-                                }
-                                <span asp-validation-for="FullName" class="text-danger"></span>
+
+                        <!-- User Information Section -->
+                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-primary">
+                            <div class="card-header bg-light py-2 border-0">
+                                <h6 class="fw-bold mb-0 text-primary text-uppercase"><i class="bi bi-person-lines-fill me-2"></i>User Information</h6>
                             </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Phone</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="PhoneNumber" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="PhoneNumber" class="form-control" />
-                                }
-                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Email</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="Email" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="Email" class="form-control" />
-                                }
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Address</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="StreetAddress" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="StreetAddress" class="form-control" />
-                                }
-                                <span asp-validation-for="StreetAddress" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">City</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="City" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="City" class="form-control" />
-                                }
-                                <span asp-validation-for="City" class="text-danger"></span>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Order Date</label>
-                            <div class="col-sm-9">
-                                <input value="@FormatDateEgypt(Model.OrderDate)" class="form-control bg-light" readonly />
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Carrier</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="Carrier" id="carrier" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="Carrier" id="carrier" class="form-control" />
-                                }
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Tracking</label>
-                            <div class="col-sm-9">
-                                @if (Model.OrderStatus == "Shipped")
-                                {
-                                    <input asp-for="TrackingNumber" id="trackingNumber" class="form-control bg-light" readonly />
-                                }
-                                else
-                                {
-                                    <input asp-for="TrackingNumber" id="trackingNumber" class="form-control" />
-                                }
-                            </div>
-                        </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Shipping Date</label>
-                            <div class="col-sm-9">
-                                <input value="@FormatDateEgypt(Model.ShippingDate)" class="form-control bg-light" readonly />
+                            <div class="card-body px-4 py-3">
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Name</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="FullName" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="FullName" class="form-control" />
+                                        }
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Phone</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="PhoneNumber" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="PhoneNumber" class="form-control" />
+                                        }
+                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Email</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="Email" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="Email" class="form-control" />
+                                        }
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Address</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="StreetAddress" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="StreetAddress" class="form-control" />
+                                        }
+                                        <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">City</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="City" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="City" class="form-control" />
+                                        }
+                                        <span asp-validation-for="City" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Date</label>
-                            <div class="col-sm-9">
-                                <input value="@FormatDateEgypt(Model.PaymentDate)" class="form-control bg-light" readonly />
+                        <!-- Order & Shipping Section -->
+                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-info">
+                            <div class="card-header bg-light py-2 border-0">
+                                <h6 class="fw-bold mb-0 text-info text-uppercase"><i class="bi bi-truck me-2"></i>Order & Shipping</h6>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Order Date</label>
+                                    <div class="col-sm-9">
+                                        <input value="@FormatDateEgypt(Model.OrderDate)" class="form-control bg-light" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Carrier</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="Carrier" id="carrier" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="Carrier" id="carrier" class="form-control" />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Tracking</label>
+                                    <div class="col-sm-9">
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        {
+                                            <input asp-for="TrackingNumber" id="trackingNumber" class="form-control bg-light" readonly />
+                                        }
+                                        else
+                                        {
+                                            <input asp-for="TrackingNumber" id="trackingNumber" class="form-control" />
+                                        }
+                                    </div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Shipping Date</label>
+                                    <div class="col-sm-9">
+                                        <input value="@FormatDateEgypt(Model.ShippingDate)" class="form-control bg-light" readonly />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Status</label>
-                            <div class="col-sm-9">
-                                <input asp-for="PaymentStatus" class="form-control bg-light" readonly />
+                        
+                        <!-- Payment Information Section -->
+                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-success">
+                            <div class="card-header bg-light py-2 border-0">
+                                <h6 class="fw-bold mb-0 text-success text-uppercase"><i class="bi bi-credit-card me-2"></i>Payment Information</h6>
+                            </div>
+                            <div class="card-body px-4 py-3">
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Date</label>
+                                    <div class="col-sm-9">
+                                        <input value="@FormatDateEgypt(Model.PaymentDate)" class="form-control bg-light" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Status</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="PaymentStatus" class="form-control bg-light" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Session ID</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="SessionId" class="form-control bg-light" readonly />
+                                    </div>
+                                </div>
+                                <div class="row mb-2 align-items-center">
+                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Intent</label>
+                                    <div class="col-sm-9">
+                                        <input asp-for="PaymentIntentId" class="form-control bg-light text-primary fw-bold" readonly />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- SessionId and PaymentIntentId -->
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Session ID</label>
-                            <div class="col-sm-9">
-                                <input asp-for="SessionId" class="form-control bg-light" readonly />
-                            </div>
-                        </div>
-
-                        <div class="row mb-3 align-items-center">
-                            <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Intent ID</label>
-                            <div class="col-sm-9">
-                                <input asp-for="PaymentIntentId" class="form-control bg-light text-primary fw-bold" readonly />
-                            </div>
-                        </div>
-
                         <!-- Update Button -->
-                        @if (Model.OrderStatus != "Shipped")
+                        @if (Model.OrderStatus != "Shipped" && Model.OrderStatus != "Cancelled")
                         {
-                            <button type="submit" asp-action="UpdateOrderDetails" class="btn btn-warning w-100 fw-bold shadow-sm p-3 border-0" style="background-color: #e69c4c; color: white;">
-                                UPDATE ORDER DETAILS
+                            <button type="submit" asp-action="UpdateOrderDetails" class="btn w-100 fw-bold shadow-sm p-3 border-0 mt-2" style="background-color: #2b3452; color: white;">
+                                <i class="bi bi-arrow-repeat me-2"></i>UPDATE ORDER DETAILS
                             </button>
                         }
                     </div>
 
                     <!-- Right Column: Order Summary -->
                     <div class="col-md-5 ps-md-4">
-                        <h4 class="fw-bold mb-4">Order Summary</h4>
-                        <div class="card mb-4 border-1 rounded shadow-sm">
-                            <div class="card-header text-center py-3 border-bottom-0" style="background-color: #fafafa;">
-                                <span class="fw-bold fs-6 text-uppercase" style="color: #6c757d;">ORDER STATUS - @Model.OrderStatus</span>
+                        @{
+                            var badgeClass = Model.OrderStatus switch {
+                                "Approved" => "bg-success text-white",
+                                "Processing" => "bg-warning text-dark",
+                                "Shipped" => "bg-info text-dark",
+                                "Cancelled" => "bg-danger text-white",
+                                _ => "bg-secondary text-white"
+                            };
+                            var iconClass = Model.OrderStatus switch {
+                                "Approved" => "bi-check-circle-fill",
+                                "Processing" => "bi-gear-fill",
+                                "Shipped" => "bi-truck",
+                                "Cancelled" => "bi-x-circle-fill",
+                                _ => "bi-info-circle-fill"
+                            };
+                        }
+                        <!-- Order Summary Card -->
+                        <div class="card shadow rounded-4 border-0 mb-4 overflow-hidden">
+                            <!-- Status Header -->
+                            <div class="card-header border-0 d-flex flex-column align-items-center justify-content-center py-4" style="background-color: #f8f9fa;">
+                                <h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing: 1px;"><i class="bi bi-activity me-2"></i>Order Status</h6>
+                                <span class="badge rounded-pill @badgeClass fs-5 px-4 py-2 shadow-sm">
+                                    <i class="bi @iconClass me-2"></i>@Model.OrderStatus
+                                </span>
                             </div>
-                            <ul class="list-group list-group-flush">
-                                @if (Model.Items != null && Model.Items.Any())
-                                {
-                                    foreach (var item in Model.Items)
+
+                            <!-- Products List -->
+                            <div class="card-body p-0">
+                                <div class="bg-light px-4 py-2 border-top border-bottom">
+                                    <span class="fw-bold text-secondary text-uppercase" style="font-size: 0.85rem;"><i class="bi bi-bag-check me-2"></i>Order Items</span>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    @if (Model.Items != null && Model.Items.Any())
                                     {
-                                        <li class="list-group-item d-flex justify-content-between align-items-start py-3">
-                                            <div class="w-75">
-                                                <h6 class="my-0 fw-bold text-dark">@item.Title</h6>
-                                                <small class="text-muted d-block mt-1">Price : @item.Price.ToString("c")</small>
-                                                <small class="text-muted d-block">Quantity : @item.Quantity</small>
-                                            </div>
-                                            <span class="text-dark fw-bold pt-1">@((item.Price * item.Quantity).ToString("c"))</span>
-                                        </li>
+                                        foreach (var item in Model.Items)
+                                        {
+                                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-light hover-shadow-sm transition-all" style="background-color: #fff;">
+                                                <div class="ms-1 me-auto">
+                                                    <div class="fw-bold text-dark fs-6 mb-1">@item.Title</div>
+                                                    <div class="text-muted small d-flex align-items-center">
+                                                        <span class="fw-semibold text-secondary">@item.Price.ToString("c")</span> 
+                                                        <span class="mx-2 text-light-emphasis">&times;</span> 
+                                                        <span class="badge bg-light text-dark border rounded-pill px-2">@item.Quantity</span>
+                                                    </div>
+                                                </div>
+                                                <span class="fw-bolder fs-5" style="color: #2b3452;">@((item.Price * item.Quantity).ToString("c"))</span>
+                                            </li>
+                                        }
                                     }
-                                }
-                                <li class="list-group-item d-flex justify-content-between align-items-center bg-primary text-white py-3">
-                                    <h5 class="my-0 fw-bold">TOTAL</h5>
-                                    <h5 class="my-0 fw-bold">@Model.OrderTotal.ToString("c")</h5>
-                                </li>
-                            </ul>
+                                </ul>
+                            </div>
+                            
+                            <!-- Total Footer -->
+                            <div class="card-footer bg-dark text-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold text-uppercase d-flex align-items-center" style="letter-spacing: 1px;">
+                                    <i class="bi bi-wallet2 me-2"></i>Total
+                                </h5>
+                                <h4 class="mb-0 fw-bolder text-warning">@Model.OrderTotal.ToString("c")</h4>
+                            </div>
                         </div>
                         
                         <!-- Status Buttons -->

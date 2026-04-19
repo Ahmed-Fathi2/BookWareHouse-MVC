@@ -54,6 +54,7 @@ namespace BookWarehouse.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> StartShipping(int id, string carrier, string trackingNumber)
         {
+            //var req = Request;
             var updateDetailsResult = await _orderService.UpdateOrderDetailsAsync(id, carrier, trackingNumber);
             if (!updateDetailsResult.IsSuccess)
             {
@@ -70,16 +71,6 @@ namespace BookWarehouse.Presentation.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CancelOrder(int id)
-        //{
-        //    var result = await _orderService.UpdateOrderStatusAsync(id, "Cancelled");
-        //    if (!result.IsSuccess)
-        //        TempData["Error"] = "Failed to cancel order.";
-        //    else
-        //        TempData["Success"] = "Order has been Cancelled.";
-
-        //    return RedirectToAction(nameof(Details), new { id });
-        //}
+       
     }
 }
