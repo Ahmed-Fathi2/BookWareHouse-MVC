@@ -7,24 +7,22 @@
         </div>
         
         <div class="d-flex align-items-center">
-            <div class="btn-group shadow-sm bg-white rounded-pill overflow-hidden border" role="group" aria-label="Status filters">
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnAll" autocomplete="off" data-status="all" checked>
-                <label class="btn btn-outline-primary px-3 py-2 fw-semibold border-0" for="btnAll">All</label>
-
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnPending" autocomplete="off" data-status="Pending">
-                <label class="btn btn-outline-secondary px-3 py-2 fw-semibold border-0" for="btnPending">Pending</label>
-
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnApproved" autocomplete="off" data-status="Approved">
-                <label class="btn btn-outline-success px-3 py-2 fw-semibold border-0" for="btnApproved">Approved</label>
-
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnProcessing" autocomplete="off" data-status="Processing">
-                <label class="btn btn-outline-warning px-3 py-2 fw-semibold border-0" for="btnProcessing">Processing</label>
-
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnShipped" autocomplete="off" data-status="Shipped">
-                <label class="btn btn-outline-info px-3 py-2 fw-semibold border-0" for="btnShipped">Shipped</label>
-
-                <input type="radio" class="btn-check status-radio" name="statusFilter" id="btnCancelled" autocomplete="off" data-status="Cancelled">
-                <label class="btn btn-outline-danger px-3 py-2 fw-semibold border-0" for="btnCancelled">Cancelled</label>
+            <div class="dropdown custom-filter-dropdown">
+                <button class="btn rounded-pill d-flex align-items-center gap-2 px-4 py-2 fw-bold text-white shadow-sm border-0 dropdown-toggle" type="button" id="statusFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); transition: all 0.3s ease;">
+                    <i class="bi bi-funnel-fill"></i>
+                    <span id="currentFilterText">All Orders</span>
+                    <i class="bi bi-chevron-down ms-2" style="font-size: 0.8rem; transition: transform 0.3s ease;" id="dropdownChevron"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2 animated-dropdown" aria-labelledby="statusFilterDropdown" style="min-width: 220px;">
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn active" href="#" data-status="all"><i class="bi bi-list-ul text-primary me-3"></i>All Orders</a></li>
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn" href="#" data-status="Pending"><i class="bi bi-hourglass-split text-secondary me-3"></i>Pending</a></li>
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn" href="#" data-status="Approved"><i class="bi bi-check-circle-fill text-success me-3"></i>Approved</a></li>
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn" href="#" data-status="Processing"><i class="bi bi-gear-fill text-warning me-3"></i>Processing</a></li>
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn" href="#" data-status="Shipped"><i class="bi bi-truck text-info me-3"></i>Shipped</a></li>
+                    <li><a class="dropdown-item rounded-3 mb-1 filter-dropdown-btn" href="#" data-status="Delivered"><i class="bi bi-box-seam-fill text-success me-3"></i>Delivered</a></li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li><a class="dropdown-item rounded-3 filter-dropdown-btn text-danger fw-bold" href="#" data-status="Cancelled"><i class="bi bi-x-circle-fill me-3"></i>Cancelled</a></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -55,12 +53,43 @@
 @section Scripts {
     <script src="~/js/order.js"></script>
     <style>
-        .btn-group .btn-check:checked + .btn-outline-primary { color: #fff; background-color: #0d6efd; }
-        /* .btn-group .btn-check:checked + .btn-outline-secondary { color: #fff; background-color: #6c757d; } */
-        .btn-group .btn-check:checked + .btn-outline-success { color: #fff; background-color: #198754; }
-        .btn-group .btn-check:checked + .btn-outline-warning { color: #000; background-color: #ffc107; }
-        .btn-group .btn-check:checked + .btn-outline-info { color: #000; background-color: #0dcaf0; }
-        .btn-group .btn-check:checked + .btn-outline-danger { color: #fff; background-color: #dc3545; }
+        .custom-filter-dropdown {
+            z-index: 1050;
+        }
+        .custom-filter-dropdown .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3) !important;
+        }
+        .custom-filter-dropdown .dropdown-toggle::after {
+            display: none;
+        }
+        .custom-filter-dropdown.show #dropdownChevron {
+            transform: rotate(180deg);
+        }
+        .animated-dropdown {
+            animation: fadeInDropdown 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            transform-origin: top right;
+        }
+        @@keyframes fadeInDropdown {
+            from { opacity: 0; transform: scale(0.95) translateY(-5px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .filter-dropdown-btn {
+            font-weight: 600;
+            color: #4b5563;
+            transition: all 0.2s ease;
+            padding: 10px 16px;
+        }
+        .filter-dropdown-btn:hover {
+            background-color: #f3f4f6;
+            color: #111827;
+            transform: translateX(4px);
+        }
+        .filter-dropdown-btn.active {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            box-shadow: inset 3px 0 0 #4f46e5;
+        }
         
         table.dataTable tbody tr td {
             vertical-align: middle;

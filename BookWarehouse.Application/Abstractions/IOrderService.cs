@@ -16,6 +16,8 @@ namespace BookWarehouse.Application.Abstractions
         Task<Result<IEnumerable<OrderReadVM>>> GetAllOrdersAsync(OrderStatus? orderStatus);
         Task<Result<OrderDetailsVM>> GetOrderDeatilsByIdAsync(int orderId);
 
+        Task<Result> CancelOrderAsync(int orderId);
+
         Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus status);
         Task<Result> UpdateOrderDetailsAsync(int orderId, string carrier, string trackingNumber);
         Task HandlePaymentResult(WebHookVM webHookVM);

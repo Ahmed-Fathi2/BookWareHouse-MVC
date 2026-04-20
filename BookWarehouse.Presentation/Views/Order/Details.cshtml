@@ -47,7 +47,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Name</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="FullName" class="form-control bg-light" readonly />
                                         }
@@ -61,7 +61,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Phone</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="PhoneNumber" class="form-control bg-light" readonly />
                                         }
@@ -75,7 +75,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Email</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="Email" class="form-control bg-light" readonly />
                                         }
@@ -89,7 +89,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Address</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="StreetAddress" class="form-control bg-light" readonly />
                                         }
@@ -103,7 +103,7 @@
                                 <div class="row mb-2 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">City</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="City" class="form-control bg-light" readonly />
                                         }
@@ -132,7 +132,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Carrier</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="Carrier" id="carrier" class="form-control bg-light" readonly />
                                         }
@@ -145,7 +145,7 @@
                                 <div class="row mb-3 align-items-center">
                                     <label class="col-sm-3 col-form-label text-muted fw-bold">Tracking</label>
                                     <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled")
+                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
                                         {
                                             <input asp-for="TrackingNumber" id="trackingNumber" class="form-control bg-light" readonly />
                                         }
@@ -197,7 +197,7 @@
                             </div>
                         </div>
                         <!-- Update Button -->
-                        @if (Model.OrderStatus != "Shipped" && Model.OrderStatus != "Cancelled")
+                        @if (Model.OrderStatus != "Shipped" && Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Delivered")
                         {
                             <button type="submit" asp-action="UpdateOrderDetails" class="btn w-100 fw-bold shadow-sm p-3 border-0 mt-2" style="background-color: #2b3452; color: white;">
                                 <i class="bi bi-arrow-repeat me-2"></i>UPDATE ORDER DETAILS
@@ -212,6 +212,7 @@
                                 "Approved" => "bg-success text-white",
                                 "Processing" => "bg-warning text-dark",
                                 "Shipped" => "bg-info text-dark",
+                                "Delivered" => "bg-success text-white",
                                 "Cancelled" => "bg-danger text-white",
                                 _ => "bg-secondary text-white"
                             };
@@ -219,6 +220,7 @@
                                 "Approved" => "bi-check-circle-fill",
                                 "Processing" => "bi-gear-fill",
                                 "Shipped" => "bi-truck",
+                                "Delivered" => "bi-box-seam-fill",
                                 "Cancelled" => "bi-x-circle-fill",
                                 _ => "bi-info-circle-fill"
                             };
@@ -284,7 +286,13 @@
                                     START SHIPPING
                                 </button>
                             }
-                            @if (Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Shipped")
+                            @if (Model.OrderStatus == "Shipped")
+                            {
+                                <button type="submit" asp-action="CompleteOrder" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-success fw-bold py-2 shadow-sm text-uppercase">
+                                    DELIVERED
+                                </button>
+                            }
+                            @if (Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Shipped" && Model.OrderStatus != "Delivered")
                             {
                                 <button type="submit" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Cancelled" class="btn btn-danger fw-bold py-2 shadow-sm text-uppercase" style="background-color: #e53e3e;">
                                     CANCEL ORDER

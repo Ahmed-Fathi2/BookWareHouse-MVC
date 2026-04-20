@@ -6,6 +6,6 @@
         Paid,  
         Failed,     
         Refunded,
-        cancelled
+        Cancelled
     }
 }

@@ -4,8 +4,18 @@ $(document).ready(function () {
     // Load initially with "all" status
     initDataTable("all");
 
-    // Listen to changes on the new radio filter buttons
-    $('.status-radio').on('change', function () {
+    // Listen to clicks on the new dropdown filter options
+    $('.filter-dropdown-btn').on('click', function (e) {
+        e.preventDefault();
+        
+        // Handle UI update
+        $('.filter-dropdown-btn').removeClass('active');
+        $(this).addClass('active');
+        
+        // Update the button text
+        var text = $(this).text().trim();
+        $('#currentFilterText').text(text);
+        
         var status = $(this).data('status');
         
         // Add smooth opacity fade out
@@ -27,6 +37,7 @@ function getStatusBadge(status) {
         case 'Approved': badgeClass = 'bg-success'; break;
         case 'Processing': badgeClass = 'bg-warning text-dark'; break;
         case 'Shipped': badgeClass = 'bg-info text-dark'; break;
+        case 'Delivered': badgeClass = 'bg-success'; break;
         case 'Cancelled': badgeClass = 'bg-danger'; break;
         case 'Pending': badgeClass = 'bg-secondary'; break;
     }

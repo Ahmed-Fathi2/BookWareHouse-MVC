@@ -113,8 +113,9 @@ namespace BookWarehouse.Presentation.Controllers
 
             checkoutVM.ApplicationUserId= User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-            var origin = $"{Request.Scheme}://{Request.Host}";
-            //var origin = "https://brethren-kilobyte-deflected.ngrok-free.dev";
+            //var origin = $"{Request.Scheme}://{Request.Host}";
+
+            var origin = "https://brethren-kilobyte-deflected.ngrok-free.dev";
 
             var sessionUrlResult = await _orderService.PlaceOrderAsync(origin,checkoutVM);
             if (!sessionUrlResult.IsSuccess)

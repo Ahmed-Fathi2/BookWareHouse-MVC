@@ -44,9 +44,9 @@ namespace BookWarehouse.Presentation.Controllers
         {
             var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Processing);
             if (!result.IsSuccess)
-                TempData["Error"] = "Failed to update order status.";
+                TempData["error"] = "Failed to update order status.";
             else
-                TempData["Success"] = "Order is now Processing.";
+                TempData["success"] = "Order is now Processing.";
             return RedirectToAction(nameof(Details), new { id });
         }
       
@@ -59,15 +59,27 @@ namespace BookWarehouse.Presentation.Controllers
             var updateDetailsResult = await _orderService.UpdateOrderDetailsAsync(id, carrier, trackingNumber);
             if (!updateDetailsResult.IsSuccess)
             {
-                TempData["Error"] = "Failed to update shipping details.";
+                TempData["error"] = "Failed to update shipping details.";
                 return RedirectToAction(nameof(Details), new { id });
             }
 
             var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Shipped);
             if (!result.IsSuccess)
-                TempData["Error"] = "Failed to update order status.";
+                TempData["error"] = "Failed to update order status.";
             else
-                TempData["Success"] = "Order is now Shipped.";
+                TempData["success"] = "Order is now Shipped.";
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteOrder(int id)
+        {
+            var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Delivered);
+            if (!result.IsSuccess)
+                TempData["error"] = "Failed to update order status.";
+            else
+                TempData["success"] = "Order is now Delivered.";
 
             return RedirectToAction(nameof(Details), new { id });
         }
@@ -75,13 +87,14 @@ namespace BookWarehouse.Presentation.Controllers
 
         public async Task<IActionResult> CancelOrder(int id)
         {
-            var result = await _orderService.UpdateOrderStatusAsync(id, OrderStatus.Cancelled);
+
+            var result = await _orderService.CancelOrderAsync(id);
             if (!result.IsSuccess)
-                TempData["Error"] = "Failed to update order status.";
+                TempData["error"] = "Failed to update order status.";
             else
             {
                 // implement refund logic here if necessary
-                TempData["Success"] = "Order is now Cancelled.";
+                TempData["success"] = "Order cancelled successfully. Any paid amount has been refunded.";
 
             }
             return RedirectToAction(nameof(Details), new { id });

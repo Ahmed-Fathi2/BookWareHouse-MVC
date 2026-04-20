@@ -120,7 +120,7 @@ namespace BookWarehouse.Application.Services
             return Result.Success();
         }
 
-        private async Task<Domain.Entities.Order> GetOrCreateOrderAsync(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems)
+        private async Task<Order> GetOrCreateOrderAsync(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems)
         {
             var cartSignature = GenerateCartSignature(cartItems);
 
@@ -155,7 +155,7 @@ namespace BookWarehouse.Application.Services
             return await CreateNewOrder(checkoutVM, cartItems, cartSignature);
         }
 
-        private async Task<Domain.Entities.Order> CreateNewOrder(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems, string signature)
+        private async Task<Order> CreateNewOrder(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems, string signature)
         {
             var newOrder = checkoutVM.Adapt<Domain.Entities.Order>();
             newOrder.CartSignature = signature;
@@ -201,7 +201,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        private async Task UpdateCompletedOrder(string status, string transactionId, Domain.Entities.Order order)
+        private async Task UpdateCompletedOrder(string status, string transactionId, Order order)
         {
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
@@ -222,7 +222,7 @@ namespace BookWarehouse.Application.Services
 
         }
 
-        private async Task UpdateFailedOrder(string status, string transactionId, Domain.Entities.Order order)
+        private async Task UpdateFailedOrder(string status, string transactionId, Order order)
         {
 
             if (order.PaymentStatus == PaymentStatus.Failed)
@@ -246,6 +246,37 @@ namespace BookWarehouse.Application.Services
                 .Select(x => $"{x.ProductId}-{x.Count}"));
         }
 
+        public async Task<Result> CancelOrderAsync(int orderId)
+        {
+            var order =await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            if (order == null)
+                return Result.Failure(new Error("Order not found", "Order.NotFound"));
+
+            if (order.OrderStatus == OrderStatus.Shipped || order.OrderStatus == OrderStatus.Delivered)
+                return Result.Failure(new Error("Cannot cancel shipped or delivered order", "Order.CancelFailed"));
+
+            if (order.PaymentStatus == PaymentStatus.Paid)
+            {
+                var refundResult = await _paymentService.RefundPaymentAsync(order.Id ,order.PaymentIntentId!, order.OrderTotal);
+                if (!refundResult.IsSuccess)
+                    return Result.Failure(new Error("Refund failed: " + refundResult.Error.Description, "Order.RefundFailed"));
+
+                order.PaymentStatus = PaymentStatus.Refunded;
+                order.OrderStatus = OrderStatus.Cancelled;
+            }
+            else
+            {
+                order.PaymentStatus = PaymentStatus.Cancelled;
+                order.OrderStatus = OrderStatus.Cancelled;
+
+            }
+           await _unitOfWork.SaveChangesAsync();
+
+            return Result.Success();
+
+
+
+        }
     }
 }
 
