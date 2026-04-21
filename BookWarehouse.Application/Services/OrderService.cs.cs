@@ -61,21 +61,17 @@ namespace BookWarehouse.Application.Services
             return Result.Success(sessionResult.Value);
         }
 
-        public async Task<Result<IEnumerable<OrderReadVM>>> GetAllOrdersAsync(OrderStatus? orderStatus)
+        public async Task<Result<IEnumerable<OrderDetailsVM>>> GetAllOrdersAsync(OrderStatus? orderStatus,string? userId)
         {
-            Expression<Func<Domain.Entities.Order, bool>>? filter = null;
+            Expression<Func<Order, bool>>? filter = o =>
+                (!orderStatus.HasValue || o.OrderStatus == orderStatus.Value) &&
+                (string.IsNullOrEmpty(userId) || o.ApplicationUserId == userId);
 
-            if (orderStatus.HasValue)
-            {
-                filter = o => o.OrderStatus == orderStatus.Value;
-            }
+            var orders = await _unitOfWork.OrderRepository.GetAllOrders(filter: filter);
 
-            var orders = await _unitOfWork.OrderRepository.GetAllAsync(filter: filter);
-
-            var orderReadVMs = orders.Adapt<IEnumerable<OrderReadVM>>();
+            var orderReadVMs = orders.Adapt<IEnumerable<OrderDetailsVM>>();
 
             return Result.Success(orderReadVMs);
-
         }
 
         public async Task<Result<OrderDetailsVM>> GetOrderDeatilsByIdAsync(int orderId)
@@ -88,6 +84,7 @@ namespace BookWarehouse.Application.Services
 
             return Result.Success(result);
         }
+
         public async Task<Result> UpdateOrderStatusAsync(int orderId, OrderStatus status)
         {
             var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
@@ -96,7 +93,7 @@ namespace BookWarehouse.Application.Services
 
 
             if (status == OrderStatus.Shipped)
-                order.ShippingDate = DateTime.Now;
+                order.ShippingDate = DateTime.UtcNow;
 
 
             order.OrderStatus = status;
@@ -119,6 +116,27 @@ namespace BookWarehouse.Application.Services
             await _unitOfWork.SaveChangesAsync();
             return Result.Success();
         }
+
+        public async Task HandlePaymentResult(WebHookVM webHookVM)
+        {
+
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(webHookVM.OrderId);
+            if (order == null)
+            {
+                _logger.LogWarning("Received webhook for non-existent order with id {OrderId}", webHookVM.OrderId);
+                return;
+            }
+
+            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.SUCCESS.ToString(), StringComparison.OrdinalIgnoreCase))
+                await UpdateCompletedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
+
+            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.FAILURE.ToString(), StringComparison.OrdinalIgnoreCase))
+                await UpdateFailedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
+
+        }
+
+
+        #region Private Methods
 
         private async Task<Order> GetOrCreateOrderAsync(CheckoutVM checkoutVM, IEnumerable<CartDetailsVM> cartItems)
         {
@@ -182,30 +200,17 @@ namespace BookWarehouse.Application.Services
             return newOrder;
         }
 
-
-        public async Task HandlePaymentResult(WebHookVM webHookVM)
-        {
-
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(webHookVM.OrderId);
-            if (order == null)
-            {
-                _logger.LogWarning("Received webhook for non-existent order with id {OrderId}", webHookVM.OrderId);
-                return;
-            }
-
-            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.SUCCESS.ToString(), StringComparison.OrdinalIgnoreCase))
-                await UpdateCompletedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
-
-            if (string.Equals(webHookVM.Status, PaymentWebhookStatus.FAILURE.ToString(), StringComparison.OrdinalIgnoreCase))
-                await UpdateFailedOrder(webHookVM.Status, webHookVM.TransactionId, order!);
-
-        }
-
         private async Task UpdateCompletedOrder(string status, string transactionId, Order order)
         {
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
                 _logger.LogInformation("Order {Id} already marked as Paid. Skipping duplicate webhook event.", order.Id);
+                return;
+            }
+
+            if (order.OrderStatus == OrderStatus.Cancelled || order.PaymentStatus == PaymentStatus.Refunded)
+            {
+                _logger.LogInformation("Order {Id} is already cancelled or refunded. Skipping delayed or refund webhook.", order.Id);
                 return;
             }
 
@@ -246,9 +251,11 @@ namespace BookWarehouse.Application.Services
                 .Select(x => $"{x.ProductId}-{x.Count}"));
         }
 
+        #endregion
+
         public async Task<Result> CancelOrderAsync(int orderId)
         {
-            var order =await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            var order = await _unitOfWork.OrderRepository.GetOrderById(orderId);
             if (order == null)
                 return Result.Failure(new Error("Order not found", "Order.NotFound"));
 
@@ -257,7 +264,7 @@ namespace BookWarehouse.Application.Services
 
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
-                var refundResult = await _paymentService.RefundPaymentAsync(order.Id ,order.PaymentIntentId!, order.OrderTotal);
+                var refundResult = await _paymentService.RefundPaymentAsync(order.Id, order.PaymentIntentId!, order.OrderTotal);
                 if (!refundResult.IsSuccess)
                     return Result.Failure(new Error("Refund failed: " + refundResult.Error.Description, "Order.RefundFailed"));
 
@@ -270,7 +277,7 @@ namespace BookWarehouse.Application.Services
                 order.OrderStatus = OrderStatus.Cancelled;
 
             }
-           await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             return Result.Success();
 

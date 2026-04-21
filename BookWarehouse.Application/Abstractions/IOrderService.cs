@@ -13,7 +13,7 @@ namespace BookWarehouse.Application.Abstractions
         Task<Result<string>> PlaceOrderAsync(string origin, CheckoutVM checkoutVM);
 
 
-        Task<Result<IEnumerable<OrderReadVM>>> GetAllOrdersAsync(OrderStatus? orderStatus);
+        Task<Result<IEnumerable<OrderDetailsVM>>> GetAllOrdersAsync(OrderStatus? orderStatus, string? userId);
         Task<Result<OrderDetailsVM>> GetOrderDeatilsByIdAsync(int orderId);
 
         Task<Result> CancelOrderAsync(int orderId);

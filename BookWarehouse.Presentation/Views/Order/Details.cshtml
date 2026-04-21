@@ -1,6 +1,7 @@
 @model BookWarehouse.Application.ViewModels.Order.OrderDetailsVM
 @{
-    ViewData["Title"] = "Order Details";
+    bool isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+    ViewData["Title"] = isAdmin ? "Order Details" : $"Order ORD-{Model.Id}";
 }
 
 @functions {
@@ -11,323 +12,619 @@
             var egyptZone = TimeZoneInfo.FindSystemTimeZoneById("Egypt Standard Time");
             var date = DateTime.SpecifyKind(utcDate.Value, DateTimeKind.Utc);
             var egyptTime = TimeZoneInfo.ConvertTimeFromUtc(date, egyptZone);
-            return egyptTime.ToString("dd/MM/yyyy, hh:mm tt", System.Globalization.CultureInfo.InvariantCulture).ToLower();
+            return egyptTime.ToString("MMM dd, yyyy");
         } 
         catch 
         {
-            return utcDate.Value.ToString("dd/MM/yyyy, hh:mm tt", System.Globalization.CultureInfo.InvariantCulture).ToLower();
+            return utcDate.Value.ToString("MMM dd, yyyy");
         }
     }
 }
 
-<form method="post">
-    <!-- Hidden id for form binding -->
-    <input type="hidden" asp-for="Id" />
-    
-    <div class="container mt-4 mb-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-primary text-white py-3">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-cart3"></i> Order Summary</h5>
-                    <a asp-action="Index" class="btn btn-outline-light btn-sm text-uppercase fw-bold">Back to Orders</a>
-                </div>
-            </div>
-            
-            <div class="card-body px-4 py-4">
-                <div class="row">
-                    <!-- Left Column: PickUp Details -->
-                    <div class="col-md-7 border-end pe-md-4">
-
-                        <!-- User Information Section -->
-                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-primary">
-                            <div class="card-header bg-light py-2 border-0">
-                                <h6 class="fw-bold mb-0 text-primary text-uppercase"><i class="bi bi-person-lines-fill me-2"></i>User Information</h6>
-                            </div>
-                            <div class="card-body px-4 py-3">
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Name</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="FullName" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="FullName" class="form-control" />
-                                        }
-                                        <span asp-validation-for="FullName" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Phone</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="PhoneNumber" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="PhoneNumber" class="form-control" />
-                                        }
-                                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Email</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="Email" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="Email" class="form-control" />
-                                        }
-                                        <span asp-validation-for="Email" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Address</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="StreetAddress" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="StreetAddress" class="form-control" />
-                                        }
-                                        <span asp-validation-for="StreetAddress" class="text-danger"></span>
-                                    </div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">City</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="City" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="City" class="form-control" />
-                                        }
-                                        <span asp-validation-for="City" class="text-danger"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Order & Shipping Section -->
-                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-info">
-                            <div class="card-header bg-light py-2 border-0">
-                                <h6 class="fw-bold mb-0 text-info text-uppercase"><i class="bi bi-truck me-2"></i>Order & Shipping</h6>
-                            </div>
-                            <div class="card-body px-4 py-3">
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Order Date</label>
-                                    <div class="col-sm-9">
-                                        <input value="@FormatDateEgypt(Model.OrderDate)" class="form-control bg-light" readonly />
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Carrier</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="Carrier" id="carrier" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="Carrier" id="carrier" class="form-control" />
-                                        }
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Tracking</label>
-                                    <div class="col-sm-9">
-                                        @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
-                                        {
-                                            <input asp-for="TrackingNumber" id="trackingNumber" class="form-control bg-light" readonly />
-                                        }
-                                        else
-                                        {
-                                            <input asp-for="TrackingNumber" id="trackingNumber" class="form-control" />
-                                        }
-                                    </div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Shipping Date</label>
-                                    <div class="col-sm-9">
-                                        <input value="@FormatDateEgypt(Model.ShippingDate)" class="form-control bg-light" readonly />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Payment Information Section -->
-                        <div class="card mb-4 shadow-sm border-0 border-start border-4 border-success">
-                            <div class="card-header bg-light py-2 border-0">
-                                <h6 class="fw-bold mb-0 text-success text-uppercase"><i class="bi bi-credit-card me-2"></i>Payment Information</h6>
-                            </div>
-                            <div class="card-body px-4 py-3">
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Date</label>
-                                    <div class="col-sm-9">
-                                        <input value="@FormatDateEgypt(Model.PaymentDate)" class="form-control bg-light" readonly />
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Status</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="PaymentStatus" class="form-control bg-light" readonly />
-                                    </div>
-                                </div>
-                                <div class="row mb-3 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Session ID</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="SessionId" class="form-control bg-light" readonly />
-                                    </div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Intent</label>
-                                    <div class="col-sm-9">
-                                        <input asp-for="PaymentIntentId" class="form-control bg-light text-primary fw-bold" readonly />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Update Button -->
-                        @if (Model.OrderStatus != "Shipped" && Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Delivered")
-                        {
-                            <button type="submit" asp-action="UpdateOrderDetails" class="btn w-100 fw-bold shadow-sm p-3 border-0 mt-2" style="background-color: #2b3452; color: white;">
-                                <i class="bi bi-arrow-repeat me-2"></i>UPDATE ORDER DETAILS
-                            </button>
-                        }
+@if (isAdmin)
+{
+    @* --- ADMIN DETAILS UI (Do NOT Touch) --- *@
+    <form method="post">
+        <!-- Hidden id for form binding -->
+        <input type="hidden" asp-for="Id" />
+        
+        <div class="container mt-4 mb-5">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-cart3"></i> Order Summary</h5>
+                        <a asp-action="Index" class="btn btn-outline-light btn-sm text-uppercase fw-bold">Back to Orders</a>
                     </div>
+                </div>
+                
+                <div class="card-body px-4 py-4">
+                    <div class="row">
+                        <!-- Left Column: PickUp Details -->
+                        <div class="col-md-7 border-end pe-md-4">
 
-                    <!-- Right Column: Order Summary -->
-                    <div class="col-md-5 ps-md-4">
-                        @{
-                            var badgeClass = Model.OrderStatus switch {
-                                "Approved" => "bg-success text-white",
-                                "Processing" => "bg-warning text-dark",
-                                "Shipped" => "bg-info text-dark",
-                                "Delivered" => "bg-success text-white",
-                                "Cancelled" => "bg-danger text-white",
-                                _ => "bg-secondary text-white"
-                            };
-                            var iconClass = Model.OrderStatus switch {
-                                "Approved" => "bi-check-circle-fill",
-                                "Processing" => "bi-gear-fill",
-                                "Shipped" => "bi-truck",
-                                "Delivered" => "bi-box-seam-fill",
-                                "Cancelled" => "bi-x-circle-fill",
-                                _ => "bi-info-circle-fill"
-                            };
-                        }
-                        <!-- Order Summary Card -->
-                        <div class="card shadow rounded-4 border-0 mb-4 overflow-hidden">
-                            <!-- Status Header -->
-                            <div class="card-header border-0 d-flex flex-column align-items-center justify-content-center py-4" style="background-color: #f8f9fa;">
-                                <h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing: 1px;"><i class="bi bi-activity me-2"></i>Order Status</h6>
-                                <span class="badge rounded-pill @badgeClass fs-5 px-4 py-2 shadow-sm">
-                                    <i class="bi @iconClass me-2"></i>@Model.OrderStatus
-                                </span>
-                            </div>
-
-                            <!-- Products List -->
-                            <div class="card-body p-0">
-                                <div class="bg-light px-4 py-2 border-top border-bottom">
-                                    <span class="fw-bold text-secondary text-uppercase" style="font-size: 0.85rem;"><i class="bi bi-bag-check me-2"></i>Order Items</span>
+                            <!-- User Information Section -->
+                            <div class="card mb-4 shadow-sm border-0 border-start border-4 border-primary">
+                                <div class="card-header bg-light py-2 border-0">
+                                    <h6 class="fw-bold mb-0 text-primary text-uppercase"><i class="bi bi-person-lines-fill me-2"></i>User Information</h6>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                    @if (Model.Items != null && Model.Items.Any())
-                                    {
-                                        foreach (var item in Model.Items)
-                                        {
-                                            <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-light hover-shadow-sm transition-all" style="background-color: #fff;">
-                                                <div class="ms-1 me-auto">
-                                                    <div class="fw-bold text-dark fs-6 mb-1">@item.Title</div>
-                                                    <div class="text-muted small d-flex align-items-center">
-                                                        <span class="fw-semibold text-secondary">@item.Price.ToString("c")</span> 
-                                                        <span class="mx-2 text-light-emphasis">&times;</span> 
-                                                        <span class="badge bg-light text-dark border rounded-pill px-2">@item.Quantity</span>
-                                                    </div>
-                                                </div>
-                                                <span class="fw-bolder fs-5" style="color: #2b3452;">@((item.Price * item.Quantity).ToString("c"))</span>
-                                            </li>
-                                        }
-                                    }
-                                </ul>
+                                <div class="card-body px-4 py-3">
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Name</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="FullName" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="FullName" class="form-control" />
+                                            }
+                                            <span asp-validation-for="FullName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Phone</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="PhoneNumber" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="PhoneNumber" class="form-control" />
+                                            }
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Email</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="Email" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="Email" class="form-control" />
+                                            }
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Address</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="StreetAddress" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="StreetAddress" class="form-control" />
+                                            }
+                                            <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">City</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="City" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="City" class="form-control" />
+                                            }
+                                            <span asp-validation-for="City" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <!-- Total Footer -->
-                            <div class="card-footer bg-dark text-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0 fw-bold text-uppercase d-flex align-items-center" style="letter-spacing: 1px;">
-                                    <i class="bi bi-wallet2 me-2"></i>Total
-                                </h5>
-                                <h4 class="mb-0 fw-bolder text-warning">@Model.OrderTotal.ToString("c")</h4>
+                            <!-- Order & Shipping Section -->
+                            <div class="card mb-4 shadow-sm border-0 border-start border-4 border-info">
+                                <div class="card-header bg-light py-2 border-0">
+                                    <h6 class="fw-bold mb-0 text-info text-uppercase"><i class="bi bi-truck me-2"></i>Order & Shipping</h6>
+                                </div>
+                                <div class="card-body px-4 py-3">
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Order Date</label>
+                                        <div class="col-sm-9">
+                                            <input value="@FormatDateEgypt(Model.OrderDate)" class="form-control bg-light" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Carrier</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="Carrier" id="carrier" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="Carrier" id="carrier" class="form-control" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Tracking</label>
+                                        <div class="col-sm-9">
+                                            @if (Model.OrderStatus == "Shipped" || Model.OrderStatus == "Cancelled" || Model.OrderStatus == "Delivered")
+                                            {
+                                                <input asp-for="TrackingNumber" id="trackingNumber" class="form-control bg-light" readonly />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="TrackingNumber" id="trackingNumber" class="form-control" />
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Shipping Date</label>
+                                        <div class="col-sm-9">
+                                            <input value="@FormatDateEgypt(Model.ShippingDate)" class="form-control bg-light" readonly />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            <!-- Payment Information Section -->
+                            <div class="card mb-4 shadow-sm border-0 border-start border-4 border-success">
+                                <div class="card-header bg-light py-2 border-0">
+                                    <h6 class="fw-bold mb-0 text-success text-uppercase"><i class="bi bi-credit-card me-2"></i>Payment Information</h6>
+                                </div>
+                                <div class="card-body px-4 py-3">
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Date</label>
+                                        <div class="col-sm-9">
+                                            <input value="@FormatDateEgypt(Model.PaymentDate)" class="form-control bg-light" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Status</label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="PaymentStatus" class="form-control bg-light" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Session ID</label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="SessionId" class="form-control bg-light" readonly />
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label text-muted fw-bold">Payment Intent</label>
+                                        <div class="col-sm-9">
+                                            <input asp-for="PaymentIntentId" class="form-control bg-light text-primary fw-bold" readonly />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Update Button -->
+                            @if (Model.OrderStatus != "Shipped" && Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Delivered")
+                            {
+                                <button type="submit" asp-action="UpdateOrderDetails" class="btn w-100 fw-bold shadow-sm p-3 border-0 mt-2" style="background-color: #2b3452; color: white;">
+                                    <i class="bi bi-arrow-repeat me-2"></i>UPDATE ORDER DETAILS
+                                </button>
+                            }
                         </div>
-                        
-                        <!-- Status Buttons -->
-                        <div class="d-grid gap-3 mt-4">
-                            @if (Model.OrderStatus == "Approved")
-                            {
- 
-                                <button type="submit" asp-action="StartProcessing" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Processing" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase">
-                                    START PROCESSING
-                                </button>
-                            }
-                            @if (Model.OrderStatus == "Processing")
-                            {
 
-                                <button type="submit" asp-action="StartShipping" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase" onclick="return validateShipping()">
-                                    START SHIPPING
-                                </button>
+                        <!-- Right Column: Order Summary -->
+                        <div class="col-md-5 ps-md-4">
+                            @{
+                                var badgeClass = Model.OrderStatus switch {
+                                    "Approved" => "bg-success text-white",
+                                    "Processing" => "bg-warning text-dark",
+                                    "Shipped" => "bg-info text-dark",
+                                    "Delivered" => "bg-success text-white",
+                                    "Cancelled" => "bg-danger text-white",
+                                    _ => "bg-secondary text-white"
+                                };
+                                var iconClass = Model.OrderStatus switch {
+                                    "Approved" => "bi-check-circle-fill",
+                                    "Processing" => "bi-gear-fill",
+                                    "Shipped" => "bi-truck",
+                                    "Delivered" => "bi-box-seam-fill",
+                                    "Cancelled" => "bi-x-circle-fill",
+                                    _ => "bi-info-circle-fill"
+                                };
                             }
-                            @if (Model.OrderStatus == "Shipped")
-                            {
-                                <button type="submit" asp-action="CompleteOrder" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-success fw-bold py-2 shadow-sm text-uppercase">
-                                    DELIVERED
-                                </button>
-                            }
-                            @if (Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Shipped" && Model.OrderStatus != "Delivered")
-                            {
-                                <button type="submit" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Cancelled" class="btn btn-danger fw-bold py-2 shadow-sm text-uppercase" style="background-color: #e53e3e;">
-                                    CANCEL ORDER
-                                </button>
-                            }
+                            <!-- Order Summary Card -->
+                            <div class="card shadow rounded-4 border-0 mb-4 overflow-hidden">
+                                <!-- Status Header -->
+                                <div class="card-header border-0 d-flex flex-column align-items-center justify-content-center py-4" style="background-color: #f8f9fa;">
+                                    <h6 class="text-muted text-uppercase fw-bold mb-3" style="letter-spacing: 1px;"><i class="bi bi-activity me-2"></i>Order Status</h6>
+                                    <span class="badge rounded-pill @badgeClass fs-5 px-4 py-2 shadow-sm">
+                                        <i class="bi @iconClass me-2"></i>@Model.OrderStatus
+                                    </span>
+                                </div>
+
+                                <!-- Products List -->
+                                <div class="card-body p-0">
+                                    <div class="bg-light px-4 py-2 border-top border-bottom">
+                                        <span class="fw-bold text-secondary text-uppercase" style="font-size: 0.85rem;"><i class="bi bi-bag-check me-2"></i>Order Items</span>
+                                    </div>
+                                    <ul class="list-group list-group-flush">
+                                        @if (Model.Items != null && Model.Items.Any())
+                                        {
+                                            foreach (var item in Model.Items)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-bottom border-light hover-shadow-sm transition-all" style="background-color: #fff;">
+                                                    <div class="ms-1 me-auto">
+                                                        <div class="fw-bold text-dark fs-6 mb-1">@item.Title</div>
+                                                        <div class="text-muted small d-flex align-items-center">
+                                                            <span class="fw-semibold text-secondary">@item.Price.ToString("c")</span> 
+                                                            <span class="mx-2 text-light-emphasis">&times;</span> 
+                                                            <span class="badge bg-light text-dark border rounded-pill px-2">@item.Quantity</span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="fw-bolder fs-5" style="color: #2b3452;">@((item.Price * item.Quantity).ToString("c"))</span>
+                                                </li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                                
+                                <!-- Total Footer -->
+                                <div class="card-footer bg-dark text-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0 fw-bold text-uppercase d-flex align-items-center" style="letter-spacing: 1px;">
+                                        <i class="bi bi-wallet2 me-2"></i>Total
+                                    </h5>
+                                    <h4 class="mb-0 fw-bolder text-warning">@Model.OrderTotal.ToString("c")</h4>
+                                </div>
+                            </div>
+                            
+                            <!-- Status Buttons -->
+                            <div class="d-grid gap-3 mt-4">
+                                @if (Model.OrderStatus == "Approved")
+                                {
+    
+                                    <button type="submit" asp-action="StartProcessing" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Processing" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase">
+                                        START PROCESSING
+                                    </button>
+                                }
+                                @if (Model.OrderStatus == "Processing")
+                                {
+
+                                    <button type="submit" asp-action="StartShipping" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-primary fw-bold py-2 shadow-sm text-uppercase" onclick="return validateShipping()">
+                                        START SHIPPING
+                                    </button>
+                                }
+                                @if (Model.OrderStatus == "Shipped")
+                                {
+                                    <button type="submit" asp-action="CompleteOrder" asp-controller="Order" asp-route-id="@Model.Id" class="btn btn-success fw-bold py-2 shadow-sm text-uppercase">
+                                        DELIVERED
+                                    </button>
+                                }
+                                @if (Model.OrderStatus != "Cancelled" && Model.OrderStatus != "Shipped" && Model.OrderStatus != "Delivered")
+                                {
+                                    <button type="submit" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" asp-route-orderStatus="Cancelled" class="btn btn-danger fw-bold py-2 shadow-sm text-uppercase" style="background-color: #e53e3e;">
+                                        CANCEL ORDER
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </form>
+}
+else
+{
+    @* --- CUSTOMER MY ORDERS DETAILS UI --- *@
+    <div class="container my-5" style="max-width: 1000px; min-height: 60vh;">
+        
+        <div class="mb-4">
+            <a asp-action="GetAllUserOders" asp-controller="Order" class="text-decoration-none fw-semibold d-flex align-items-center gap-2 hover-text-dark" style="color: #64748b; font-size: 0.95rem; margin-left: 5px;">
+                <i class="bi bi-arrow-left"></i> Back to My Orders
+            </a>
+        </div>
+
+        @* Top Order Status Card *@
+        <div class="card border rounded-4 bg-white mb-4 position-relative p-4 p-md-5" style="border-color: #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+            <div class="d-flex justify-content-between align-items-start mb-4 pb-2">
+                <div>
+                    <span class="d-block text-muted fw-semibold mb-2" style="font-size: 0.9rem;">Order ORD-@Model.Id</span>
+                    
+                    @{
+                        string headlineStatus = Model.OrderStatus switch {
+                            "Pending" => "Order received — hang tight!",
+                            "Approved" => "Order approved — getting ready!",
+                            "Processing" => "We're preparing your order!",
+                            "Shipped" => "On its way — get ready!",
+                            "Delivered" => "Delivered — enjoy!",
+                            "Cancelled" => "Order Cancelled",
+                            _ => $"Order is {Model.OrderStatus}"
+                        };
+                    }
+                    <h2 class="fw-bolder mb-3" style="color: #0f172a; font-size: 2.2rem; letter-spacing: -0.5px;">@headlineStatus</h2>
+                    
+                    <div class="text-muted" style="font-size: 0.95rem;">
+                        Placed on @FormatDateEgypt(Model.OrderDate) &middot; @(Model.Items?.Count ?? 0) items &middot; @Model.OrderTotal.ToString("c")
+                    </div>
+                </div>
+                
+                <div class="mt-2 text-end">
+                    @{
+                        string badgeStyleCst = Model.OrderStatus switch {
+                            "Approved" => "background-color: #e0e7ff; color: #4338ca; border-color: #c7d2fe;",
+                            "Processing" => "background-color: #fef3c7; color: #b45309; border-color: #fde68a;",
+                            "Shipped" => "background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;",
+                            "Delivered" => "background-color: #dcfce7; color: #166534; border-color: #dcfce7;",
+                            "Cancelled" => "background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;",
+                            _ => "background-color: #f1f5f9; color: #475569; border-color: #f1f5f9;"
+                        };
+                        string badgeIconCst = Model.OrderStatus switch {
+                            "Delivered" => "bi-check-circle",
+                            "Shipped" => "bi-truck",
+                            "Processing" => "bi-gear",
+                            "Approved" => "bi-check2-circle",
+                            "Cancelled" => "bi-x-circle",
+                            _ => "bi-clock"
+                        };
+                    }
+                    <div class="badge rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center" style="@badgeStyleCst font-size: 0.85rem;">
+                        <i class="bi @badgeIconCst me-2" style="font-size: 0.95rem;"></i> @Model.OrderStatus
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.OrderStatus != "Cancelled")
+            {
+                <div class="mt-4 pt-3 pb-2 position-relative w-100 mx-auto" style="max-width: 800px;">
+                    @{
+                        int step = Model.OrderStatus switch {
+                            "Pending" => 1,
+                            "Approved" => 1,
+                            "Processing" => 2,
+                            "Shipped" => 3,
+                            "Delivered" => 4,
+                            _ => 1
+                        };
+                    }
+                    
+                    <!-- Progress Lines -->
+                    <div class="position-absolute" style="top: 29px; left: 40px; right: 40px; height: 2px; background-color: #e2e8f0; z-index: 1;"></div>
+                    <div class="position-absolute" style="top: 29px; left: 40px; width: calc((100% - 80px) * @(((step - 1) / 3.0).ToString(System.Globalization.CultureInfo.InvariantCulture))); height: 2px; background-color: #2563eb; z-index: 1; transition: width 0.5s ease-in-out;"></div>
+
+                    <div class="d-flex justify-content-between position-relative w-100" style="z-index: 2;">
+                        <!-- Step 1: Placed -->
+                        <div class="d-flex flex-column align-items-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 28px; height: 28px; background-color: #2563eb !important;">
+                                <i class="bi bi-check fw-bold" style="font-size: 1.2rem;"></i>
+                            </div>
+                            <div class="mt-3 text-center @(step >= 1 ? "fw-bold text-dark" : "fw-semibold text-muted")" style="font-size: 0.9rem; letter-spacing: 0.3px;">Placed</div>
+                        </div>
+
+                        <!-- Step 2: Processing -->
+                        <div class="d-flex flex-column align-items-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center @(step >= 2 ? "bg-primary text-white" : "bg-white text-muted border border-2")" style="width: 28px; height: 28px; @(step >= 2 ? "background-color: #2563eb !important;" : "border-color: #cbd5e1 !important;")">
+                                @if (step >= 2) { <i class="bi bi-check fw-bold" style="font-size: 1.2rem;"></i> }
+                            </div>
+                            <div class="mt-3 text-center @(step >= 2 ? "fw-bold text-dark" : "fw-semibold text-muted")" style="font-size: 0.9rem; letter-spacing: 0.3px;">Processing</div>
+                        </div>
+
+                        <!-- Step 3: Shipped -->
+                        <div class="d-flex flex-column align-items-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center @(step >= 3 ? "bg-primary text-white" : "bg-white text-muted border border-2")" style="width: 28px; height: 28px; @(step >= 3 ? "background-color: #2563eb !important;" : "border-color: #cbd5e1 !important;")">
+                                @if (step >= 3) { <i class="bi bi-check fw-bold" style="font-size: 1.2rem;"></i> }
+                            </div>
+                            <div class="mt-3 text-center @(step >= 3 ? "fw-bold text-dark" : "fw-semibold text-muted")" style="font-size: 0.9rem; letter-spacing: 0.3px;">Shipped</div>
+                        </div>
+
+                        <!-- Step 4: Delivered -->
+                        <div class="d-flex flex-column align-items-center" style="width: 80px;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center @(step >= 4 ? "bg-primary text-white" : "bg-white text-muted border border-2")" style="width: 28px; height: 28px; @(step >= 4 ? "background-color: #2563eb !important;" : "border-color: #cbd5e1 !important;")">
+                                @if (step >= 4) { <i class="bi bi-check fw-bold" style="font-size: 1.2rem;"></i> }
+                            </div>
+                            <div class="mt-3 text-center @(step >= 4 ? "fw-bold text-dark" : "fw-semibold text-muted")" style="font-size: 0.9rem; letter-spacing: 0.3px;">Delivered</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row g-4">
+            
+            <div class="col-lg-8">
+                <!-- Items in this order -->
+                <div class="card border rounded-4 bg-white mb-4" style="border-color: #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
+                        <h6 class="fw-bolder mb-0 text-dark" style="font-size: 1rem;">Items in this order</h6>
+                    </div>
+                    
+                    <div class="card-body px-0 py-0">
+                        <div class="list-group list-group-flush rounded-bottom-4">
+                            @if (Model.Items != null && Model.Items.Any())
+                            {
+                                int idx = 0;
+                                foreach (var item in Model.Items)
+                                {
+                                    bool isLast = (idx == Model.Items.Count - 1);
+                                    <div class="list-group-item bg-transparent d-flex justify-content-between align-items-start px-4 py-4 @(isLast ? "border-bottom-0" : "")" style="border-color: #f1f5f9 !important;">
+                                        <div class="d-flex gap-4 w-100">
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                            {
+                                                <img src="~/@item.ImageUrl" alt="@item.Title" class="rounded-4 shadow-sm" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #f1f5f9;" onerror="this.onerror=null; this.outerHTML='<div class=\'rounded-4 bg-light d-flex justify-content-center align-items-center shadow-sm\' style=\'width: 80px; height: 80px;\'><i class=\'bi bi-image text-muted opacity-50 fs-2\'></i></div>';" />
+                                            }
+                                            else
+                                            {
+                                                <div class="rounded-4 bg-light shadow-sm d-flex justify-content-center align-items-center" style="width: 80px; height: 80px; border: 1px solid #f1f5f9;">
+                                                    <i class="bi bi-image text-secondary opacity-50 fs-2"></i>
+                                                </div>
+                                            }
+                                            
+                                            <div class="flex-grow-1 d-flex flex-column justify-content-between h-100" style="min-height: 80px;">
+                                                <div>
+                                                    <h6 class="fw-bold text-dark mb-1 d-block" style="font-size: 0.95rem; line-height: 1.4;">@item.Title</h6>
+                                                    <span class="text-muted" style="font-size: 0.85rem;">Qty: @item.Quantity &middot; @item.Price.ToString("c") each</span>
+                                                </div>
+                                                <div class="text-end mt-auto w-100">
+                                                    <span class="fw-bold" style="color: #0f172a; font-size: 0.95rem;">@((item.Price * item.Quantity).ToString("c"))</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    idx++;
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shipping Details -->
+                <div class="card border rounded-4 bg-white mb-4" style="border-color: #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    <div class="card-header bg-white border-bottom pt-4 px-4 pb-3" style="border-color: #f1f5f9 !important;">
+                        <h6 class="fw-bolder mb-0 text-dark" style="font-size: 1rem;">Shipping details</h6>
+                    </div>
+                    
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <div class="col-sm-6 d-flex gap-3">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi bi-person text-secondary fs-5"></i>
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">RECIPIENT</span>
+                                    <span class="fw-medium text-dark" style="font-size: 0.9rem;">@Model.FullName</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 d-flex gap-3">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi bi-telephone text-secondary fs-5"></i>
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">PHONE</span>
+                                    <span class="fw-medium text-dark" style="font-size: 0.9rem;">@Model.PhoneNumber</span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 d-flex gap-3">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi bi-geo-alt text-secondary fs-5"></i>
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">ADDRESS</span>
+                                    <span class="fw-medium text-dark" style="font-size: 0.9rem; display: block; line-height: 1.4;">
+                                        @Model.StreetAddress<br />
+                                        @Model.City
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 d-flex gap-3">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                    <i class="bi bi-truck text-secondary fs-5"></i>
+                                </div>
+                                <div>
+                                    <span class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">SHIPPING METHOD</span>
+                                    <span class="fw-medium text-dark d-block mb-1" style="font-size: 0.9rem;">@(string.IsNullOrEmpty(Model.Carrier) ? "Standard Shipping" : Model.Carrier)</span>
+                                    <span class="text-muted" style="font-size: 0.8rem;">Tracking: @(string.IsNullOrEmpty(Model.TrackingNumber) ? "Pending" : Model.TrackingNumber)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Order Summary -->
+                <div class="card border rounded-4 bg-white mb-4" style="border-color: #e2e8f0 !important; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    <div class="card-header bg-white border-bottom-0 pt-4 px-4 pb-2">
+                        <h6 class="fw-bolder mb-0 text-dark" style="font-size: 1rem;">Order summary</h6>
+                    </div>
+                    
+                    <div class="card-body p-4 pt-1">
+                        @{
+                            // Dummy shipping and tax breakdown if the backend doesn't supply it.
+                            // Assuming OrderTotal is Subtotal + Shipping + Tax.
+                            // In real scenarios, these properties would come from the VM.
+                            decimal shippingEstimate = 9.99m; 
+                            decimal taxEstimate = Model.OrderTotal > 0 ? (Model.OrderTotal - shippingEstimate) * 0.08m : 0; 
+                            decimal subTotalEst = Model.OrderTotal - shippingEstimate - taxEstimate;
+                            if (subTotalEst < 0) {
+                                subTotalEst = Model.OrderTotal;
+                                shippingEstimate = 0;
+                                taxEstimate = 0;
+                            }
+                        }
+                        <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
+                            <span>Subtotal</span>
+                            <span class="text-dark fw-medium">@subTotalEst.ToString("c")</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
+                            <span>Shipping</span>
+                            <span class="text-dark fw-medium">@shippingEstimate.ToString("c")</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-4 border-bottom pb-4 text-muted" style="border-color: #f1f5f9 !important; font-size: 0.9rem;">
+                            <span>Tax</span>
+                            <span class="text-dark fw-medium">@taxEstimate.ToString("c")</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-4 align-items-center">
+                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">Total</span>
+                            <span class="fw-bolder" style="color: #0f172a; font-size: 1.15rem;">@Model.OrderTotal.ToString("c")</span>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="d-flex flex-column gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-light bg-transparent border rounded-pill py-2 fw-semibold text-dark shadow-sm hover-bg-light" style="font-size: 0.9rem; border-color: #cbd5e1 !important;">
+                                <i class="bi bi-arrow-left me-1"></i> Back to My Orders
+                            </a>
+
+                            @if (Model.OrderStatus == "Pending" || Model.OrderStatus == "Processing" || Model.OrderStatus == "Approved")
+                            {
+                                <form method="post" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" class="mt-2 text-center" onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');">
+                                    <button type="submit" class="btn btn-white border-0 text-danger fw-semibold" style="font-size: 0.9rem; text-decoration: underline;">
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
     </div>
-</form>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Function to validate tracking details on "Start Shipping"
-        function validateShipping() {
-            var tracking = document.getElementById("trackingNumber").value;
-            var carrier = document.getElementById("carrier").value;
+    @if (isAdmin)
+    {
+        <script>
+            // Function to validate tracking details on "Start Shipping"
+            function validateShipping() {
+                var tracking = document.getElementById("trackingNumber").value;
+                var carrier = document.getElementById("carrier").value;
 
-            if (tracking === '' || carrier === '') {
-                // Try to use SweetAlert if available, otherwise fallback to vanilla alert
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Missing Details',
-                        text: 'Please enter a valid tracking number and carrier to start shipping!',
-                    });
-                } else {
-                    alert('Please enter a valid tracking number and carrier to start shipping!');
+                if (tracking === '' || carrier === '') {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Missing Details',
+                            text: 'Please enter a valid tracking number and carrier to start shipping!',
+                        });
+                    } else {
+                        alert('Please enter a valid tracking number and carrier to start shipping!');
+                    }
+                    return false; // Prevent form submission
                 }
-                return false; // Prevent form submission
+                return true;
             }
-            return true;
-        }
-    </script>
+        </script>
+    }
+    else
+    {
+        <style>
+            body { background-color: #f8fafc; }
+            .hover-text-dark:hover { color: #0f172a !important; }
+            .hover-bg-light:hover { background-color: #f1f5f9 !important; }
+        </style>
+    }
 }

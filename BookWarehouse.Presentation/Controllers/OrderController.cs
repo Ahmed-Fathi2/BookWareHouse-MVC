@@ -1,6 +1,9 @@
 using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Comman.Constants;
 using BookWarehouse.Domain.Common.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookWarehouse.Presentation.Controllers
 {
@@ -15,11 +18,24 @@ namespace BookWarehouse.Presentation.Controllers
 
         public async Task<IActionResult> GetAll(OrderStatus? status)
         {
-            var orders = await _orderService.GetAllOrdersAsync(status);
+            var orders = await _orderService.GetAllOrdersAsync(status, null);
 
             return Json(new { data = orders.Value });
         }
 
+
+
+        [Authorize(Roles =DefaultRole.Customer)]
+        public async Task<IActionResult> GetAllUserOders(OrderStatus? status)
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);            
+
+            var orders = await _orderService.GetAllOrdersAsync(null, userId);
+
+            return View("Index", orders.Value);
+
+        }
         public async Task<IActionResult> Details(int id)
         {
             var order = await _orderService.GetOrderDeatilsByIdAsync(id);
@@ -49,8 +65,7 @@ namespace BookWarehouse.Presentation.Controllers
                 TempData["success"] = "Order is now Processing.";
             return RedirectToAction(nameof(Details), new { id });
         }
-      
-     
+
 
         [HttpPost]
         public async Task<IActionResult> StartShipping(int id, string carrier, string trackingNumber)

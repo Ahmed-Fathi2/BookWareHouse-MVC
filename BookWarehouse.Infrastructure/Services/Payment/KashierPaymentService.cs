@@ -157,9 +157,9 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
         public async Task<Result> RefundPaymentAsync(int orderId,string transactionId ,decimal amount)
         {
-            var  order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
-            if(order is null)
-                return Result.Failure(new Error("Order.NotFound", $"Order with id {orderId} not found"));
+            //var  order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
+            //if(order is null)
+            //    return Result.Failure(new Error("Order.NotFound", $"Order with id {orderId} not found"));
 
 
             var url = $"https://test-fep.kashier.io/v3/orders/{orderId}";
