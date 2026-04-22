@@ -29,12 +29,42 @@ namespace BookWarehouse.Infrastructure.Persistence.Seeders
 
             var categories = new List<Category>()
             {
-                    new Category { Name = "Novels",  DisplayOrder = 1 },
-                    new Category { Name = "Children's Books", DisplayOrder = 2 },
-                    new Category { Name = "Science", DisplayOrder = 3 },
-                    new Category { Name = "History", DisplayOrder = 4 },
-                    new Category { Name = "Religion & Philosophy", DisplayOrder = 5 },
-                    new Category { Name = "Self-Help",  DisplayOrder = 6 }
+                new Category
+                {
+                    Name = "Novels",
+                    DisplayOrder = 1,
+                    Description = "Fictional stories and literary works."
+                },
+                new Category
+                {
+                    Name = "Children's Books",
+                    DisplayOrder = 2,
+                    Description = "Books designed for kids with simple and fun content."
+                },
+                new Category
+                {
+                    Name = "Science",
+                    DisplayOrder = 3,
+                    Description = "Books covering scientific topics and discoveries."
+                },
+                new Category
+                {
+                    Name = "History",
+                    DisplayOrder = 4,
+                    Description = "Books about historical events and civilizations."
+                },
+                new Category
+                {
+                    Name = "Religion & Philosophy",
+                    DisplayOrder = 5,
+                    Description = "Books discussing religious and philosophical ideas."
+                },
+                new Category
+                {
+                    Name = "Self-Help",
+                    DisplayOrder = 6,
+                    Description = "Books that help improve personal development."
+                }
             };
 
             return categories;

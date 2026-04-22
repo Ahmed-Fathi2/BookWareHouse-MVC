@@ -9,7 +9,7 @@
                     <p class="mb-0 text-white-50 mt-1">Organize your inventory with new book categories.</p>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <form method="post" asp-controller="Category" asp-action="SaveCreate">
+                    <form method="post" asp-controller="Category" asp-action="SaveCreate" enctype="multipart/form-data">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4 rounded-3 border-0 shadow-sm"></div>
 
                         <h4 class="section-title"><i class="bi bi-info-circle"></i> Category Details</h4>
@@ -21,9 +21,52 @@
                         </div>
 
                         <div class="mb-5">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control form-control-lg" rows="4" placeholder="Enter a brief description of the category..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-5">
                             <label asp-for="DisplayOrder" class="form-label"></label>
                             <input asp-for="DisplayOrder" class="form-control form-control-lg" placeholder="e.g. 1" />
                             <span asp-validation-for="DisplayOrder" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <h4 class="section-title"><i class="bi bi-images"></i> Category Media</h4>
+                        
+                        <div class="row align-items-center mb-5">
+                            <div class="col-md-7">
+                                <label class="form-label mb-2 fw-semibold">Upload Category Image</label>
+                                <div class="p-4 border rounded-4 bg-light text-center position-relative" style="border: 2px dashed var(--nvy-border) !important; transition: all 0.3s ease;">
+                                    <i class="bi bi-cloud-arrow-up fs-2 text-primary d-block mb-3"></i>
+                                    <label for="imageInput" class="btn btn-outline-secondary btn-lg px-4 mb-2 shadow-sm fw-semibold">
+                                        Choose an Image...
+                                    </label>
+                                    <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" onchange="previewImage(event)" />
+                                    <div class="text-muted small fw-medium" id="fileNameDisplay">Supported formats: JPG, PNG, WEBP. Max 5MB.</div>
+                                </div>
+                                <span class="text-danger d-block mt-2 fw-medium">@Html.ValidationMessage("Image")</span>
+                            </div>
+
+                            <!-- Image Preview Block -->
+                            <div class="col-md-5 d-flex justify-content-center mt-4 mt-md-0 position-relative">
+                                
+                                <div id="previewContainer" class="w-100 d-none">
+                                    <div class="bg-light rounded-4 border shadow-sm position-relative overflow-hidden w-100 d-flex justify-content-center align-items-center" style="height: 250px; padding: 0.5rem;">
+                                        <img id="imagePreview" src="#" alt="Preview" class="w-100 h-100 rounded-3" style="object-fit: contain; background-color: transparent;" />
+                                        <button type="button" class="btn btn-danger position-absolute shadow-lg rounded-circle" onclick="clearImage()" style="top: 10px; right: 10px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; z-index: 10;" title="Remove Image">
+                                            <i class="bi bi-x fs-5"></i>
+                                        </button>
+                                    </div>
+                                    <p class="mt-2 mb-0 text-center fw-semibold text-success small"><i class="bi bi-check-circle-fill me-1"></i> Preview Generated</p>
+                                </div>
+                                
+                                <div id="noPreviewContainer" class="p-4 bg-light rounded-4 border d-flex flex-column align-items-center justify-content-center w-100" style="height: 250px; border: 2px dashed var(--nvy-border) !important;">
+                                    <i class="bi bi-image text-muted" style="font-size: 4rem; opacity: 0.2;"></i>
+                                    <p class="text-muted mt-3 mb-0 small fw-semibold text-uppercase" style="letter-spacing: 1px;">Image Preview</p>
+                                </div>
+
+                            </div>
                         </div>
 
                         <div class="d-flex align-items-center justify-content-end gap-3 mt-5 pt-4 border-top">
@@ -43,4 +86,48 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function previewImage(event) {
+            var input = event.target;
+            var container = document.getElementById('previewContainer');
+            var noPreview = document.getElementById('noPreviewContainer');
+            var output = document.getElementById('imagePreview');
+            var fileNameDisplay = document.getElementById('fileNameDisplay');
+            
+            if (input.files && input.files[0]) {
+                // Clear validation message
+                var validationSpan = document.querySelector('[data-valmsg-for="Image"]');
+                if (validationSpan) {
+                    validationSpan.textContent = '';
+                }
+
+                fileNameDisplay.textContent = input.files[0].name;
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    output.src = e.target.result;
+                    container.classList.remove('d-none');
+                    noPreview.classList.remove('d-flex');
+                    noPreview.classList.add('d-none');
+                }
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                clearImage();
+            }
+        }
+
+        function clearImage() {
+            var input = document.getElementById('imageInput');
+            var container = document.getElementById('previewContainer');
+            var noPreview = document.getElementById('noPreviewContainer');
+            var output = document.getElementById('imagePreview');
+            var fileNameDisplay = document.getElementById('fileNameDisplay');
+            
+            input.value = '';
+            fileNameDisplay.textContent = 'Supported formats: JPG, PNG, WEBP. Max 5MB.';
+            container.classList.add('d-none');
+            noPreview.classList.remove('d-none');
+            noPreview.classList.add('d-flex');
+            output.src = '#';
+        }
+    </script>
 }

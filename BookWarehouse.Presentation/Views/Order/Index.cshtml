@@ -68,14 +68,22 @@ else
         <p class="text-muted mb-4 pb-2" style="font-size: 1.05rem;">Track, manage, and review every order you've placed.</p>
 
         <!-- Search input -->
+        <form id="searchForm" asp-action="GetAllUserOders" asp-controller="Order" method="get">
+        @if (!string.IsNullOrEmpty(Context.Request.Query["status"]))
+        {
+            <input type="hidden" name="status" value="@Context.Request.Query["status"]" />
+        }
         <div class="mb-4" style="max-width: 350px;">
             <div class="input-group border rounded-3 bg-white" style="border-color: #cbd5e1 !important;">
                 <span class="input-group-text bg-transparent border-0 text-muted ps-3 pe-2">
+                    <button type="submit" class="btn p-0 m-0 border-0 text-muted hover-text-primary">
                     <i class="bi bi-search"></i>
+                    </button>
                 </span>
-                <input type="text" class="form-control border-0 shadow-none py-2 cust-search-input" placeholder="Search by order ID or product">
+                <input type="text" id="searchInput" name="searchValue" value="@Context.Request.Query["searchValue"]" class="form-control border-0 shadow-none py-2 cust-search-input" placeholder="Search by order ID or product">
             </div>
         </div>
+        </form>
 
         @{
             // Exclude Pending orders entirely as they represent unpaid/incomplete checkouts
@@ -287,5 +295,45 @@ else
                 .bottom-footer-row { flex-direction: column; align-items: start !important; gap: 15px; }
             }
         </style>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const searchInput = document.getElementById('searchInput');
+                const searchForm = document.getElementById('searchForm');
+                let searchTimeout;
+
+                if (searchInput) {
+                    // Restore cursor to the end of the input if there is a value
+                    const val = searchInput.value;
+                    if (val) {
+                        searchInput.focus();
+                        searchInput.value = '';
+                        searchInput.value = val;
+                    }
+
+                    searchInput.addEventListener('input', function () {
+                        clearTimeout(searchTimeout);
+                        const trimVal = this.value.trim();
+                        
+                        if (trimVal === '') {
+                            // Prevent request if input is empty
+                            return;
+                        }
+
+                        searchTimeout = setTimeout(() => {
+                            searchForm.submit();
+                        }, 600); // 600ms debounce
+                    });
+                }
+
+                if (searchForm) {
+                    searchForm.addEventListener('submit', function (e) {
+                        if (searchInput && searchInput.value.trim() === '') {
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        </script>
     }
 }

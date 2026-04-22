@@ -61,15 +61,18 @@ namespace BookWarehouse.Application.Services
             return Result.Success(sessionResult.Value);
         }
 
-        public async Task<Result<IEnumerable<OrderDetailsVM>>> GetAllOrdersAsync(OrderStatus? orderStatus,string? userId)
+        public async Task<Result<IEnumerable<OrderDetailsVM>>> GetAllOrdersAsync(OrderStatus? orderStatus,string? userId, string? searchValue)
         {
             Expression<Func<Order, bool>>? filter = o =>
                 (!orderStatus.HasValue || o.OrderStatus == orderStatus.Value) &&
-                (string.IsNullOrEmpty(userId) || o.ApplicationUserId == userId);
+                (string.IsNullOrEmpty(userId) || o.ApplicationUserId == userId) &&
+                (string.IsNullOrEmpty(searchValue) ||( o.Id.ToString().Contains(searchValue)));
 
             var orders = await _unitOfWork.OrderRepository.GetAllOrders(filter: filter);
 
             var orderReadVMs = orders.Adapt<IEnumerable<OrderDetailsVM>>();
+
+
 
             return Result.Success(orderReadVMs);
         }

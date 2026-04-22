@@ -60,7 +60,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
                 allowedMethods = "card,wallet",
                 type = "one-time",
-                display = "ar",
+                display = "en",
 
                 customer = new
                 {
@@ -186,7 +186,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
                 request.Headers.Add("Authorization",_options.Secret);
                 request.Headers.Add("accept", "application/json");
 
-            var response = await httpClient.SendAsync(request);
+                var response = await httpClient.SendAsync(request);
 
                 var responseBody = await response.Content.ReadAsStringAsync();
 

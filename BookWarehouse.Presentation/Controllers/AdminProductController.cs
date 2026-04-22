@@ -63,7 +63,7 @@ namespace BookWarehouse.Presentation.Controllers
             }
             else
             {
-                ModelState.AddModelError("Image", "Image is required and must have a size greater than 0.");
+                ModelState.AddModelError("Image", "Image is required and must have a size less than 5MB.");
             }
 
             if (!ModelState.IsValid)

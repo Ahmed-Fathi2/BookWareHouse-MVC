@@ -10,9 +10,9 @@ namespace BookWarehouse.Presentation.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var result = await _productService.GetAllProducts();
+            var result = await _productService.GetAllProducts(categoryId);
             return View(result.Value);
         }
 

@@ -25,10 +25,10 @@ namespace BookWarehouse.Application.Services
             _unitOfWork = unitOfWork;
             _fileService = fileService;
         }
-        public async Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts()
+        public async Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts(int? categoryId = null)
         {
             var products = await _unitOfWork.ProductRepository.GetAllAsync(
-                filter: x => !x.IsDeleted && !x.Category.IsDeleted,
+                filter: x => !x.IsDeleted && !x.Category.IsDeleted && (!categoryId.HasValue || x.CategoryId == categoryId.Value),
                 includes: [ p => p.Category ]
                 );
 

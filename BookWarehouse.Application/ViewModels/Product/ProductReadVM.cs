@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
 namespace BookWarehouse.Application.ViewModels.Product
 {
@@ -17,7 +14,7 @@ namespace BookWarehouse.Application.ViewModels.Product
 
 
         [Display(Name = "List Price")]
-        public decimal Price { get; set; }
+        public decimal Price { get; set; } // Final price after discount
 
         public decimal ListPrice { get; set; }
 

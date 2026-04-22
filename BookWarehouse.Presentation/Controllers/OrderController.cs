@@ -18,7 +18,7 @@ namespace BookWarehouse.Presentation.Controllers
 
         public async Task<IActionResult> GetAll(OrderStatus? status)
         {
-            var orders = await _orderService.GetAllOrdersAsync(status, null);
+            var orders = await _orderService.GetAllOrdersAsync(status, null, null);
 
             return Json(new { data = orders.Value });
         }
@@ -26,12 +26,12 @@ namespace BookWarehouse.Presentation.Controllers
 
 
         [Authorize(Roles =DefaultRole.Customer)]
-        public async Task<IActionResult> GetAllUserOders(OrderStatus? status)
+        public async Task<IActionResult> GetAllUserOders(OrderStatus? status, string? searchValue)
         {
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);            
 
-            var orders = await _orderService.GetAllOrdersAsync(null, userId);
+            var orders = await _orderService.GetAllOrdersAsync(status, userId, searchValue);
 
             return View("Index", orders.Value);
 

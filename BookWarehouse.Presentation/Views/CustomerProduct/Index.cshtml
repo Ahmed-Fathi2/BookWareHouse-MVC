@@ -1,29 +1,175 @@
 @model IEnumerable<ProductReadVM>
+@{
+    var categoryName = Model.FirstOrDefault()?.CategoryName ?? "Products";
+    var productCount = Model.Count();
+    var maxPrice = Model.Any() ? Model.Max(p => p.Price) : 0;
+}
 
-
-<div class="container py-5 mt-3">
-    <!-- Header -->
-    <div class="text-center mb-5 pb-3 border-bottom">
-        <h2 class="fw-bold text-primary display-5 mb-2"><i class="bi bi-shop-window me-3"></i>Book Store</h2>
-        <p class="text-secondary fs-5">Browse and discover your next great read from our latest collection.</p>
+<div class="container-fluid px-md-5 py-5" style="background-color: #f8f9fa; min-height: 100vh;">
+    <!-- HEADER ROW -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+        <div>
+            <h1 class="fw-bolder text-dark mb-1" style="font-size: 2.2rem; color: #0f172a !important;">@categoryName</h1>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">@productCount products available</p>
+        </div>
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+            <!-- Search Input -->
+            <div class="input-group bg-white border rounded-3 shadow-sm" style="width: 280px; align-items: center; padding: 0.2rem 0.5rem;">
+                <span class="bg-transparent border-0 text-muted px-2">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control border-0 shadow-none bg-transparent ps-0" placeholder="Search products...">
+            </div>
+            <!-- Sort Dropdown -->
+            <select class="form-select border rounded-3 shadow-sm bg-white text-dark" style="width: 150px; cursor: pointer;">
+                <option selected>Featured</option>
+                <option value="1">Price: Low to High</option>
+                <option value="2">Price: High to Low</option>
+                <option value="3">Newest Arrivals</option>
+            </select>
+        </div>
     </div>
 
-    <!-- Product Grid -->
-    <div class="row">
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center py-5 my-5">
-                <i class="bi bi-bookshelf text-muted text-opacity-50" style="font-size: 5rem;"></i>
-                <h3 class="fw-bold text-primary mt-4">We are restocking!</h3>
-                <p class="text-secondary fs-5 mt-2">No books are currently available in the warehouse. Please check back later.</p>
+    <div class="row g-4">
+        <!-- SIDEBAR -->
+        <div class="col-lg-3 col-md-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-body p-4">
+                    <h6 class="fw-bolder mb-4 text-dark" style="font-size: 1.1rem;">Max price</h6>
+                    <div class="mb-3">
+                        <input type="range" class="custom-slider w-100" id="priceRange" min="0" max="@maxPrice" value="@maxPrice">
+                    </div>
+                    <p class="text-muted small mb-4">Up to <strong class="text-dark" id="priceDisplay">$@maxPrice</strong></p>
+
+                    <button class="btn btn-light w-100 fw-bold rounded-3 text-dark border" style="background-color: #f8fafc; transition: all 0.2s;">
+                        Reset filters
+                    </button>
+                </div>
             </div>
-        }
-        else
-        {
-            foreach (var product in Model)
-            {
-                <partial name="_ProductCard" model="product" />
-            }
-        }
+        </div>
+
+        <!-- MAIN CONTENT (PRODUCT GRID) -->
+        <div class="col-lg-9 col-md-8">
+            <div class="row g-4">
+                @foreach(var product in Model)
+                {
+                    <div class="col-sm-6 col-md-6 col-xl-4">
+                        <div class="card h-100 border-0 shadow-sm category-card" style="border-radius: 16px; overflow: hidden; background-color: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                            
+                            <!-- Image Header -->
+                            <div class="position-relative bg-light overflow-hidden" style="height: 220px;">
+                                <!-- Badge -->
+                                <span class="badge bg-primary position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px; z-index: 2;">NEW</span>
+                                
+                                @if(string.IsNullOrWhiteSpace(product.ImageUrl))
+                                {
+                                    <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+                                        <i class="bi bi-image text-muted text-opacity-25" style="font-size: 4rem;"></i>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <img src="~/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: contain; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                                }
+                            </div>
+
+                            <!-- Card Body -->
+                            <div class="card-body p-4 d-flex flex-column">
+                                <p class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">@product.Author</p>
+                                <h6 class="card-title fw-bolder text-dark mb-0" style="font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.4rem;">@product.Title</h6>
+                                                        
+                                <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-0">
+                                    <div>
+                                        <span class="fs-5 fw-bolder text-dark" style="color: #0f172a !important;">$@product.Price</span>
+                                        @if(product.ListPrice > 0 && product.ListPrice > product.Price)
+                                        {
+                                            <span class="text-muted text-decoration-line-through small ms-1 fw-semibold" style="font-size: 0.75rem;">$@product.ListPrice</span>
+                                        }
+                                    </div>
+                                    <a asp-controller="CustomerProduct" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary d-flex align-items-center justify-content-center p-0 shadow-sm" style="width: 40px; height: 40px; border-radius: 12px; transition: transform 0.2s;">
+                                        <i class="bi bi-cart3 fs-5"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+
+                @if(!Model.Any())
+                {
+                    <div class="col-12 text-center py-5">
+                        <i class="bi bi-basket2 text-muted opacity-25" style="font-size: 5rem;"></i>
+                        <h4 class="fw-bold mt-4 text-dark">No products found</h4>
+                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
 </div>
+
+<style>
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
+    
+    .custom-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 5px;
+        background: #e9ecef;
+        outline: none;
+        transition: background 0.1s;
+    }
+
+    .custom-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #0d6efd;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    .custom-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #0d6efd;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        border: none;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const slider = document.getElementById("priceRange");
+            const display = document.getElementById("priceDisplay");
+
+            if(slider && display) {
+                function updateSlider() {
+                    const min = parseFloat(slider.min) || 0;
+                    const max = parseFloat(slider.max) || 100;
+                    const val = parseFloat(slider.value) || 0;
+                    
+                    const percent = max > min ? ((val - min) / (max - min)) * 100 : 100;
+                    
+                    display.innerText = '$' + val;
+                    // Apply linear-gradient to color the filled portion
+                    slider.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${percent}%, #e9ecef ${percent}%, #e9ecef 100%)`;
+                }
+
+                slider.addEventListener("input", updateSlider);
+                // Run on load
+                updateSlider();
+            }
+        });
+    </script>
+}

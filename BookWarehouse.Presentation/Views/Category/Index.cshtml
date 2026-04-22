@@ -1,96 +1,207 @@
 @model IEnumerable<CategoryReadEditVM>
 
-<div class="container-fluid mt-5 mb-5 pb-5 px-md-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-tags-fill me-2"></i>Categories</h2>
-            <p class="text-muted mb-0">Organize your book collection by defining categories and genres.</p>
-        </div>
-        <a asp-controller="Category" asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
-            <i class="bi bi-plus-circle-fill"></i> Create Category
-        </a>
-    </div>
+@{
+    bool isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+    ViewData["Title"] = isAdmin ? "Categories Management" : "Browse Categories";
+}
 
-    <div class="table-container">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th class="ps-4">Category Name</th>
-                        <th>Display Order</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+@if (isAdmin)
+{
+    @* --- ADMIN DASHBOARD UI --- *@
+    <div class="container-fluid mt-5 mb-5 pb-5 px-md-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold text-primary mb-1"><i class="bi bi-tags-fill me-2"></i>Categories</h2>
+                <p class="text-muted mb-0">Organize your book collection by defining categories and genres.</p>
+            </div>
+            <a asp-controller="Category" asp-action="Create" class="btn btn-primary btn-lg shadow-sm">
+                <i class="bi bi-plus-circle-fill"></i> Create Category
+            </a>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <td class="ps-4 fw-semibold text-primary fs-5">@item.Name</td>
-                            <td><span class="badge bg-light text-dark border p-2 fs-6">@item.DisplayOrder</span></td>
-                            <td>
-                                <div class="table-action-buttons">
-                                    <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info shadow-sm text-white">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                    @* <a  asp-controller="Category" asp-action="Delete" asp-route-id="@item.Id"  class="btn btn-danger shadow-sm">
-                                        <i class="bi bi-trash-fill"></i> Delete
-                                    </a> *@
-                                    <a href="javascript:void(0);"
-                                           onclick="Delete('/Category/Delete/@item.Id')"
-                                           class="btn btn-danger shadow-sm">
-                                        <i class="bi bi-trash-fill"></i> Delete
-                                    </a>
-                                </div>
-                            </td>
+                            <th class="ps-4">Image</th>
+                            <th>Category Name</th>
+                            <th style="max-width: 250px;">Description</th>
+                            <th>Display Order</th>
+                            <th class="text-center">Actions</th>
                         </tr>
-                    }
-                    @if(!Model.Any()) {
-                        <tr>
-                            <td colspan="3" class="text-center py-5 text-muted">
-                                <i class="bi bi-collection fs-1 d-block mb-3"></i>
-                                <h5>No Categories Added</h5>
-                                <p>Start by creating categories to organize your store.</p>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    @if(!string.IsNullOrEmpty(item.ImageUrl)) {
+                                        <img src="~/@item.ImageUrl" alt="@item.Name" class="rounded shadow-sm" style="width: 50px; height: 50px; object-fit: cover;" />
+                                    } else {
+                                        <div class="rounded bg-light shadow-sm d-flex justify-content-center align-items-center" style="width: 50px; height: 50px;">
+                                            <i class="bi bi-image text-muted"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="fw-semibold text-primary fs-5">@item.Name</td>
+                                <td class="text-muted text-truncate" style="max-width: 250px;" title="@item.Description">@item.Description</td>
+                                <td><span class="badge bg-light text-dark border p-2 fs-6">@item.DisplayOrder</span></td>
+                                <td>
+                                    <div class="table-action-buttons">
+                                        <a asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info shadow-sm text-white">
+                                            <i class="bi bi-pencil-square"></i> Edit
+                                        </a>
+                                        <a href="javascript:void(0);"
+                                               onclick="Delete('/Category/Delete/@item.Id')"
+                                               class="btn btn-danger shadow-sm">
+                                            <i class="bi bi-trash-fill"></i> Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        @if(!Model.Any()) {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-collection fs-1 d-block mb-3"></i>
+                                    <h5>No Categories Added</h5>
+                                    <p>Start by creating categories to organize your store.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    @* --- CUSTOMER BROWSE UI --- *@
+    <div class="container my-5 pb-5">
+        <!-- Header -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bolder mb-2" style="color: #0f172a; font-size: 2.5rem;">Browse Our Categories</h2>
+            <p class="text-muted" style="font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Explore a wide range of genres and find your next great read among our carefully curated collections.
+            </p>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-collection text-muted opacity-50" style="font-size: 4rem;"></i>
+                <h5 class="fw-bold text-dark mt-3">No Categories Found</h5>
+                <p class="text-muted">Stay tuned, we are adding new categories soon!</p>
+            </div>
+        }
+        else
+        {
+            <div class="row g-4 justify-content-center">
+                @foreach (var category in Model.OrderBy(c => c.DisplayOrder))
+                {
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100 border-0 rounded-4 overflow-hidden shadow-sm category-card" style="transition: all 0.3s ease; background-color: #ffffff;">
+                            
+                            <!-- Category Image -->
+                            <div class="position-relative overflow-hidden" style="height: 200px; background-color: #f8fafc;">
+                                @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                {
+                                    <img src="~/@category.ImageUrl" alt="@category.Name" class="w-100 h-100 category-img" style="object-fit: cover; transition: transform 0.5s ease;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                                }
+                                else
+                                {
+                                    <div class="w-100 h-100 d-flex justify-content-center align-items-center bg-light">
+                                        <i class="bi bi-journal-bookmark text-muted" style="font-size: 4rem; opacity: 0.5;"></i>
+                                    </div>
+                                }
+                                
+                                <!-- Product Count Badge -->
+                                <div class="position-absolute top-0 end-0 m-3">
+                                    <span class="badge rounded-pill bg-white text-dark shadow-sm px-3 py-2 fw-bold border" style="font-size: 0.8rem;">
+                                        @(category.NumOfProducts) Products
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Category Details -->
+                            <div class="card-body p-4 text-center">
+                                <h5 class="card-title fw-bold mb-2 text-dark" style="font-size: 1.25rem;">@category.Name</h5>
+                                <p class="card-text text-muted small mb-0" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; min-height: 40px;">
+                                    @(string.IsNullOrEmpty(category.Description) ? "Explore our collection of " + category.Name + " books." : category.Description)
+                                </p>
+                            </div>
+                            
+                            <!-- Hover Overlay Element -->
+                            <div class="card-footer bg-transparent border-0 text-center pb-4 pt-0">
+                                <a asp-controller="CustomerProduct" asp-action="Index" asp-route-categoryId="@category.Id" class="text-primary text-decoration-none fw-semibold explore-btn" style="font-size: 0.95rem; opacity: 0.8; transition: all 0.3s ease;">
+                                    Explore <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
 
 @section Scripts{
-    <script>
-
-        function Delete(url) {
-            Swal.fire({
-                title: 'Are you sure?',
-                html: `
-                    <p>You won't be able to revert this!</p>
-                    <p style="color:red; font-weight:bold;">
-                        ⚠️ Deleting this category will also delete ALL related products!
-                    </p>
-                `,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33', 
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete everything!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: url,
-                        type: 'DELETE',
-                        success: function (data) {
-                                 location.reload();
-                        },
-                        error: function () {
-                            toastr.error("Something went wrong");
-                        }
-                    });
-                }
-            });
-        
-        }
-    </script>
+    @if (isAdmin)
+    {
+        <script>
+            function Delete(url) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    html: `
+                        <p>You won't be able to revert this!</p>
+                        <p style="color:red; font-weight:bold;">
+                            ⚠️ Deleting this category will also delete ALL related products!
+                        </p>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33', 
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete everything!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: url,
+                            type: 'DELETE',
+                            success: function (data) {
+                                     location.reload();
+                            },
+                            error: function () {
+                                toastr.error("Something went wrong");
+                            }
+                        });
+                    }
+                });
+            
+            }
+        </script>
+    }
+    else
+    {
+        <style>
+            body { background-color: #f8fafc; }
+            .category-card {
+                border: 1px solid #e2e8f0 !important;
+            }
+            .category-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+                border-color: #cbd5e1 !important;
+            }
+            .category-card:hover .category-img {
+                transform: scale(1.03);
+            }
+            .category-card:hover .explore-btn {
+                opacity: 1 !important;
+                letter-spacing: 0.5px;
+            }
+        </style>
+    }
 }

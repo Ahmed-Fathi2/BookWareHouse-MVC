@@ -31,9 +31,10 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync(
-            Expression<Func<TEntity, bool>>? filter = null,
-            Expression<Func<TEntity, object>>[]? includes = null,
+            Expression<Func<TEntity, bool>>? filter = null, // for filter and searching
+            Expression<Func<TEntity, object>>[]? includes = null, // for eager loading of related entities
             bool tracked = false)
+        // need to add sorting and pagination later
         {
             var query = _dbContext.Set<TEntity>().AsQueryable();
 

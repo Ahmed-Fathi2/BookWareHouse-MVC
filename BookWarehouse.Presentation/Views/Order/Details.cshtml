@@ -537,7 +537,7 @@ else
                     </div>
                     
                     <div class="card-body p-4 pt-1">
-                        @{
+                        @* @{
                             // Dummy shipping and tax breakdown if the backend doesn't supply it.
                             // Assuming OrderTotal is Subtotal + Shipping + Tax.
                             // In real scenarios, these properties would come from the VM.
@@ -549,22 +549,22 @@ else
                                 shippingEstimate = 0;
                                 taxEstimate = 0;
                             }
-                        }
+                        } *@
                         <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
                             <span>Subtotal</span>
-                            <span class="text-dark fw-medium">@subTotalEst.ToString("c")</span>
+                            <span class="text-dark fw-medium">@Model.OrderTotal.ToString("c")</span>
                         </div>
                         
-                        <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
+                         <div class="d-flex justify-content-between mb-3 text-muted" style="font-size: 0.9rem;">
                             <span>Shipping</span>
-                            <span class="text-dark fw-medium">@shippingEstimate.ToString("c")</span>
+                            <span class="text-dark fw-medium">Free</span>
                         </div>
                         
-                        <div class="d-flex justify-content-between mb-4 border-bottom pb-4 text-muted" style="border-color: #f1f5f9 !important; font-size: 0.9rem;">
-                            <span>Tax</span>
-                            <span class="text-dark fw-medium">@taxEstimate.ToString("c")</span>
-                        </div>
-                        
+                         <div class="d-flex justify-content-between mb-4 border-bottom pb-4 text-muted" style="border-color: #f1f5f9 !important; font-size: 0.9rem;">
+                            @* <span>Tax</span>
+                            <span class="text-dark fw-medium">@taxEstimate.ToString("c")</span> *@
+                        </div> 
+                         
                         <div class="d-flex justify-content-between mb-4 align-items-center">
                             <span class="fw-bold text-dark" style="font-size: 0.95rem;">Total</span>
                             <span class="fw-bolder" style="color: #0f172a; font-size: 1.15rem;">@Model.OrderTotal.ToString("c")</span>
@@ -572,13 +572,13 @@ else
                         
                         <!-- Actions -->
                         <div class="d-flex flex-column gap-2 mt-4">
-                            <a asp-action="Index" class="btn btn-light bg-transparent border rounded-pill py-2 fw-semibold text-dark shadow-sm hover-bg-light" style="font-size: 0.9rem; border-color: #cbd5e1 !important;">
+                            <a asp-action="GetAllUserOders" class="btn btn-light bg-transparent border rounded-pill py-2 fw-semibold text-dark shadow-sm hover-bg-light" style="font-size: 0.9rem; border-color: #cbd5e1 !important;">
                                 <i class="bi bi-arrow-left me-1"></i> Back to My Orders
                             </a>
 
                             @if (Model.OrderStatus == "Pending" || Model.OrderStatus == "Processing" || Model.OrderStatus == "Approved")
                             {
-                                <form method="post" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" class="mt-2 text-center" onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');">
+                                <form method="get" asp-action="CancelOrder" asp-controller="Order" asp-route-id="@Model.Id" class="mt-2 text-center" onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.');">
                                     <button type="submit" class="btn btn-white border-0 text-danger fw-semibold" style="font-size: 0.9rem; text-decoration: underline;">
                                         Cancel Order
                                     </button>

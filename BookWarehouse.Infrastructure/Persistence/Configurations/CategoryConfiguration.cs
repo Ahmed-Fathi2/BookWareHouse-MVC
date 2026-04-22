@@ -14,7 +14,12 @@ namespace BookWarehouse.Infrastructure.Persistence.Configurations
                 .HasMaxLength(256)
                 .IsRequired();
 
-           
+
+            builder.Property(x => x.Description)
+                .HasMaxLength(256)
+                .IsRequired();
+
+
 
 
 

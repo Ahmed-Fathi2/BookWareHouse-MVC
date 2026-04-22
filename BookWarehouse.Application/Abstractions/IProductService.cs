@@ -9,7 +9,7 @@ namespace BookWarehouse.Application.Abstractions
 {
     public interface IProductService
     {
-        Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts();
+        Task<Result<IEnumerable<ProductReadVM>>> GetAllProducts(int? categoryId = null);
         Task<Result<ProductReadDetailsVM>> GetProductById(int id);
         Task<Result<ProductEditVM>> GetProductForEdit(int id);
         Task<Result> CreateProduct(ProductCreateVM productCreateVM);

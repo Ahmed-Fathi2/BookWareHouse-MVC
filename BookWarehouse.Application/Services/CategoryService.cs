@@ -24,7 +24,7 @@ namespace BookWarehouse.Application.Services
 
         public async Task<Result<IEnumerable<CategoryReadEditVM>>> GetAllCategories()
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAllAsync(filter:x=>!x.IsDeleted);
+            var categories = await _unitOfWork.CategoryRepository.GetAllAsync(filter:x=>!x.IsDeleted,includes:[x => x.Products]);
 
             var response= categories.Adapt<IEnumerable<CategoryReadEditVM>>();
 
@@ -45,6 +45,8 @@ namespace BookWarehouse.Application.Services
 
         public async Task<Result> CreateCategory(CategoryCreateVM categoryCreateVM)
         {
+
+
             var category = categoryCreateVM.Adapt<Category>();
             _unitOfWork.CategoryRepository.Add(category); // Add to Local Containet so no need to await here
             await _unitOfWork.SaveChangesAsync();
