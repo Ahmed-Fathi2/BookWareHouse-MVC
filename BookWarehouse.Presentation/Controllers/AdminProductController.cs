@@ -160,8 +160,8 @@ namespace BookWarehouse.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _productService.GetAllProducts();
-            return Json(new {data=result.Value });
+            var result = await _productService.GetAllProductsForJson();
+            return Json(new { data = result.Value });
         }
         private async Task<IEnumerable<SelectListItem>> GetSelectListItemOfCategories()
         {

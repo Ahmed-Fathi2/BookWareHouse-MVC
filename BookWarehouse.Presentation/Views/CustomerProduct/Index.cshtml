@@ -1,113 +1,211 @@
-@model IEnumerable<ProductReadVM>
+@using BookWarehouse.Application.Comman.Pagination
+@using BookWarehouse.Application.ViewModels.Category
+@using BookWarehouse.Application.ViewModels.Product
+@model PagedResult<ProductReadVM>
 @{
-    var categoryName = Model.FirstOrDefault()?.CategoryName ?? "Products";
-    var productCount = Model.Count();
-    var maxPrice = Model.Any() ? Model.Max(p => p.Price) : 0;
+    var query = ViewBag.Query as ProductQueryVM ?? new ProductQueryVM();
+    var categories = ViewBag.Categories as IEnumerable<CategoryReadEditVM> ?? new List<CategoryReadEditVM>();
+    
+    var categoryName = query.CategoryId.HasValue 
+        ? categories.FirstOrDefault(c => c.Id == query.CategoryId)?.Name ?? "Products" 
+        : "All products";
 }
 
-<div class="container-fluid px-md-5 py-5" style="background-color: #f8f9fa; min-height: 100vh;">
-    <!-- HEADER ROW -->
-    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
-        <div>
-            <h1 class="fw-bolder text-dark mb-1" style="font-size: 2.2rem; color: #0f172a !important;">@categoryName</h1>
-            <p class="text-muted mb-0" style="font-size: 0.95rem;">@productCount products available</p>
-        </div>
-        <div class="d-flex gap-2 mt-3 mt-md-0">
-            <!-- Search Input -->
-            <div class="input-group bg-white border rounded-3 shadow-sm" style="width: 280px; align-items: center; padding: 0.2rem 0.5rem;">
-                <span class="bg-transparent border-0 text-muted px-2">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" class="form-control border-0 shadow-none bg-transparent ps-0" placeholder="Search products...">
+<form method="get" asp-controller="CustomerProduct" asp-action="Index" id="filterForm">
+    <div class="container-fluid px-md-5 py-5" style="background-color: #f8f9fa; min-height: 100vh;">
+        <!-- HEADER ROW -->
+        <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
+            <div>
+                <h1 class="fw-bolder text-dark mb-1" style="font-size: 2.2rem; color: #0f172a !important;">@categoryName</h1>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">Page @Model.PageNumber of @(Model.TotalPages == 0 ? 1 : Model.TotalPages)</p>
             </div>
-            <!-- Sort Dropdown -->
-            <select class="form-select border rounded-3 shadow-sm bg-white text-dark" style="width: 150px; cursor: pointer;">
-                <option selected>Featured</option>
-                <option value="1">Price: Low to High</option>
-                <option value="2">Price: High to Low</option>
-                <option value="3">Newest Arrivals</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <!-- SIDEBAR -->
-        <div class="col-lg-3 col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-body p-4">
-                    <h6 class="fw-bolder mb-4 text-dark" style="font-size: 1.1rem;">Max price</h6>
-                    <div class="mb-3">
-                        <input type="range" class="custom-slider w-100" id="priceRange" min="0" max="@maxPrice" value="@maxPrice">
-                    </div>
-                    <p class="text-muted small mb-4">Up to <strong class="text-dark" id="priceDisplay">$@maxPrice</strong></p>
-
-                    <button class="btn btn-light w-100 fw-bold rounded-3 text-dark border" style="background-color: #f8fafc; transition: all 0.2s;">
-                        Reset filters
-                    </button>
+            <div class="d-flex gap-2 mt-3 mt-md-0">
+                <!-- Search Input -->
+                <div class="input-group bg-white rounded-3 shadow-sm" style="width: 280px; height: 48px; align-items: center; padding: 0 0.5rem; border: 1px solid #e2e8f0;">
+                    <span class="bg-transparent border-0 text-muted px-2">
+                        <i class="bi bi-search" style="font-size: 1.1rem; color: #94a3b8;"></i>
+                    </span>
+                    <input type="text" id="searchInput" name="SearchValue" value="@query.SearchValue" class="form-control border-0 shadow-none bg-transparent ps-0 fw-medium" placeholder="Search products..." style="height: 100%; font-size: 0.95rem; color: #475569;">
                 </div>
+                <!-- Sort Dropdown -->
+                <div class="dropdown" style="height: 48px;">
+                    <button class="btn bg-white rounded-3 shadow-sm d-flex align-items-center justify-content-between h-100" type="button" id="sortDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" style="width: 210px; padding: 0 1rem; border: 1px solid #e2e8f0;">
+                        @{
+                            string sortText = "FEATURED";
+                            if (query.SortBy == "Price" && !query.IsDescending) sortText = "PRICE: LOW TO HIGH";
+                            if (query.SortBy == "Price" && query.IsDescending) sortText = "PRICE: HIGH TO LOW";
+                        }
+                        <span class="fw-bold text-truncate" style="font-size: 0.85rem; color: #334155; max-width: 85%; text-align: left; letter-spacing: 0.5px;">@sortText</span>
+                        <i class="bi bi-chevron-down" style="font-size: 0.75rem; color: #94a3b8;"></i>
+                    </button>
+                    <ul class="dropdown-menu shadow-lg border-0 rounded-4 mt-2 animated-dropdown" aria-labelledby="sortDropdownBtn" style="min-width: 210px; z-index: 1050;">
+                        <li><a class="dropdown-item py-2 px-3 fw-bold @(string.IsNullOrEmpty(query.SortBy) ? "active bg-light text-primary" : "text-secondary")" style="font-size: 0.85rem; letter-spacing: 0.5px;" href="javascript:void(0)" onclick="handleSortSelect('')">FEATURED</a></li>
+                        <li><a class="dropdown-item py-2 px-3 fw-bold @(query.SortBy == "Price" && !query.IsDescending ? "active bg-light text-primary" : "text-secondary")" style="font-size: 0.85rem; letter-spacing: 0.5px;" href="javascript:void(0)" onclick="handleSortSelect('PriceAsc')">PRICE: LOW TO HIGH</a></li>
+                        <li><a class="dropdown-item py-2 px-3 fw-bold @(query.SortBy == "Price" && query.IsDescending ? "active bg-light text-primary" : "text-secondary")" style="font-size: 0.85rem; letter-spacing: 0.5px;" href="javascript:void(0)" onclick="handleSortSelect('PriceDesc')">PRICE: HIGH TO LOW</a></li>
+                    </ul>
+                </div>
+                <!-- Hidden inputs for precise sorting submission -->
+                <input type="hidden" name="SortBy" id="actualSortBy" value="@query.SortBy" />
+                <input type="hidden" name="IsDescending" id="actualIsDescending" value="@(query.IsDescending ? "true" : "false")" />
             </div>
         </div>
 
-        <!-- MAIN CONTENT (PRODUCT GRID) -->
-        <div class="col-lg-9 col-md-8">
-            <div class="row g-4">
-                @foreach(var product in Model)
-                {
-                    <div class="col-sm-6 col-md-6 col-xl-4">
-                        <div class="card h-100 border-0 shadow-sm category-card" style="border-radius: 16px; overflow: hidden; background-color: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease;">
-                            
-                            <!-- Image Header -->
-                            <div class="position-relative bg-light overflow-hidden" style="height: 220px;">
-                                <!-- Badge -->
-                                <span class="badge bg-primary position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px; z-index: 2;">NEW</span>
-                                
-                                @if(string.IsNullOrWhiteSpace(product.ImageUrl))
-                                {
-                                    <div class="w-100 h-100 d-flex justify-content-center align-items-center">
-                                        <i class="bi bi-image text-muted text-opacity-25" style="font-size: 4rem;"></i>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <img src="~/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: contain; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
-                                }
+        <div class="row g-4">
+            <!-- SIDEBAR -->
+            <div class="col-lg-3 col-md-4">
+                <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                    <div class="card-body p-4">
+                        <h6 class="fw-bolder mb-3 text-dark" style="font-size: 1.1rem;">Category</h6>
+                        <div class="mb-4">
+                            <input type="hidden" name="CategoryId" id="actualCategory" value="@query.CategoryId" />
+                            <div class="dropdown w-100">
+                                <button class="btn bg-white border w-100 d-flex justify-content-between align-items-center rounded-3 shadow-sm" type="button" id="categoryDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false" style="border-color: #e2e8f0 !important; padding: 0.5rem 0.75rem;">
+                                    <span class="text-dark fw-semibold text-truncate" style="max-width: 85%;">
+                                        @(query.CategoryId.HasValue ? categories.FirstOrDefault(c => c.Id == query.CategoryId)?.Name : "All Categories")
+                                    </span>
+                                    <i class="bi bi-chevron-down text-muted" style="font-size: 0.8rem;"></i>
+                                </button>
+                                <ul class="dropdown-menu w-100 shadow-lg border-0 rounded-4 mt-2 animated-dropdown custom-scrollbar" aria-labelledby="categoryDropdownBtn" style="max-height: 280px; overflow-y: auto; overflow-x: hidden; z-index: 1050;">
+                                    <li><a class="dropdown-item py-2 px-3 @(!query.CategoryId.HasValue ? "active bg-light text-primary fw-bold" : "text-dark")" href="javascript:void(0)" onclick="selectCategory('')">All Categories</a></li>
+                                    @foreach(var cat in categories)
+                                    {
+                                        <li><a class="dropdown-item py-2 px-3 @(query.CategoryId == cat.Id ? "active bg-light text-primary fw-bold" : "text-dark")" href="javascript:void(0)" onclick="selectCategory('@cat.Id')">@cat.Name</a></li>
+                                    }
+                                </ul>
                             </div>
+                        </div>
 
-                            <!-- Card Body -->
-                            <div class="card-body p-4 d-flex flex-column">
-                                <p class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.7rem; letter-spacing: 0.5px;">@product.Author</p>
-                                <h6 class="card-title fw-bolder text-dark mb-0" style="font-size: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.4rem;">@product.Title</h6>
-                                                        
-                                <div class="mt-auto pt-4 d-flex justify-content-between align-items-center border-0">
-                                    <div>
-                                        <span class="fs-5 fw-bolder text-dark" style="color: #0f172a !important;">$@product.Price</span>
-                                        @if(product.ListPrice > 0 && product.ListPrice > product.Price)
-                                        {
-                                            <span class="text-muted text-decoration-line-through small ms-1 fw-semibold" style="font-size: 0.75rem;">$@product.ListPrice</span>
-                                        }
-                                    </div>
-                                    <a asp-controller="CustomerProduct" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary d-flex align-items-center justify-content-center p-0 shadow-sm" style="width: 40px; height: 40px; border-radius: 12px; transition: transform 0.2s;">
-                                        <i class="bi bi-cart3 fs-5"></i>
-                                    </a>
+                        <h6 class="fw-bolder mb-3 text-dark" style="font-size: 1.1rem;">Price Range</h6>
+                        <div class="row g-2 mb-4">
+                            <div class="col-6">
+                                <label class="form-label text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">MIN PRICE</label>
+                                <div class="input-group input-group-sm border rounded-3 bg-white" style="border-color: #e2e8f0 !important; overflow: hidden;">
+                                    <span class="input-group-text bg-transparent border-0 text-muted pe-1">$</span>
+                                    <input type="number" id="minPriceInput" class="form-control border-0 shadow-none ps-1 text-dark fw-semibold" name="MinPrice" value="@query.MinPrice" min="0" placeholder="0">
                                 </div>
                             </div>
-
+                            <div class="col-6">
+                                <label class="form-label text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">MAX PRICE</label>
+                                <div class="input-group input-group-sm border rounded-3 bg-white" style="border-color: #e2e8f0 !important; overflow: hidden;">
+                                    <span class="input-group-text bg-transparent border-0 text-muted pe-1">$</span>
+                                    <input type="number" id="maxPriceInput" class="form-control border-0 shadow-none ps-1 text-dark fw-semibold" name="MaxPrice" value="@query.MaxPrice" min="0" placeholder="Any">
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                }
 
-                @if(!Model.Any())
+                        <a href="@Url.Action("Index", "CustomerProduct")" class="btn btn-light w-100 fw-bold rounded-3 text-dark border" style="background-color: #f8fafc; transition: all 0.2s; font-size: 0.95rem;">
+                            Reset filters
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT (PRODUCT GRID) -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row g-4">
+                    @foreach(var product in Model.Items)
+                    {
+                        <div class="col-sm-6 col-md-6 col-xl-3">
+                            <div class="card h-100 border-0 shadow-sm category-card position-relative" style="border-radius: 16px; overflow: hidden; background-color: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                                
+                                <!-- Image Header -->
+                                <div class="position-relative bg-light overflow-hidden" style="height: 200px;">
+                                    <!-- Badges -->
+                                    <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-1" style="z-index: 2;">
+                                        @if(product.ListPrice > 0 && product.ListPrice > product.Price)
+                                        {
+                                            <span class="badge bg-primary px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">SALE</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">NEW</span>
+                                        }
+                                    </div>
+                                    
+                                    @if(string.IsNullOrWhiteSpace(product.ImageUrl))
+                                    {
+                                        <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+                                            <i class="bi bi-image text-muted text-opacity-25" style="font-size: 4rem;"></i>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <img src="~/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: contain; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                                    }
+                                </div>
+
+                                <!-- Card Body -->
+                                <div class="card-body p-3 d-flex flex-column">
+                                    <p class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">@product.CategoryName</p>
+                                    <h6 class="card-title fw-bolder text-dark mb-2" style="font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.2rem;">@product.Title</h6>
+                                    
+                                    <!-- Rating Stars -->
+                                    <div class="d-flex align-items-center mb-3 mt-1">
+                                        <i class="bi bi-star-fill text-warning me-1" style="font-size: 0.75rem;"></i>
+                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">4.5</span>
+                                        <span class="text-muted ms-1" style="font-size: 0.75rem;">(120)</span>
+                                    </div>
+
+                                    <div class="mt-auto pt-2 d-flex justify-content-between align-items-center border-0">
+                                        <div>
+                                            <span class="fs-5 fw-bolder text-dark" style="color: #0f172a !important;">$@product.Price</span>
+                                            @if(product.ListPrice > 0 && product.ListPrice > product.Price)
+                                            {
+                                                <span class="text-muted text-decoration-line-through small ms-1 fw-semibold" style="font-size: 0.7rem;">$@product.ListPrice</span>
+                                            }
+                                        </div>
+                                        <a asp-controller="CustomerProduct" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary d-flex align-items-center justify-content-center p-0 shadow-sm" style="width: 36px; height: 36px; border-radius: 10px; transition: transform 0.2s;">
+                                            <i class="bi bi-cart3 fs-5"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    }
+
+                    @if(!Model.Items.Any())
+                    {
+                        <div class="col-12 text-center py-5">
+                            <i class="bi bi-basket2 text-muted opacity-25" style="font-size: 5rem;"></i>
+                            <h4 class="fw-bold mt-4 text-dark">No products found</h4>
+                            <p class="text-muted">Try adjusting your filters or check back later.</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                @if (Model.TotalPages > 1)
                 {
-                    <div class="col-12 text-center py-5">
-                        <i class="bi bi-basket2 text-muted opacity-25" style="font-size: 5rem;"></i>
-                        <h4 class="fw-bold mt-4 text-dark">No products found</h4>
-                        <p class="text-muted">Try adjusting your filters or check back later.</p>
+                    <div class="d-flex justify-content-center mt-5">
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination mb-0 d-flex align-items-center bg-white shadow-sm rounded-3 p-1" style="border: 1px solid #f1f5f9;">
+                                <li class="page-item @(!Model.IsPrevious ? "disabled" : "")">
+                                    <button type="submit" name="PageNumber" value="@(Model.PageNumber - 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Previous" @(!Model.IsPrevious ? "disabled" : "")>
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </button>
+                                </li>
+                                
+                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                {
+                                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                                        <button type="submit" name="PageNumber" value="@i" class="page-link border-0 fw-bold px-3 py-2 rounded-2 mx-1 @(Model.PageNumber == i ? "text-white" : "text-secondary")" style="background-color: @(Model.PageNumber == i ? "#0f172a" : "#f8fafc");">@i</button>
+                                    </li>
+                                }
+
+                                <li class="page-item @(!Model.IsNext ? "disabled" : "")">
+                                    <button type="submit" name="PageNumber" value="@(Model.PageNumber + 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Next" @(!Model.IsNext ? "disabled" : "")>
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
                     </div>
                 }
             </div>
         </div>
     </div>
-</div>
+</form>
 
 <style>
     .category-card:hover {
@@ -115,61 +213,114 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
     }
     
-    .custom-slider {
-        -webkit-appearance: none;
-        appearance: none;
-        height: 6px;
-        border-radius: 5px;
-        background: #e9ecef;
-        outline: none;
-        transition: background 0.1s;
+    .animated-dropdown { 
+        animation: fadeInDropdown 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+        transform-origin: top; 
+    }
+    @@keyframes fadeInDropdown {
+        from { opacity: 0; transform: scale(0.98) translateY(-5px); }
+        to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .dropdown-item {
+        transition: all 0.2s ease;
+    }
+    .dropdown-item:hover {
+        background-color: #f8fafc;
+        color: #4f46e5 !important;
+        font-weight: 600;
+        transform: translateX(4px);
+    }
+    .dropdown-item.active {
+        box-shadow: inset 3px 0 0 #4f46e5;
     }
 
-    .custom-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #0d6efd;
-        cursor: pointer;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    /* Remove arrows/spinners from number inputs */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    input[type=number] {
+        -moz-appearance: textfield; /* Firefox */
     }
 
-    .custom-slider::-moz-range-thumb {
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: #0d6efd;
-        cursor: pointer;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
-        border: none;
+    /* Custom Scrollbar for Dropdowns */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent; 
+        border-radius: 8px;
+        margin-block: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1; 
+        border-radius: 8px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8; 
     }
 </style>
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const slider = document.getElementById("priceRange");
-            const display = document.getElementById("priceDisplay");
+        function selectCategory(id) {
+            document.getElementById('actualCategory').value = id;
+            document.getElementById('filterForm').submit();
+        }
 
-            if(slider && display) {
-                function updateSlider() {
-                    const min = parseFloat(slider.min) || 0;
-                    const max = parseFloat(slider.max) || 100;
-                    const val = parseFloat(slider.value) || 0;
-                    
-                    const percent = max > min ? ((val - min) / (max - min)) * 100 : 100;
-                    
-                    display.innerText = '$' + val;
-                    // Apply linear-gradient to color the filled portion
-                    slider.style.background = `linear-gradient(to right, #0d6efd 0%, #0d6efd ${percent}%, #e9ecef ${percent}%, #e9ecef 100%)`;
-                }
+        function handleSortSelect(val) {
+            const sortByInput = document.getElementById('actualSortBy');
+            const isDescInput = document.getElementById('actualIsDescending');
 
-                slider.addEventListener("input", updateSlider);
-                // Run on load
-                updateSlider();
+            if (val === 'PriceDesc') {
+                sortByInput.value = 'Price';
+                isDescInput.value = 'true';
+            } else if (val === 'PriceAsc') {
+                sortByInput.value = 'Price';
+                isDescInput.value = 'false';
+            } else {
+                sortByInput.value = '';
+                isDescInput.value = 'false';
             }
+            document.getElementById('filterForm').submit();
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const filterForm = document.getElementById('filterForm');
+            let searchTimeout;
+
+            // Generalized function to debounce input and restore focus
+            const lastFocusedId = sessionStorage.getItem('lastFocusedInput');
+            if (lastFocusedId) {
+                const elem = document.getElementById(lastFocusedId);
+                if (elem) {
+                    const val = elem.value;
+                    elem.focus();
+                    if (elem.type === 'text' || elem.type === 'number') {
+                        elem.value = '';
+                        elem.value = val;
+                    }
+                }
+                sessionStorage.removeItem('lastFocusedInput');
+            }
+
+            function setupDebouncedSubmit(inputId) {
+                const inputElem = document.getElementById(inputId);
+                if (inputElem) {
+                    inputElem.addEventListener('input', function () {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(() => {
+                            sessionStorage.setItem('lastFocusedInput', inputId);
+                            filterForm.submit();
+                        }, 600); // 600ms debounce
+                    });
+                }
+            }
+
+            setupDebouncedSubmit('searchInput');
+            setupDebouncedSubmit('minPriceInput');
+            setupDebouncedSubmit('maxPriceInput');
         });
     </script>
 }

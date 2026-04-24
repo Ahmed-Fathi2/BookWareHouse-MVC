@@ -9,10 +9,13 @@ namespace BookWarehouse.Domain.Repositories
     public interface IGenericRepository<TEntity,TKey> where TEntity : class
     {
 
-        Task<IEnumerable<TEntity>> GetAllAsync(
-            Expression<Func<TEntity,bool>>? filter = null,
-            Expression<Func<TEntity, object>>[]? includes = null,
-            bool tracked = false);
+        Task<IQueryable<TEntity>> GetAllAsync(
+                  Expression<Func<TEntity, bool>>? filter = null, // Filtering && Searching
+                  Expression<Func<TEntity, object>>[]? includes = null, // Eager Loading
+                  string? SortBy = null,
+                  bool IsDescending = false,
+                  bool tracked = false);
+
         Task<TEntity?> GetByIdAsync(TKey id);
 
         void Add(TEntity entity );

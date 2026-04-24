@@ -25,6 +25,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Stripe.net" Version="51.0.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.2" />
 
   </ItemGroup>
 

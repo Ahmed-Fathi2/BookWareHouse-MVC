@@ -1,11 +1,8 @@
 ﻿using BookWarehouse.Domain.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
+using System.Linq.Dynamic.Core;
 
 namespace BookWarehouse.Infrastructure.Persistence.Repositories
 {
@@ -13,13 +10,13 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
     {
         protected readonly ApplicationDbContext _dbContext = dbContext;
 
-     
+
         public async Task<TEntity?> GetByIdAsync(TKey id)
         {
-            return await _dbContext.Set<TEntity>().FindAsync(id);  
+            return await _dbContext.Set<TEntity>().FindAsync(id);
         }
 
-    
+
         public void Add(TEntity entity)
         {
             _dbContext.Add(entity);
@@ -30,19 +27,22 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
             _dbContext.Remove(entity);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync(
-            Expression<Func<TEntity, bool>>? filter = null, // for filter and searching
-            Expression<Func<TEntity, object>>[]? includes = null, // for eager loading of related entities
+        public async Task<IQueryable<TEntity>> GetAllAsync(
+            Expression<Func<TEntity, bool>>? filter = null, // Filtering && Searching
+            Expression<Func<TEntity, object>>[]? includes = null, // Eager Loading
+            string? SortBy = null,
+            bool IsDescending = false,
             bool tracked = false)
-        // need to add sorting and pagination later
+
         {
             var query = _dbContext.Set<TEntity>().AsQueryable();
 
-            if(!tracked)
+            if (!tracked)
                 query = query.AsNoTracking();
 
             if (filter is not null)
-                query= query.Where(filter);
+                query = query.Where(filter);
+
 
             if (includes is not null && includes.Length > 0)
             {
@@ -52,7 +52,15 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
                 }
             }
 
-            return await query.ToListAsync();
+            if (!string.IsNullOrEmpty(SortBy))
+            {
+                var sortingDirection = IsDescending ? "DESC" : "ASC";
+
+                query = query.OrderBy($"{SortBy} {sortingDirection}");
+            }
+
+
+            return query;
 
         }
 
@@ -63,7 +71,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
 
         public void DeleteAll(IEnumerable<TEntity> entities)
         {
-            _dbContext.RemoveRange(entities);   
+            _dbContext.RemoveRange(entities);
         }
     }
 }

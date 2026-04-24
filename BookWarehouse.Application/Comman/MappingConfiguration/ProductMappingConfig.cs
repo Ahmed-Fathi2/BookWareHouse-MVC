@@ -12,7 +12,8 @@ namespace BookWarehouse.Application.Comman.MappingConfiguration
         public void Register(TypeAdapterConfig config)
         {
           config.NewConfig<Product,ProductReadVM>()
-                .Map(dest => dest.CategoryName, src => src.Category.Name);
+                .Map(dest => dest.CategoryName, src => src.Category.Name)
+                .Map(dest => dest.CategoryId, src => src.CategoryId);
 
             config.NewConfig<Product, ProductReadDetailsVM>()
               .Map(dest => dest.CategoryName, src => src.Category.Name);
