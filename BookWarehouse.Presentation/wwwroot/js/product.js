@@ -7,28 +7,66 @@ function loadDataTable() {
 
     dataTable = $('#producttbl').DataTable({
         "ajax": { url: '/AdminProduct/GetAll' },
+        "processing": true,
+        "language": {
+            "processing": '<div class="spinner-border text-primary mt-3" role="status"><span class="visually-hidden">Loading...</span></div>'
+        },
         "columns": [
-            { data: 'title', "width": "25%" },
-            { data: 'isbn', "width": "25%" },
-            { data: 'price', "width": "10%", className: "text-start" },
-            { data: 'author', "width": "15%" },
-            { data: 'categoryName', "width": "15%" },
+            { 
+                data: 'title', 
+                "width": "25%",
+                className: "align-middle ps-4",
+                render: function(data) { return `<span class="fw-bold text-dark" style="font-size: 0.95rem;">${data}</span>`; }
+            },
+            { 
+                data: 'isbn', 
+                "width": "15%",
+                className: "align-middle",
+                render: function(data) { return `<span class="text-muted fw-medium" style="font-size: 0.9rem;">${data}</span>`; }
+            },
+            { 
+                data: 'price', 
+                "width": "10%", 
+                className: "text-start align-middle",
+                render: function(data) { return `<span class="fw-bolder text-dark" style="font-size: 0.95rem;">$${data.toFixed(2)}</span>`; }
+            },
+            { 
+                data: 'author', 
+                "width": "15%",
+                className: "align-middle",
+                render: function(data) { return `<span class="fw-medium text-dark" style="font-size: 0.9rem;">${data}</span>`; }
+            },
+            { 
+                data: 'categoryName', 
+                "width": "15%",
+                className: "align-middle",
+                render: function(data) { 
+                    return `
+                        <span class="badge rounded-pill bg-light text-secondary border fw-bold px-3 py-2" style="font-size: 0.8rem;">
+                            ${data}
+                        </span>
+                    `; 
+                }
+            },
             {
                 data: 'id',
+                className: "text-center align-middle",
                 render: function (data) {
-                    return `<div class="align-middle text-center" style="white-space: nowrap;">
-                            <a href="/AdminProduct/Edit/${data}" class="btn btn-sm btn-info m-1 text-white">
+                    return `
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <a href="/AdminProduct/Edit/${data}" class="btn btn-sm btn-white border shadow-sm fw-bold rounded-3 px-3 d-flex align-items-center gap-1 text-dark hover-bg-light" style="font-size: 0.85rem;">
                                 <i class="bi bi-pencil-square"></i> Edit
                             </a>
-                            <a href="/AdminProduct/Details/${data}" class="btn btn-sm btn-secondary m-1">
-                                <i class="bi bi-info-circle"></i> Details
+                            <a href="/AdminProduct/Details/${data}" class="btn btn-sm btn-white border shadow-sm rounded-3 px-2 text-muted hover-bg-light">
+                                <i class="bi bi-info-circle"></i>
                             </a>
-                            <a onClick=Delete('/AdminProduct/Delete/${data}') class="btn btn-sm btn-danger m-1">
-                                <i class="bi bi-trash-fill"></i> Delete
+                            <a onClick=Delete('/AdminProduct/Delete/${data}') class="btn btn-sm btn-white border shadow-sm rounded-3 px-2 text-danger hover-bg-light">
+                                <i class="bi bi-trash-fill"></i>
                             </a>
-                        </div>`;
-                }
-                , "width": "25%"
+                        </div>
+                    `;
+                }, 
+                "width": "20%"
             }
         ]
     });

@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.ViewModels.Auth;
 using Ecom.BLL.ViewModel.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -54,7 +54,17 @@ namespace BookWarehouse.Presentation.Controllers
                 ModelState.AddModelError(string.Empty, result.Error.Description);
                 return View(loginVM);
             }
-            return RedirectToAction("Index", "CustomerProduct");
+            return RedirectToAction(nameof(LoginRedirect));
+        }
+
+        [HttpGet]
+        public IActionResult LoginRedirect()
+        {
+            if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+            {
+                return RedirectToAction("Index", "Order");
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         public async Task<IActionResult> Logout()

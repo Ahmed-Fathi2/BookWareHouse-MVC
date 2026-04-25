@@ -1,4 +1,7 @@
-
+@using System.Security.Claims
+@using BookWarehouse.Application.Abstractions
+@using BookWarehouse.Application.Comman.Constants
+@inject ICartService CartService
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +20,21 @@
     
 </head>
 <body>
+    @{
+        int cartCount = 0;
+        if (User.Identity!.IsAuthenticated && User.IsInRole(DefaultRole.Customer))
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != null)
+            {
+                var cartResult = await CartService.GetAllUserCartProducts(userId);
+                if (cartResult.IsSuccess)
+                {
+                    cartCount = cartResult.Value.Sum(c => c.Count);
+                }
+            }
+        }
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -27,11 +45,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-uppercase"  asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                      
-                      
 
                         @if (User.IsInRole(DefaultRole.Admin))
                         {
@@ -57,8 +70,11 @@
                         else if (User.IsInRole(DefaultRole.Customer))
                         {
                             <li class="nav-item">
+                                <a class="nav-link text-uppercase" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" asp-controller="Cart" asp-action="Index">
-                                    <i class="bi bi-cart3"></i> &nbsp; (0)
+                                    <i class="bi bi-cart3"></i> &nbsp; (@cartCount)
                            
                                 </a>
                             </li>

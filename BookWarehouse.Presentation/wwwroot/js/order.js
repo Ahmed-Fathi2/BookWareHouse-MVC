@@ -19,7 +19,7 @@ $(document).ready(function () {
         var status = $(this).data('status');
         
         // Add smooth opacity fade out
-        $('#orderTable tbody').css('opacity', '0.1');
+        $('#orderTable tbody').css('opacity', '0.3');
         
         var url = status === "all" ? '/Order/GetAll' : `/Order/GetAll?status=${status}`;
         
@@ -31,19 +31,6 @@ $(document).ready(function () {
     });
 });
 
-function getStatusBadge(status) {
-    let badgeClass = 'bg-secondary';
-    switch (status) {
-        case 'Approved': badgeClass = 'bg-success'; break;
-        case 'Processing': badgeClass = 'bg-warning text-dark'; break;
-        case 'Shipped': badgeClass = 'bg-info text-dark'; break;
-        case 'Delivered': badgeClass = 'bg-success'; break;
-        case 'Cancelled': badgeClass = 'bg-danger'; break;
-        case 'Pending': badgeClass = 'bg-secondary'; break;
-    }
-    return `<span class="badge rounded-pill px-3 py-2 ${badgeClass} fw-bold shadow-sm" style="min-width: 90px; letter-spacing: 0.5px;">${status}</span>`;
-}
-
 function initDataTable(status) {
     var url = status === "all" ? '/Order/GetAll' : `/Order/GetAll?status=${status}`;
 
@@ -53,71 +40,123 @@ function initDataTable(status) {
         "language": {
             "processing": '<div class="spinner-border text-primary mt-3" role="status"><span class="visually-hidden">Loading...</span></div>'
         },
+        // We do not want table borders managed by datatables css, so we keep classes simple in HTML
         "columns": [
             { 
-                data: 'id', width: "10%", className: "text-center align-middle", 
-                render: function(data) { return `<span class="fw-bolder" style="color: #000; font-size: 0.95rem;">${data}</span>`; }
+                data: 'id', 
+                className: "align-middle", 
+                render: function(data) { return `<span class="fw-bolder text-dark" style="font-size: 0.95rem;">#${data}</span>`; }
             },
             { 
-                data: 'fullName', width: "15%", className: "text-start align-middle",
-                render: function(data) { return `<span class="fw-bold" style="color: #000; font-size: 0.95rem;">${data}</span>`; }
-            },
-            { 
-                data: 'phoneNumber', width: "16%", className: "text-start align-middle",
-                render: function(data) { return `<span class="fw-bold" style="color: #000; font-size: 0.95rem;">${data}</span>`; }
-            },
-            {
-                data: 'orderDate',
-                width: "18%",
+                data: 'fullName', 
                 className: "align-middle",
-                render: function (data) {
-                    const date = new Date(data + "Z");
-                    let formatted = date.toLocaleString('en-GB', {
-                        timeZone: 'Africa/Cairo',
-                        day: '2-digit', month: 'short', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit', hour12: true
-                    });
-                    return `<span class="fw-bold" style="color: #000; font-size: 0.9rem;">${formatted}</span>`;
+                render: function(data, type, row) { 
+                    let initials = data.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                    let email = row.email || (data.split(' ')[0].toLowerCase() + "@mail.com"); // fallback if email is null
+                    return `
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex justify-content-center align-items-center text-primary fw-bold" style="width: 42px; height: 42px; background-color: #e0f2fe; font-size: 0.95rem;">
+                                ${initials}
+                            </div>
+                            <div class="d-flex flex-column">
+                                <span class="fw-bold text-dark" style="font-size: 0.95rem;">${data}</span>
+                                <span class="text-muted" style="font-size: 0.85rem;">${email}</span>
+                            </div>
+                        </div>
+                    `; 
                 }
             },
             { 
+                data: 'phoneNumber', 
+                className: "align-middle",
+                render: function(data) { return `<span class="text-muted fw-medium" style="font-size: 0.95rem;">${data}</span>`; }
+            },
+            {
+                data: 'orderDate',
+                className: "align-middle",
+                render: function (data) {
+                    const date = new Date(data + "Z");
+                    let dateStr = date.toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                    let timeStr = date.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+                    return `
+                        <div class="d-flex flex-column">
+                            <span class="text-dark fw-medium" style="font-size: 0.95rem;">${dateStr},</span>
+                            <span class="text-muted" style="font-size: 0.9rem;">${timeStr}</span>
+                        </div>
+                    `;
+                }
+            },
+            { 
+                data: 'items', 
+                className: "align-middle",
+                render: function(data) {
+                    let count = data ? data.length : 0;
+                    return `
+                        <div class="d-flex flex-column justify-content-center align-items-center rounded-3" style="background-color: #f1f5f9; width: 48px; padding: 4px;">
+                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">${count}</span>
+                            <span class="text-muted" style="font-size: 0.75rem;">items</span>
+                        </div>
+                    `;
+                }
+            },
+            { 
+                data: 'orderTotal', 
+                className: "align-middle",
+                render: function(data) { return `<span class="fw-bolder text-dark" style="font-size: 0.95rem;">$${data.toFixed(2)}</span>`; }
+            },
+            { 
                 data: 'orderStatus', 
-                width: "13%", 
                 className: "text-center align-middle",
                 render: function(data) {
-                    return getStatusBadge(data);
+                    let bgClass = "bg-light";
+                    let textClass = "text-secondary";
+                    let dotColor = "#6c757d";
+                    
+                    if (data === "Delivered" || data === "Approved") { bgClass = "bg-success bg-opacity-10"; textClass = "text-success"; dotColor = "#198754"; }
+                    else if (data === "Pending") { bgClass = "bg-warning bg-opacity-10"; textClass = "text-warning"; dotColor = "#ffc107"; }
+                    else if (data === "Processing") { bgClass = "bg-info bg-opacity-10"; textClass = "text-info"; dotColor = "#0dcaf0"; }
+                    else if (data === "Shipped") { bgClass = "bg-primary bg-opacity-10"; textClass = "text-primary"; dotColor = "#0d6efd"; }
+                    else if (data === "Cancelled") { bgClass = "bg-danger bg-opacity-10"; textClass = "text-danger"; dotColor = "#dc3545"; }
+
+                    return `
+                        <span class="badge rounded-pill px-3 py-2 ${bgClass} ${textClass} fw-bold" style="font-size: 0.85rem;">
+                            <span class="rounded-circle d-inline-block me-2" style="width: 6px; height: 6px; background-color: ${dotColor}; vertical-align: middle; margin-top: -1px;"></span>${data}
+                        </span>
+                    `;
                 }
             },
             { 
                 data: 'paymentStatus', 
-                width: "13%", 
                 className: "text-center align-middle",
                 render: function(data) {
-                    let colorClass = "";
-                    let iconClass = "";
-                    if (data === "Approved" || data === "Paid" || data === "Completed") {
-                        colorClass = "text-success";
-                        iconClass = "bi-check2-circle";
-                    } else if (data === "Rejected" || data === "Failed") {
-                        colorClass = "text-danger";
-                        iconClass = "bi-x-circle";
-                    } else {
-                        colorClass = "text-warning";  // Can also use a specific #color here if text-warning is too bright
-                        iconClass = "bi-clock-history";
-                    }
-                    return `<span class="${colorClass} fw-bolder" style="font-size: 0.95rem;">
-                                <i class="bi ${iconClass} me-1"></i>${data}
-                            </span>`;
+                    let bgClass = "bg-light";
+                    let textClass = "text-secondary";
+                    
+                    if (data === "Paid" || data === "Approved") { bgClass = "bg-success bg-opacity-10"; textClass = "text-success"; data = "Paid"; }
+                    else if (data === "Failed" || data === "Rejected") { bgClass = "bg-danger bg-opacity-10"; textClass = "text-danger"; data = "Failed"; }
+                    else { bgClass = "bg-warning bg-opacity-10"; textClass = "text-warning"; data = "Pending"; }
+
+                    return `
+                        <span class="badge rounded-pill px-3 py-2 ${bgClass} ${textClass} fw-bold d-inline-flex align-items-center gap-2" style="font-size: 0.85rem; border: 1px solid currentColor;">
+                            <i class="bi bi-credit-card"></i> ${data}
+                        </span>
+                    `;
                 }
             },
             {
                 data: 'id',
-                width: "13%",
                 className: "text-center align-middle",
                 render: function (data) {
-                    return `<a href="/order/Details/${data}" class="btn btn-sm rounded-pill btn-outline-primary px-3 shadow-sm transition-all text-nowrap fw-bold" style="color: #0d6efd;">
-                                <i class="bi bi-eye-fill me-1"></i> Details
-                            </a>`;
+                    return `
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+                            <a href="/Order/Details/${data}" class="btn btn-sm btn-white border shadow-sm fw-bold rounded-3 px-3 d-flex align-items-center gap-1 text-dark hover-bg-light" style="font-size: 0.85rem;">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <button class="btn btn-sm btn-white border shadow-sm rounded-3 px-2 text-muted hover-bg-light">
+                                <i class="bi bi-three-dots"></i>
+                            </button>
+                        </div>
+                    `;
                 }
             }
         ],
