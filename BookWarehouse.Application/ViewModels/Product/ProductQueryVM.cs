@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BookWarehouse.Application.ViewModels.Category;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,7 @@ namespace BookWarehouse.Application.ViewModels.Product
     {
         public int PageNumber { get; set; } = 1;
 
-        public int PageSize { get; set; } = 2;
+        public int PageSize { get; set; } = 9;
 
 
         public string? SearchValue { get; set; }  // filter by name or description
@@ -23,6 +24,7 @@ namespace BookWarehouse.Application.ViewModels.Product
 
         public string? SortBy { get; set; }  // sort by property name
         public bool IsDescending { get; set; } = false;
+
 
 
 

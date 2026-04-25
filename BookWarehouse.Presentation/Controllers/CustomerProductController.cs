@@ -18,10 +18,14 @@ namespace BookWarehouse.Presentation.Controllers
             var result = await _productService.GetAllProducts(productQueryVM);
             var categories = await _categoryService.GetAllCategories();
             
-            ViewBag.Categories = categories.IsSuccess ? categories.Value : new List<CategoryReadEditVM>();
-            ViewBag.Query = productQueryVM;
+            var vm = new CustomerProductIndexVM
+            {
+                Query = productQueryVM,
+                Categories = categories.IsSuccess ? categories.Value : new List<CategoryReadEditVM>(),
+                Products = result.Value
+            };
            
-            return View(result.Value);
+            return View(vm);
         }
 
         [HttpGet]

@@ -1,10 +1,7 @@
-@using BookWarehouse.Application.Comman.Pagination
-@using BookWarehouse.Application.ViewModels.Category
-@using BookWarehouse.Application.ViewModels.Product
-@model PagedResult<ProductReadVM>
+@model BookWarehouse.Application.ViewModels.Product.CustomerProductIndexVM
 @{
-    var query = ViewBag.Query as ProductQueryVM ?? new ProductQueryVM();
-    var categories = ViewBag.Categories as IEnumerable<CategoryReadEditVM> ?? new List<CategoryReadEditVM>();
+    var query = Model.Query;
+    var categories = Model.Categories;
     
     var categoryName = query.CategoryId.HasValue 
         ? categories.FirstOrDefault(c => c.Id == query.CategoryId)?.Name ?? "Products" 
@@ -17,7 +14,7 @@
         <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
             <div>
                 <h1 class="fw-bolder text-dark mb-1" style="font-size: 2.2rem; color: #0f172a !important;">@categoryName</h1>
-                <p class="text-muted mb-0" style="font-size: 0.95rem;">Page @Model.PageNumber of @(Model.TotalPages == 0 ? 1 : Model.TotalPages)</p>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">Page @Model.Products.PageNumber of @(Model.Products.TotalPages == 0 ? 1 : Model.Products.TotalPages)</p>
             </div>
             <div class="d-flex gap-2 mt-3 mt-md-0">
                 <!-- Search Input -->
@@ -103,9 +100,9 @@
             <!-- MAIN CONTENT (PRODUCT GRID) -->
             <div class="col-lg-9 col-md-8">
                 <div class="row g-4">
-                    @foreach(var product in Model.Items)
+                    @foreach(var product in Model.Products.Items)
                     {
-                        <div class="col-sm-6 col-md-6 col-xl-3">
+                        <div class="col-12 col-sm-6 col-lg-4">
                             <div class="card h-100 border-0 shadow-sm category-card position-relative" style="border-radius: 16px; overflow: hidden; background-color: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease;">
                                 
                                 <!-- Image Header -->
@@ -139,12 +136,7 @@
                                     <p class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">@product.CategoryName</p>
                                     <h6 class="card-title fw-bolder text-dark mb-2" style="font-size: 0.95rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.2rem;">@product.Title</h6>
                                     
-                                    <!-- Rating Stars -->
-                                    <div class="d-flex align-items-center mb-3 mt-1">
-                                        <i class="bi bi-star-fill text-warning me-1" style="font-size: 0.75rem;"></i>
-                                        <span class="fw-bold text-dark" style="font-size: 0.8rem;">4.5</span>
-                                        <span class="text-muted ms-1" style="font-size: 0.75rem;">(120)</span>
-                                    </div>
+
 
                                     <div class="mt-auto pt-2 d-flex justify-content-between align-items-center border-0">
                                         <div>
@@ -164,7 +156,7 @@
                         </div>
                     }
 
-                    @if(!Model.Items.Any())
+                    @if(!Model.Products.Items.Any())
                     {
                         <div class="col-12 text-center py-5">
                             <i class="bi bi-basket2 text-muted opacity-25" style="font-size: 5rem;"></i>
@@ -175,26 +167,26 @@
                 </div>
 
                 <!-- Pagination -->
-                @if (Model.TotalPages > 1)
+                @if (Model.Products.TotalPages > 1)
                 {
                     <div class="d-flex justify-content-center mt-5">
                         <nav aria-label="Page navigation">
                             <ul class="pagination mb-0 d-flex align-items-center bg-white shadow-sm rounded-3 p-1" style="border: 1px solid #f1f5f9;">
-                                <li class="page-item @(!Model.IsPrevious ? "disabled" : "")">
-                                    <button type="submit" name="PageNumber" value="@(Model.PageNumber - 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Previous" @(!Model.IsPrevious ? "disabled" : "")>
+                                <li class="page-item @(!Model.Products.IsPrevious ? "disabled" : "")">
+                                    <button type="submit" name="PageNumber" value="@(Model.Products.PageNumber - 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Previous" @(!Model.Products.IsPrevious ? "disabled" : "")>
                                         <span aria-hidden="true">&laquo;</span>
                                     </button>
                                 </li>
                                 
-                                @for (int i = 1; i <= Model.TotalPages; i++)
+                                @for (int i = 1; i <= Model.Products.TotalPages; i++)
                                 {
-                                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                                        <button type="submit" name="PageNumber" value="@i" class="page-link border-0 fw-bold px-3 py-2 rounded-2 mx-1 @(Model.PageNumber == i ? "text-white" : "text-secondary")" style="background-color: @(Model.PageNumber == i ? "#0f172a" : "#f8fafc");">@i</button>
+                                    <li class="page-item @(Model.Products.PageNumber == i ? "active" : "")">
+                                        <button type="submit" name="PageNumber" value="@i" class="page-link border-0 fw-bold px-3 py-2 rounded-2 mx-1 @(Model.Products.PageNumber == i ? "text-white" : "text-secondary")" style="background-color: @(Model.Products.PageNumber == i ? "#0f172a" : "#f8fafc");">@i</button>
                                     </li>
                                 }
 
-                                <li class="page-item @(!Model.IsNext ? "disabled" : "")">
-                                    <button type="submit" name="PageNumber" value="@(Model.PageNumber + 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Next" @(!Model.IsNext ? "disabled" : "")>
+                                <li class="page-item @(!Model.Products.IsNext ? "disabled" : "")">
+                                    <button type="submit" name="PageNumber" value="@(Model.Products.PageNumber + 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Next" @(!Model.Products.IsNext ? "disabled" : "")>
                                         <span aria-hidden="true">&raquo;</span>
                                     </button>
                                 </li>

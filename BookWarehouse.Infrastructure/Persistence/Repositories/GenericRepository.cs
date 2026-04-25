@@ -28,8 +28,8 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
         }
 
         public async Task<IQueryable<TEntity>> GetAllAsync(
-            Expression<Func<TEntity, bool>>? filter = null, // Filtering && Searching
-            Expression<Func<TEntity, object>>[]? includes = null, // Eager Loading
+            Expression<Func<TEntity, bool>>? filter = null, 
+            Expression<Func<TEntity, object>>[]? includes = null, 
             string? SortBy = null,
             bool IsDescending = false,
             bool tracked = false)
