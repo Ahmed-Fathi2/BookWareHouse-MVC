@@ -1,8 +1,207 @@
+@model BookWarehouse.Application.ViewModels.Home.HomeIndexVM
 @{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid px-md-5 py-5" style="background-color: #F8FAFC; min-height: 100vh;">
+    
+    <!-- HERO SECTION -->
+    <div class="row align-items-stretch mb-5">
+        <!-- Left Text Area -->
+        <div class="col-lg-6 d-flex flex-column justify-content-center pe-lg-5 mb-4 mb-lg-0">
+            <div>
+                <span class="badge bg-white border text-dark fw-semibold rounded-pill px-3 py-2 shadow-sm mb-4" style="font-size: 0.8rem; border-color: #e2e8f0 !important;">
+                    <i class="bi bi-stars text-primary me-1" style="color: #2563eb !important;"></i> New season — up to 30% off
+                </span>
+                
+                <h1 class="display-4 fw-bolder text-dark mb-3" style="color: #0f172a !important; font-size: 3.5rem; line-height: 1.15; letter-spacing: -1px;">
+                    Modern essentials,<br/>
+                    <span style="color: #2563eb;">delivered.</span>
+                </h1>
+                
+                <p class="text-muted mb-4 fs-5" style="color: #64748b !important; max-width: 90%;">
+                    Discover thoughtfully designed products from independent brands. Premium quality, fair prices, fast shipping.
+                </p>
+                
+                <form method="get" asp-controller="CustomerProduct" asp-action="Index" class="mb-4">
+                    <div class="input-group shadow-sm bg-white p-1" style="max-width: 480px; height: 56px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <span class="input-group-text bg-transparent border-0 text-muted px-3">
+                            <i class="bi bi-search" style="font-size: 1.1rem;"></i>
+                        </span>
+                        <input type="text" name="SearchValue" class="form-control border-0 shadow-none fw-medium bg-transparent" placeholder="Search products, brands, categories" style="font-size: 0.95rem; color: #475569;">
+                        <button type="submit" class="btn text-white px-4" style="background-color: #2563eb; border-radius: 12px; font-weight: 600; font-size: 0.95rem; transition: background-color 0.2s;">
+                            Search
+                        </button>
+                    </div>
+                </form>
+
+                <div class="d-flex gap-3">
+                    <a asp-controller="CustomerProduct" asp-action="Index" class="btn text-white px-4 py-2 shadow-sm d-flex align-items-center" style="background-color: #2563eb; border-radius: 12px; font-weight: 600;">
+                        Shop all <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    <a href="#categories" class="btn bg-white border text-dark px-4 py-2 shadow-sm fw-semibold" style="border-radius: 12px; border-color: #e2e8f0 !important;">
+                        Browse categories
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Images Area -->
+        <div class="col-lg-6">
+            <div class="d-grid h-100" style="grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                <!-- Left big image (Headphones) -->
+                <img src="/photo-1505740420928-5e560c06d30e.jpg" class="w-100 h-100 shadow-sm" style="object-fit: cover; border-radius: 20px; min-height: 400px;" alt="Headphones" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                
+                <!-- Right stacked images -->
+                <div class="d-flex flex-column h-100" style="gap: 1.25rem;">
+                    <img src="/photo-1523275335684-37898b6baf30.jpg" class="w-100 shadow-sm" style="height: calc(50% - 0.625rem); object-fit: cover; border-radius: 20px;" alt="Watch" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                    <img src="/photo-1495474472287-4d71bcdd2085.jpg" class="w-100 shadow-sm" style="height: calc(50% - 0.625rem); object-fit: cover; border-radius: 20px;" alt="Coffee" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CATEGORIES SECTION -->
+    <div id="categories" class="mb-5 pt-4">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h3 class="fw-bolder mb-1" style="color: #0f172a; font-size: 1.8rem; letter-spacing: -0.5px;">Shop by category</h3>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">Explore curated collections.</p>
+            </div>
+            <a asp-controller="CustomerProduct" asp-action="Index" class="text-decoration-none fw-bold" style="color: #2563eb; font-size: 0.95rem;">
+                View all <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        <div class="row g-3">
+            @foreach(var cat in Model.Categories.Take(6))
+            {
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a asp-controller="CustomerProduct" asp-action="Index" asp-route-CategoryId="@cat.Id" class="text-decoration-none d-block h-100">
+                        <div class="card border-0 shadow-sm category-hover h-100 position-relative" style="border-radius: 16px; overflow: hidden; background-color: #eff6ff; transition: all 0.3s ease; aspect-ratio: 1/1;">
+                            
+                            @if(string.IsNullOrWhiteSpace(cat.ImageUrl))
+                            {
+                                <div class="w-100 h-100 d-flex justify-content-center align-items-center" style="background-color: #f1f5f9;">
+                                    <i class="bi bi-image text-muted text-opacity-25" style="font-size: 3rem;"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/@cat.ImageUrl" alt="@cat.Name" class="w-100 h-100 position-absolute" style="object-fit: cover; top: 0; left: 0;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                            }
+                            
+                            <!-- Dark Gradient Overlay -->
+                            <div class="position-absolute w-100" style="bottom: 0; left: 0; height: 60%; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);"></div>
+
+                            <!-- Text Content -->
+                            <div class="position-absolute w-100 p-3" style="bottom: 0; left: 0; text-align: left;">
+                                <h6 class="fw-bold text-white mb-1 text-truncate" style="font-size: 1.05rem;">@cat.Name</h6>
+                                <span class="text-white text-opacity-75 fw-medium" style="font-size: 0.75rem;">@cat.NumOfProducts items</span>
+                            </div>
+
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- FEATURED PRODUCTS SECTION -->
+    <div class="mb-5 pt-2">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <h3 class="fw-bolder mb-1" style="color: #0f172a; font-size: 1.8rem; letter-spacing: -0.5px;">Featured products</h3>
+                <p class="text-muted mb-0" style="font-size: 0.95rem;">Handpicked favorites from our collection.</p>
+            </div>
+            <a asp-controller="CustomerProduct" asp-action="Index" class="text-decoration-none fw-bold" style="color: #2563eb; font-size: 0.95rem;">
+                Shop all <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            @foreach(var product in Model.FeaturedProducts.Take(4))
+            {
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm product-card position-relative" style="border-radius: 16px; overflow: hidden; background-color: #ffffff; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        
+                        <!-- Image Header -->
+                        <div class="position-relative bg-light overflow-hidden" style="height: 220px;">
+                            <!-- Badges -->
+                            <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-1" style="z-index: 2;">
+                                @if(product.ListPrice > 0 && product.ListPrice > product.Price)
+                                {
+                                    <span class="badge px-3 py-1 rounded-pill shadow-sm fw-bold" style="background-color: #2563eb; font-size: 0.65rem; letter-spacing: 0.5px;">SALE</span>
+                                }
+                                else
+                                {
+                                    <span class="badge px-3 py-1 rounded-pill shadow-sm fw-bold" style="background-color: #2563eb; font-size: 0.65rem; letter-spacing: 0.5px;">NEW</span>
+                                }
+                            </div>
+                            
+                            @if(string.IsNullOrWhiteSpace(product.ImageUrl))
+                            {
+                                <div class="w-100 h-100 d-flex justify-content-center align-items-center">
+                                    <i class="bi bi-image text-muted text-opacity-25" style="font-size: 4rem;"></i>
+                                </div>
+                            }
+                            else
+                            {
+                                <img src="~/@product.ImageUrl" alt="@product.Title" class="w-100 h-100 product-img" style="object-fit: cover; display: block; mix-blend-mode: multiply; transition: transform 0.3s ease;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                            }
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body p-4 d-flex flex-column">
+                            <p class="text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px; color: #64748b !important;">@product.CategoryName</p>
+                            <h6 class="card-title fw-bolder text-dark mb-3" style="font-size: 1.05rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.4rem;">@product.Title</h6>
+                            
+                            <!-- Rating Stars (Added back as in image) -->
+                            <div class="d-flex align-items-center mb-3 mt-auto">
+                                <i class="bi bi-star-fill text-warning me-1" style="font-size: 0.75rem; color: #f59e0b !important;"></i>
+                                <span class="fw-bold text-dark" style="font-size: 0.8rem;">4.8</span>
+                                <span class="text-muted ms-1" style="font-size: 0.75rem;">(1248)</span>
+                            </div>
+
+                            <div class="pt-2 d-flex justify-content-between align-items-center border-0 mt-2">
+                                <div>
+                                    <span class="fs-5 fw-bolder text-dark" style="color: #0f172a !important;">$@product.Price</span>
+                                    @if(product.ListPrice > 0 && product.ListPrice > product.Price)
+                                    {
+                                        <span class="text-muted text-decoration-line-through small ms-2 fw-semibold" style="font-size: 0.75rem;">$@product.ListPrice</span>
+                                    }
+                                </div>
+                                <a asp-controller="CustomerProduct" asp-action="Details" asp-route-id="@product.Id" class="btn d-flex align-items-center justify-content-center p-0 shadow-sm add-cart-btn" style="width: 40px; height: 40px; border-radius: 12px; background-color: #2563eb; color: white; transition: all 0.2s;">
+                                    <i class="bi bi-cart3 fs-5"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
+
+<style>
+    .category-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.1) !important;
+        border-color: #bfdbfe !important;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+    }
+
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .add-cart-btn:hover {
+        background-color: #1d4ed8 !important;
+        transform: scale(1.05);
+    }
+</style>

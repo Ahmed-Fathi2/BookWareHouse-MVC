@@ -1,12 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.ViewModels.Category;
+using BookWarehouse.Application.ViewModels.Home;
+using BookWarehouse.Application.ViewModels.Product;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BookWarehouse.Presentation.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(IProductService productService, ICategoryService categoryService) : Controller
     {
-        public IActionResult Index()
+        private readonly IProductService _productService = productService;
+        private readonly ICategoryService _categoryService = categoryService;
+
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var categories = await _categoryService.GetAllCategories();
+            var products = await _productService.GetAllProducts(new ProductQueryVM { PageSize = 8, PageNumber = 1 });
+
+            var vm = new HomeIndexVM
+            {
+                Categories = categories.IsSuccess ? categories.Value : new List<CategoryReadEditVM>(),
+                FeaturedProducts = products.IsSuccess ? products.Value.Items : new List<ProductReadVM>()
+            };
+
+            return View(vm);
         }
     }
 }
