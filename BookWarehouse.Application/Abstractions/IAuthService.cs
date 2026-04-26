@@ -2,14 +2,19 @@
 using BookWarehouse.Application.ViewModels.Auth;
 using Ecom.BLL.ViewModel.Authentication;
 
+
 namespace BookWarehouse.Application.Abstractions
 {
     public interface IAuthService
     {
-
         Task<Result> RegisterAsync(RegisterVM registerVM);
         Task<Result> LoginAsync(LoginVM loginVM);
 
+        Task<Result> ExternalLoginCallbackAsync(string? remoteError = null);
+        Task<Result> ForgotPasswordAsync(ForgotPasswordVM forgotPasswordVM, string origin);
+
+
+        Task<Result> ResetPasswordAsync(ResetPasswordVM resetPasswordVM);
         Task<Result> LogoutAsync();
     }
 }

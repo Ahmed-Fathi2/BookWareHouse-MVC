@@ -63,8 +63,8 @@
 
     .input-with-icon .form-control:focus {
         background-color: #ffffff;
-        border-color: #ff7e5f;
-        box-shadow: 0 0 0 4px rgba(243, 94, 56, 0.1);
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
     }
 
     .input-with-icon .form-control::placeholder {
@@ -80,13 +80,12 @@
     }
 
     .btn-checkout {
-        background: linear-gradient(135deg, #f35e38, #ff7e5f);
-        /* background-color: #0d2d50; */
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
         color: white;
         border-radius: 30px;
         transition: all 0.3s ease;
         font-weight: 600;
-        box-shadow: 0 4px 15px rgba(243, 94, 56, 0.4);
+        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         border: none;
         height: 55px;
         display: flex;
@@ -97,7 +96,7 @@
 
     .btn-checkout:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(243, 94, 56, 0.6);
+        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
         color: white;
     }
 
@@ -131,7 +130,7 @@
         <div class="col-lg-7 mb-5 mb-lg-0">
             <div class="checkout-card">
                 <h3 class="section-title">
-                    <i class="bi bi-pencil-square text-primary" style="color: #f35e38 !important;"></i> 
+                    <i class="bi bi-pencil-square text-primary" style="color: #2563eb !important;"></i> 
                     Shipping details
                 </h3>
 
@@ -182,7 +181,7 @@
         <div class="col-lg-5">
             <div class="summary-card sticky-top" style="top: 2rem;">
                 <h4 class="section-title" style="margin-bottom: 20px;">
-                    <i class="bi bi-receipt text-primary" style="color: #f35e38 !important;"></i> 
+                    <i class="bi bi-receipt text-primary" style="color: #2563eb !important;"></i> 
                     Order summary
                 </h4>
                 
@@ -195,14 +194,14 @@
                 
                 <div class="d-flex justify-content-between mb-3">
                     <span class="text-muted fs-6">Shipping</span>
-                    <span class="fw-bold fs-6" style="color: #f35e38;">Free</span>
+                    <span class="fw-bold fs-6" style="color: #2563eb;">Free</span>
                 </div>
 
                 <hr class="dashed">
 
                 <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                     <h4 class="fw-bold text-dark mb-0">Total</h4>
-                    <h3 class="fw-bold mb-0" style="color: #f35e38;">@Model.OrderTotal.ToString("c")</h3>
+                    <h3 class="fw-bold mb-0" style="color: #2563eb;">@Model.OrderTotal.ToString("c")</h3>
                 </div>
 
                 <button type="submit" form="checkoutForm" class="btn btn-checkout btn-lg w-100 mt-2">

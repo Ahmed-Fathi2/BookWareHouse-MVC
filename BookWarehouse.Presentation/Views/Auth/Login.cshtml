@@ -4,37 +4,43 @@
     ViewData["Title"] = "Sign In";
 }
 
-<div class="d-flex justify-content-center align-items-center w-100 py-4" style="min-height: calc(100vh - 150px);">
+<div class="d-flex justify-content-center align-items-center w-100 py-2" style="min-height: calc(100vh - 150px);">
     <div class="w-100 px-3" style="max-width: 600px;">
-        <div class="card border-0 p-4 p-md-5" style="border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); background-color: #ffffff;">
-            <div class="text-center mb-4 pb-2">
-                <i class="bi bi-person-circle display-4 mb-3" style="color: #2563eb;"></i>
-                <h2 class="fw-bolder mb-2" style="color: #0f172a; letter-spacing: -0.5px; font-size: 2rem;">Welcome Back</h2>
-                <p class="mb-0" style="color: #64748b; font-size: 1rem;">Please sign in to your account</p>
+        <div class="card border-0 p-3 p-md-4" style="border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); background-color: #ffffff;">
+            <div class="text-center mb-3">
+                <i class="bi bi-person-circle display-5 mb-2" style="color: #2563eb;"></i>
+                <h2 class="fw-bolder mb-1" style="color: #0f172a; letter-spacing: -0.5px; font-size: 1.75rem;">Welcome Back</h2>
+                <p class="mb-0" style="color: #64748b; font-size: 0.95rem;">Please sign in to your account</p>
             </div>
 
             <form asp-action="Login">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+                <div asp-validation-summary="ModelOnly" class="validation-summary-box mb-3"></div>
 
-                <div class="mb-4 form-group">
-                    <label asp-for="Email" class="form-label fw-bold" style="color: #334155; font-size: 0.95rem;">Email Address</label>
-                    <div class="input-group shadow-sm" style="border-radius: 12px;">
-                        <span class="input-group-text bg-light border-end-0 px-3" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;"><i class="bi bi-envelope text-muted"></i></span>
-                        <input asp-for="Email" class="form-control form-control-lg border-start-0 ps-0 bg-light" placeholder="name@example.com" autofocus autocomplete="email" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; font-size: 1rem;" />
+                <div class="mb-3 form-group">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label asp-for="Email" class="form-label fw-bold mb-0" style="color: #0f172a; font-size: 0.95rem;">Email address</label>
+                    </div>
+                    <div class="position-relative">
+                        <i class="bi bi-envelope position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #64748b;"></i>
+                        <input asp-for="Email" class="form-control bg-white" placeholder="you@example.com" autofocus autocomplete="email" style="border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; padding-left: 2.8rem; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
 
-                <div class="mb-4 form-group">
-                    <label asp-for="Password" class="form-label fw-bold" style="color: #334155; font-size: 0.95rem;">Password</label>
-                    <div class="input-group shadow-sm" style="border-radius: 12px;">
-                        <span class="input-group-text bg-light border-end-0 px-3" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;"><i class="bi bi-lock text-muted"></i></span>
-                        <input asp-for="Password" type="password" class="form-control form-control-lg border-start-0 ps-0 bg-light" placeholder="••••••••" autocomplete="current-password" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; font-size: 1rem;" />
+                <div class="mb-3 form-group">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label asp-for="Password" class="form-label fw-bold mb-0" style="color: #0f172a; font-size: 0.95rem;">Password</label>
+                        <a asp-action="ForgotPassword" asp-controller="Auth" class="text-decoration-none small" style="color: #2563eb; font-weight: 500;">Forgot password?</a>
+                    </div>
+                    <div class="position-relative">
+                        <i class="bi bi-lock position-absolute" style="left: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; color: #64748b;"></i>
+                        <input asp-for="Password" type="password" class="form-control bg-white" placeholder="••••••••" autocomplete="current-password" style="border-radius: 10px; border: 1px solid #e2e8f0; font-size: 0.95rem; padding-left: 2.8rem; padding-right: 2.8rem; padding-top: 0.5rem; padding-bottom: 0.5rem;" />
+                        <i class="bi bi-eye position-absolute" style="right: 1rem; top: 50%; transform: translateY(-50%); font-size: 1.1rem; cursor: pointer; color: #64748b;" onclick="const input = document.getElementById('Password'); if(input.type === 'password') { input.type = 'text'; this.classList.replace('bi-eye', 'bi-eye-slash'); } else { input.type = 'password'; this.classList.replace('bi-eye-slash', 'bi-eye'); }"></i>
                     </div>
                     <span asp-validation-for="Password" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
                     <div class="form-check">
                         <input class="form-check-input shadow-sm" asp-for="RememberMe" style="cursor: pointer; border-color: #cbd5e1;" />
                         <label class="form-check-label fw-medium" asp-for="RememberMe" style="color: #64748b; font-size: 0.95rem; cursor: pointer;">
@@ -44,20 +50,20 @@
                     @* <a href="#" class="text-decoration-none small fw-bold" style="color: #2563eb;">Forgot Password?</a> *@
                 </div>
 
-                <div class="d-grid mb-4">
-                    <button type="submit" class="btn text-white btn-lg fw-bold shadow-sm d-flex justify-content-center align-items-center gap-2 login-btn" style="background-color: #2563eb; border-radius: 12px; font-size: 1.05rem; padding: 0.8rem; transition: all 0.2s;">
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn text-white btn-lg fw-bold shadow-sm d-flex justify-content-center align-items-center gap-2 login-btn" style="background-color: #2563eb; border-radius: 12px; font-size: 1rem; padding: 0.6rem; transition: all 0.2s;">
                         <i class="bi bi-box-arrow-in-right"></i> Sign In
                     </button>
                 </div>
             </form>
 
-            <div class="mt-2 border-top pt-4" style="border-color: #f1f5f9 !important;">
-                <p class="mb-3 text-center fw-medium" style="color: #94a3b8; font-size: 0.95rem;">Or sign in with</p>
+            <div class="mt-2 border-top pt-3" style="border-color: #f1f5f9 !important;">
+                <p class="mb-3 text-center fw-medium" style="color: #94a3b8; font-size: 0.9rem;">Or sign in with</p>
                 <div class="d-flex flex-column gap-3">
                     <form asp-action="ExternalLogin" asp-controller="Auth" method="post" class="w-100">
                         <input type="hidden" name="provider" value="Google" />
-                        <button type="submit" class="btn w-100 d-flex align-items-center justify-content-center bg-white shadow-sm external-btn" style="border: 1px solid #e2e8f0; color: #334155; font-weight: 600; padding: 0.8rem; border-radius: 12px; font-size: 1rem; transition: all 0.2s ease;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" class="me-2">
+                        <button type="submit" class="btn w-100 d-flex align-items-center justify-content-center bg-white shadow-sm external-btn" style="border: 1px solid #e2e8f0; color: #334155; font-weight: 600; padding: 0.6rem; border-radius: 12px; font-size: 0.95rem; transition: all 0.2s ease;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" class="me-2">
                                 <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.153-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"/>
                                 <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"/>
                                 <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"/>
@@ -67,7 +73,7 @@
                         </button>
                     </form>
 
-                    <form asp-action="ExternalLogin" asp-controller="Auth" method="post" class="w-100">
+                    @* <form asp-action="ExternalLogin" asp-controller="Auth" method="post" class="w-100">
                         <input type="hidden" name="provider" value="Facebook" />
                         <button type="submit" class="btn w-100 d-flex align-items-center justify-content-center bg-white shadow-sm external-btn" style="border: 1px solid #e2e8f0; color: #334155; font-weight: 600; padding: 0.8rem; border-radius: 12px; font-size: 1rem; transition: all 0.2s ease;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="me-2">
@@ -76,12 +82,12 @@
                             </svg>
                             Sign in with Facebook
                         </button>
-                    </form>
+                    </form> *@
                 </div>
             </div>
 
-            <div class="text-center mt-4 pt-4 border-top" style="border-color: #f1f5f9 !important;">
-                <p class="mb-0 fw-medium" style="color: #64748b; font-size: 1rem;">
+            <div class="text-center mt-3 pt-3 border-top" style="border-color: #f1f5f9 !important;">
+                <p class="mb-0 fw-medium" style="color: #64748b; font-size: 0.95rem;">
                     Don't have an account? <a asp-action="Register" class="text-decoration-none fw-bold" style="color: #2563eb;">Create one</a>
                 </p>
             </div>
@@ -92,6 +98,7 @@
 <style>
     body {
         background-color: #F8FAFC !important;
+        overflow: hidden !important;
     }
     .external-btn:hover {
         background-color: #f8fafc !important;
@@ -106,15 +113,26 @@
     }
     .form-control:focus {
         border-color: #2563eb !important;
-        box-shadow: none !important;
-    }
-    .input-group:focus-within {
-        border-color: #2563eb !important;
         box-shadow: 0 0 0 0.25rem rgba(37,99,235,0.1) !important;
     }
-    .form-control:focus + .input-group-text,
-    .form-control:focus ~ .input-group-text {
-        border-color: #2563eb !important;
+    .validation-summary-box {
+        background-color: #fff1f2;
+        border: 1px solid #ffe4e6;
+        color: #e11d48;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    .validation-summary-box ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .validation-summary-errors ul li::before {
+        content: "\F333";
+        font-family: "bootstrap-icons";
+        margin-right: 8px;
     }
 </style>
 

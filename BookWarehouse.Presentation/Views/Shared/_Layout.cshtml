@@ -21,17 +21,19 @@
 </head>
 <body>
     @{
-        int cartCount = 0;
-        if (User.Identity!.IsAuthenticated && User.IsInRole(DefaultRole.Customer))
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId != null)
+            int cartCount = 0;
+            if (User.Identity!.IsAuthenticated && User.IsInRole(DefaultRole.Customer))
             {
-                var cartResult = await CartService.GetAllUserCartProducts(userId);
-                if (cartResult.IsSuccess)
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId != null)
                 {
-                    cartCount = cartResult.Value.Sum(c => c.Count);
-                }
+                    var cartResult = await CartService.GetAllUserCartProducts(userId);
+                    if (cartResult.IsSuccess)
+                    {
+                        // cartCount = cartResult.Value.Sum(c => c.Count);
+
+                        cartCount = cartResult.Value.Count();
+                    }
             }
         }
     }

@@ -5,6 +5,7 @@ using BookWarehouse.Domain.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using BookWarehouse.Infrastructure.Persistence.Repositories;
 using BookWarehouse.Infrastructure.Persistence.Seeders;
+using BookWarehouse.Infrastructure.Services;
 using BookWarehouse.Infrastructure.Services.Auth;
 using BookWarehouse.Infrastructure.Services.File;
 using BookWarehouse.Infrastructure.Services.Payment;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 
 namespace BookWarehouse.Infrastructure.ServicesExtention
@@ -36,12 +36,15 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IExternalAuthService, ExternalAuthService>();
-            //services.AddScoped<IPaymentService, StripePaymentService>();
-         
+            services.AddScoped<IEmailService, EmailService>();
+            //services.AddScoped<IExternalAuthService, ExternalAuthService>();
+
+
+
             services.AddScoped<IPaymentService, KashierPaymentService>();
             services.AddHttpClient<IPaymentService, KashierPaymentService>();
 
+            //services.AddScoped<IPaymentService, StripePaymentService>();
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
@@ -65,7 +68,8 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
-                    .AddSignInManager();
+                    .AddSignInManager()
+                    .AddDefaultTokenProviders();
 
             services.AddAuthentication()
                 .AddGoogle(options =>

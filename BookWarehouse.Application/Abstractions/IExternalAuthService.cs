@@ -1,8 +1,7 @@
 using BookWarehouse.Application.Comman.Results;
 using Microsoft.AspNetCore.Authentication;
-using System.Threading.Tasks;
 
-namespace BookWarehouse.Infrastructure.Services.Auth
+namespace BookWarehouse.Application.Abstractions
 {
     public interface IExternalAuthService
     {
