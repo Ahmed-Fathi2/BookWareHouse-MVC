@@ -67,3 +67,5 @@ namespace BookWarehouse.Infrastructure.Services.Auth
         }
     }
 }
+//signin - google
+//https://localhost:7155/signin-google

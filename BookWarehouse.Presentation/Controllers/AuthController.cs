@@ -3,12 +3,19 @@ using BookWarehouse.Application.ViewModels.Auth;
 using Ecom.BLL.ViewModel.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using BookWarehouse.Domain.Entities;
+using BookWarehouse.Application.Comman.Constants;
+using BookWarehouse.Infrastructure.Services.Auth;
 
 namespace BookWarehouse.Presentation.Controllers
 {
-    public class AuthController(IAuthService authService) : Controller
+    public class AuthController(IAuthService authService, IExternalAuthService externalAuthService) : Controller
     {
         private readonly IAuthService _authService = authService;
+        private readonly IExternalAuthService _externalAuthService = externalAuthService;
 
         [HttpGet]
         public IActionResult Register()
@@ -33,6 +40,7 @@ namespace BookWarehouse.Presentation.Controllers
 
             return RedirectToAction("Login");
         }
+        
         [HttpGet]
         public IActionResult Login()
         {
@@ -76,6 +84,32 @@ namespace BookWarehouse.Presentation.Controllers
         public async Task<IActionResult> AccessDenied()
         {
             return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
+        {
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Auth", new { returnUrl });
+            var properties = _externalAuthService.ConfigureExternalAuthenticationProperties(provider, redirectUrl!);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            
+            var result = await _externalAuthService.ExternalLoginCallbackAsync(remoteError);
+
+            if (result.IsSuccess)
+            {
+                return RedirectToAction(nameof(LoginRedirect));
+            }
+            
+            ModelState.AddModelError(string.Empty, result.Error.Description);
+            return RedirectToAction(nameof(Login));
         }
     }
 }

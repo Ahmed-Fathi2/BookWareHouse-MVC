@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
 using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
@@ -36,6 +36,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IExternalAuthService, ExternalAuthService>();
             //services.AddScoped<IPaymentService, StripePaymentService>();
          
             services.AddScoped<IPaymentService, KashierPaymentService>();
@@ -65,6 +66,14 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddSignInManager();
+
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    IConfigurationSection googleAuthNSection = configuration.GetSection("Authentication:Google");
+                    options.ClientId = googleAuthNSection["ClientId"] ?? throw new InvalidOperationException("Google ClientId not found.");
+                    options.ClientSecret = googleAuthNSection["ClientSecret"] ?? throw new InvalidOperationException("Google ClientSecret not found.");
+                });
 
 
             services.Configure<IdentityOptions>(options =>

@@ -4,62 +4,119 @@
     ViewData["Title"] = "Sign In";
 }
 
-<div class="row justify-content-center align-items-center mb-5 mt-5">
-    <div class="col-md-7 col-lg-6 col-xl-5">
-        <div class="card shadow-lg p-4 p-md-5">
-            <div class="text-center mb-4">
-                <i class="bi bi-person-circle display-3 text-primary mb-3"></i>
-                <h2 class="fw-bolder text-primary">Welcome Back</h2>
-                <p class="text-secondary">Please sign in to your account</p>
+<div class="d-flex justify-content-center align-items-center w-100 py-4" style="min-height: calc(100vh - 150px);">
+    <div class="w-100 px-3" style="max-width: 600px;">
+        <div class="card border-0 p-4 p-md-5" style="border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); background-color: #ffffff;">
+            <div class="text-center mb-4 pb-2">
+                <i class="bi bi-person-circle display-4 mb-3" style="color: #2563eb;"></i>
+                <h2 class="fw-bolder mb-2" style="color: #0f172a; letter-spacing: -0.5px; font-size: 2rem;">Welcome Back</h2>
+                <p class="mb-0" style="color: #64748b; font-size: 1rem;">Please sign in to your account</p>
             </div>
 
             <form asp-action="Login">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded" role="alert"></div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                 <div class="mb-4 form-group">
-                    <label asp-for="Email" class="form-label">Email Address</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 px-3"><i class="bi bi-envelope text-muted"></i></span>
-                        <input asp-for="Email" class="form-control form-control-lg border-start-0 ps-0" placeholder="name@example.com" autofocus autocomplete="email" />
+                    <label asp-for="Email" class="form-label fw-bold" style="color: #334155; font-size: 0.95rem;">Email Address</label>
+                    <div class="input-group shadow-sm" style="border-radius: 12px;">
+                        <span class="input-group-text bg-light border-end-0 px-3" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;"><i class="bi bi-envelope text-muted"></i></span>
+                        <input asp-for="Email" class="form-control form-control-lg border-start-0 ps-0 bg-light" placeholder="name@example.com" autofocus autocomplete="email" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; font-size: 1rem;" />
                     </div>
                     <span asp-validation-for="Email" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
 
                 <div class="mb-4 form-group">
-                    <label asp-for="Password" class="form-label">Password</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 px-3"><i class="bi bi-lock text-muted"></i></span>
-                        <input asp-for="Password" type="password" class="form-control form-control-lg border-start-0 ps-0" placeholder="••••••••" autocomplete="current-password" />
+                    <label asp-for="Password" class="form-label fw-bold" style="color: #334155; font-size: 0.95rem;">Password</label>
+                    <div class="input-group shadow-sm" style="border-radius: 12px;">
+                        <span class="input-group-text bg-light border-end-0 px-3" style="border-radius: 12px 0 0 12px; border-color: #e2e8f0;"><i class="bi bi-lock text-muted"></i></span>
+                        <input asp-for="Password" type="password" class="form-control form-control-lg border-start-0 ps-0 bg-light" placeholder="••••••••" autocomplete="current-password" style="border-radius: 0 12px 12px 0; border-color: #e2e8f0; font-size: 1rem;" />
                     </div>
                     <span asp-validation-for="Password" class="text-danger small mt-1 d-block fw-semibold"></span>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4 pb-2">
                     <div class="form-check">
-                        <input class="form-check-input" asp-for="RememberMe" />
-                        <label class="form-check-label text-secondary fw-medium" asp-for="RememberMe">
+                        <input class="form-check-input shadow-sm" asp-for="RememberMe" style="cursor: pointer; border-color: #cbd5e1;" />
+                        <label class="form-check-label fw-medium" asp-for="RememberMe" style="color: #64748b; font-size: 0.95rem; cursor: pointer;">
                             @Html.DisplayNameFor(model => model.RememberMe)
                         </label>
                     </div>
-                    @* Placeholder for a future forgot password feature *@
-                    @* <a href="#" class="text-decoration-none small fw-semibold text-primary">Forgot Password?</a> *@
+                    @* <a href="#" class="text-decoration-none small fw-bold" style="color: #2563eb;">Forgot Password?</a> *@
                 </div>
 
                 <div class="d-grid mb-4">
-                    <button type="submit" class="btn btn-primary btn-lg fw-bold shadow-sm">
-                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                    <button type="submit" class="btn text-white btn-lg fw-bold shadow-sm d-flex justify-content-center align-items-center gap-2 login-btn" style="background-color: #2563eb; border-radius: 12px; font-size: 1.05rem; padding: 0.8rem; transition: all 0.2s;">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In
                     </button>
                 </div>
             </form>
 
-            <div class="text-center mt-2 border-top pt-4">
-                <p class="text-secondary mb-0">
-                    Don't have an account? <a asp-action="Register" class="text-decoration-none fw-bold text-primary">Create one</a>
+            <div class="mt-2 border-top pt-4" style="border-color: #f1f5f9 !important;">
+                <p class="mb-3 text-center fw-medium" style="color: #94a3b8; font-size: 0.95rem;">Or sign in with</p>
+                <div class="d-flex flex-column gap-3">
+                    <form asp-action="ExternalLogin" asp-controller="Auth" method="post" class="w-100">
+                        <input type="hidden" name="provider" value="Google" />
+                        <button type="submit" class="btn w-100 d-flex align-items-center justify-content-center bg-white shadow-sm external-btn" style="border: 1px solid #e2e8f0; color: #334155; font-weight: 600; padding: 0.8rem; border-radius: 12px; font-size: 1rem; transition: all 0.2s ease;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" preserveAspectRatio="xMidYMid" viewBox="0 0 256 262" class="me-2">
+                                <path fill="#4285F4" d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.153-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"/>
+                                <path fill="#34A853" d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"/>
+                                <path fill="#FBBC05" d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"/>
+                                <path fill="#EA4335" d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"/>
+                            </svg>
+                            Sign in with Google
+                        </button>
+                    </form>
+
+                    <form asp-action="ExternalLogin" asp-controller="Auth" method="post" class="w-100">
+                        <input type="hidden" name="provider" value="Facebook" />
+                        <button type="submit" class="btn w-100 d-flex align-items-center justify-content-center bg-white shadow-sm external-btn" style="border: 1px solid #e2e8f0; color: #334155; font-weight: 600; padding: 0.8rem; border-radius: 12px; font-size: 1rem; transition: all 0.2s ease;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" class="me-2">
+                                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                <path fill="#fff" d="M16.671 15.542l.532-3.469h-3.328V9.823c0-.949.465-1.874 1.956-1.874h1.514V5.004s-1.375-.235-2.686-.235c-2.74 0-4.533 1.662-4.533 4.669v2.635H7.078v3.469h3.047v8.385a12.09 12.09 0 003.75 0v-8.385h2.796z"/>
+                            </svg>
+                            Sign in with Facebook
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="text-center mt-4 pt-4 border-top" style="border-color: #f1f5f9 !important;">
+                <p class="mb-0 fw-medium" style="color: #64748b; font-size: 1rem;">
+                    Don't have an account? <a asp-action="Register" class="text-decoration-none fw-bold" style="color: #2563eb;">Create one</a>
                 </p>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    body {
+        background-color: #F8FAFC !important;
+    }
+    .external-btn:hover {
+        background-color: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+    }
+    .login-btn:hover {
+        background-color: #1d4ed8 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(37,99,235,0.2) !important;
+    }
+    .form-control:focus {
+        border-color: #2563eb !important;
+        box-shadow: none !important;
+    }
+    .input-group:focus-within {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 0.25rem rgba(37,99,235,0.1) !important;
+    }
+    .form-control:focus + .input-group-text,
+    .form-control:focus ~ .input-group-text {
+        border-color: #2563eb !important;
+    }
+</style>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
