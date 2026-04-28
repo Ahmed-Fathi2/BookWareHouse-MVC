@@ -12,6 +12,8 @@ namespace BookWarehouse.Domain.Repositories
         public IOrderRepository OrderRepository { get; }
         public IOrderDetailsRepository OrderDetailsRepository { get; }
 
+        public IUserRepository UserRepository { get; }
+
         Task BeginTransactionAsync();
         Task CommitAsync();
         Task RollbackAsync();

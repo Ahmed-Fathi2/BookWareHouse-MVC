@@ -68,7 +68,7 @@ function initDataTable(status) {
             },
             { 
                 data: 'phoneNumber', 
-                className: "align-middle",
+                className: "align-middle text-nowrap",
                 render: function(data) { return `<span class="text-muted fw-medium" style="font-size: 0.95rem;">${data}</span>`; }
             },
             {
@@ -152,9 +152,6 @@ function initDataTable(status) {
                             <a href="/Order/Details/${data}" class="btn btn-sm btn-white border shadow-sm fw-bold rounded-3 px-3 d-flex align-items-center gap-1 text-dark hover-bg-light" style="font-size: 0.85rem;">
                                 <i class="bi bi-eye"></i> View
                             </a>
-                            <button class="btn btn-sm btn-white border shadow-sm rounded-3 px-2 text-muted hover-bg-light">
-                                <i class="bi bi-three-dots"></i>
-                            </button>
                         </div>
                     `;
                 }

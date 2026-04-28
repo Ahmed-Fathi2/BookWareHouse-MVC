@@ -188,8 +188,8 @@ namespace BookWarehouse.Infrastructure.Services.Auth
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
-            //var resetLink = $"{origin}/Auth/ResetPassword?email={user.Email}&token={token}";
-            var resetLink = " https://www.youtube.com/";
+            var resetLink = $"{origin}/Auth/ResetPassword?email={user.Email}&token={token}";
+            //var resetLink = " https://www.youtube.com/";
             var body = $@"
                             <html>
                             <head>

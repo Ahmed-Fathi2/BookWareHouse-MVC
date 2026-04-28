@@ -70,7 +70,7 @@ namespace BookWarehouse.Presentation.Controllers
         {
             if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
             {
-                return RedirectToAction("Index", "Order");
+                return RedirectToAction("Index", "DashBoard");
             }
             return RedirectToAction("Index", "Home");
         }

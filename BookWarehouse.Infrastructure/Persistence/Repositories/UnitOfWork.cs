@@ -19,6 +19,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
 
         public IOrderDetailsRepository OrderDetailsRepository { get; }
 
+        public IUserRepository UserRepository { get; }
 
         public UnitOfWork(
             ApplicationDbContext dbContext,
@@ -26,7 +27,8 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
             IProductRepository productRepository,
             ICartRepository cartRepository,
             IOrderRepository orderRepository,
-            IOrderDetailsRepository orderDetailsRepository
+            IOrderDetailsRepository orderDetailsRepository,
+                IUserRepository userRepository
             )
         {
             this.dbContext = dbContext;
@@ -35,6 +37,7 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
             CartRepository = cartRepository;
             OrderRepository = orderRepository;
             OrderDetailsRepository = orderDetailsRepository;
+            UserRepository = userRepository;
         }
 
         public async Task SaveChangesAsync()

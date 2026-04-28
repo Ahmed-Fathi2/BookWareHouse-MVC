@@ -19,7 +19,7 @@ namespace BookWarehouse.Application.ServicesExtension.cs
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<IOrderService, OrderService>();
-
+            services.AddScoped<IDashboardService, DashboardService>();  
             // Mapster
             services.AddMapster();
             var config = TypeAdapterConfig.GlobalSettings;

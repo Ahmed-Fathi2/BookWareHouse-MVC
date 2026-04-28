@@ -13,6 +13,11 @@ namespace BookWarehouse.Presentation.Controllers
 
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+            {
+                return RedirectToAction("Index", "DashBoard");
+            }
+
             var categories = await _categoryService.GetAllCategories();
             var products = await _productService.GetAllProducts(new ProductQueryVM { PageSize = 8, PageNumber = 1 });
 

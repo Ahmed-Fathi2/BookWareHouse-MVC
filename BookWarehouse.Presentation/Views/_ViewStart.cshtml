@@ -1,3 +1,14 @@
-﻿@{
-    Layout = "_Layout";
+@using BookWarehouse.Application.Comman.Constants
+@{
+    var controller = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var adminControllers = new[] { "DashBoard", "AdminProduct", "Category", "Order" };
+
+    if (User.IsInRole(DefaultRole.Admin) && adminControllers.Contains(controller))
+    {
+        Layout = "_AdminLayout";
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
 }
