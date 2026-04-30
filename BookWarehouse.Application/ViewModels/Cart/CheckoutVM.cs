@@ -18,6 +18,8 @@ namespace BookWarehouse.Application.ViewModels.Cart
 
         [Required(ErrorMessage = "Phone number is required")]
         //[RegularExpression(@"^01[0-2,5]{1}[0-9]{8}$", ErrorMessage = "Enter a valid Egyptian phone number")]
+
+        [Display(Name ="Phone")]
         public string PhoneNumber { get; set; }
 
 

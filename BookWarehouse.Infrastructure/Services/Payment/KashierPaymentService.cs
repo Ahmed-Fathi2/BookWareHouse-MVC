@@ -3,11 +3,10 @@ using BookWarehouse.Application.Comman.Results;
 using BookWarehouse.Application.Comman.Settings;
 using BookWarehouse.Application.ViewModels.Cart;
 using BookWarehouse.Application.ViewModels.Payment;
-using BookWarehouse.Domain.Common.Enums;
-using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -38,16 +37,18 @@ namespace BookWarehouse.Infrastructure.Services.Payment
                 return Result.Failure<string>(
                     new Error("Order.NotFound", $"Order with id {orderId} not found"));
 
+            var merchantOrderId = $"{order.Id}-{Guid.NewGuid().ToString("N")}";
+
             var requestBody = new
             {
                 expireAt = DateTime.UtcNow.AddMinutes(30).ToString("o"),
                 maxFailureAttempts = 3,
                 paymentType = "credit",
 
-                amount = order.OrderTotal.ToString("F2"), //  "100.00"
+                amount = order.OrderTotal.ToString("F2", CultureInfo.InvariantCulture), //  "100.00"
                 currency = "EGP",
 
-                order = order.Id.ToString(),
+                order = merchantOrderId,
                 merchantId = _options.MerchantId,
 
                 //callback URL for redirection after payment  
@@ -120,32 +121,33 @@ namespace BookWarehouse.Infrastructure.Services.Payment
                     new Error("Kashier.InvalidResponse", "Invalid session data"));
 
             order.SessionId = sessionId;
+            order.MerchantOrderId = merchantOrderId;
             await _unitOfWork.SaveChangesAsync();
 
 
             return Result.Success(sessionUrl!);
         }
 
-    
+
         public async Task<Result<WebHookVM>> HandleWebhookAsync(string body, string signature)
         {
             if (!ValidateSignature(body, signature, _options.ApiKey))
             {
                 _logger.LogWarning("Invalid webhook signature. Received signature: {ReceivedSignature}", signature);
-                return Result.Failure<WebHookVM>(new Error("Kashier.InvalidSignature", "Invalid webhook signature")); 
+                return Result.Failure<WebHookVM>(new Error("Kashier.InvalidSignature", "Invalid webhook signature"));
             }
 
 
             var json = JsonDocument.Parse(body);
             var data = json.RootElement.GetProperty("data");
 
-            var orderId = data.GetProperty("merchantOrderId").GetString();
+            var merchantOrderId = data.GetProperty("merchantOrderId").GetString();
             var status = data.GetProperty("status").GetString();
             var transactionId = data.GetProperty("transactionId").GetString(); // this id present payment process that happen
 
             var webHookVM = new WebHookVM
             {
-                OrderId = int.Parse(orderId!),
+                MerchantOrderId = merchantOrderId!,
                 Status = status!,
                 TransactionId = transactionId!
             };
@@ -155,78 +157,78 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
         }
 
-        public async Task<Result> RefundPaymentAsync(int orderId,string transactionId ,decimal amount)
+        public async Task<Result> RefundPaymentAsync(string merchantOrderId, string transactionId, decimal amount)
         {
             //var  order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
             //if(order is null)
             //    return Result.Failure(new Error("Order.NotFound", $"Order with id {orderId} not found"));
 
 
-            var url = $"https://test-fep.kashier.io/v3/orders/{orderId}";
+            var url = $"https://test-fep.kashier.io/v3/orders/{merchantOrderId}";
 
             var body = new
+            {
+                apiOperation = "REFUND",
+                reason = "Customer request",
+                transaction = new
                 {
-                    apiOperation = "REFUND",
-                    reason = "Customer request",
-                    transaction = new
-                    {
-                        //amount = amount.ToString("F2"), // "100.00"
-     
-                        amount // "100.00"
+                    //amount = amount.ToString("F2"), // "100.00"
 
-                    }
-                };
+                    amount // "100.00"
 
-                var json = JsonSerializer.Serialize(body);
-
-                var request = new HttpRequestMessage(HttpMethod.Put, url);
-
-                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                request.Headers.Add("Authorization",_options.Secret);
-                request.Headers.Add("accept", "application/json");
-
-                var response = await httpClient.SendAsync(request);
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                using var doc = JsonDocument.Parse(responseBody);
-                var root = doc.RootElement;
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    // Graceful handling if the order was already refunded
-                    var cause = root.TryGetProperty("error", out var errorEl) && errorEl.TryGetProperty("cause", out var causeEl) 
-                        ? causeEl.GetString() 
-                        : null;
-
-                    if (cause == "fully refunded order")
-                    {
-                        return Result.Success();
-                    }
-
-                    return Result.Failure(
-                        new Error("Kashier.ApiError", responseBody));
                 }
-                  
+            };
 
+            var json = JsonSerializer.Serialize(body);
 
-                var status = root.GetProperty("status").GetString();
+            var request = new HttpRequestMessage(HttpMethod.Put, url);
 
-                if (status != "SUCCESS")
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            request.Headers.Add("Authorization", _options.Secret);
+            request.Headers.Add("accept", "application/json");
+
+            var response = await httpClient.SendAsync(request);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(responseBody);
+            var root = doc.RootElement;
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Graceful handling if the order was already refunded
+                var cause = root.TryGetProperty("error", out var errorEl) && errorEl.TryGetProperty("cause", out var causeEl)
+                    ? causeEl.GetString()
+                    : null;
+
+                if (cause == "fully refunded order")
                 {
-                    var message = root.GetProperty("messages")
-                                      .GetProperty("en")
-                                      .GetString();
-
-                    return Result.Failure(
-                        new Error("Kashier.RefundFailed", message ?? "Refund failed"));
+                    return Result.Success();
                 }
 
-          
-                return Result.Success();
-            
-          
+                return Result.Failure(
+                    new Error("Kashier.ApiError", responseBody));
+            }
+
+
+
+            var status = root.GetProperty("status").GetString();
+
+            if (status != "SUCCESS")
+            {
+                var message = root.GetProperty("messages")
+                                  .GetProperty("en")
+                                  .GetString();
+
+                return Result.Failure(
+                    new Error("Kashier.RefundFailed", message ?? "Refund failed"));
+            }
+
+
+            return Result.Success();
+
+
         }
 
         private bool ValidateSignature(string body, string receivedSignature, string secret)

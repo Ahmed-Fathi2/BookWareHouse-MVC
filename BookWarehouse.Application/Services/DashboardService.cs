@@ -14,15 +14,28 @@ namespace BookWarehouse.Application.Services
 
         public async Task<IEnumerable<CustomerDetailsVM>> GetCustomerDetailsAsync()
         {
-            var users = await _unitOfWork.UserRepository.GetAllAsync(includes: [x => x.Orders] );
-            var customerDetails = users.Select(u => new CustomerDetailsVM
-            {
-                CustomerId= u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email!,
-                OrdersCount = u.Orders.Count()
-            }).ToList();
+            var users= await _unitOfWork.OrderRepository.GetAllAsync(includes: [x => x.ApplicationUser], filter:x=>x.PaymentStatus == PaymentStatus.Paid );
+
+            var customerDetails = users.GroupBy(x=>x.ApplicationUser)
+                .Select(g => new CustomerDetailsVM
+                {
+                    CustomerId = g.Key.Id,
+                    FirstName = g.Key.FirstName,
+                    LastName = g.Key.LastName,
+                    Email = g.Key.Email!,
+                    OrdersCount = g.Count()
+                }).OrderByDescending(x => x.OrdersCount).ToList();
+
+
+            //var users1 = await _unitOfWork.UserRepository.GetAllAsync(includes: [x => x.Orders] );
+            //var customerDetails = users.Select(u => new CustomerDetailsVM
+            //{
+            //    CustomerId= u.Id,
+            //    FirstName = u.FirstName,
+            //    LastName = u.LastName,
+            //    Email = u.Email!,
+            //    OrdersCount = u.Orders.Count()
+            //}).ToList();
 
             return customerDetails;
 

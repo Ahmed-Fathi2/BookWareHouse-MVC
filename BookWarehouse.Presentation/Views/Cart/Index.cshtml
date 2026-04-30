@@ -3,7 +3,7 @@
 
 <style>
     body {
-        background-color: #fafafa;
+        background-color: var(--bg-main);
     }
     .cart-item {
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -42,7 +42,7 @@
         transition: color 0.2s;
     }
     .btn-qty:hover {
-        color: #2563eb;
+        color: var(--brand-primary);
     }
     .qty-val {
         font-weight: 600;
@@ -51,16 +51,17 @@
         color: #212529;
     }
     .btn-checkout {
-        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        background-color: var(--brand-primary);
         color: white;
         border-radius: 12px;
         transition: all 0.3s ease;
         font-weight: 600;
-        box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 4px 15px rgba(15, 118, 110, 0.3);
     }
     .btn-checkout:hover {
         transform: translateY(-3px);
-        box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        box-shadow: 0 6px 20px rgba(15, 118, 110, 0.4);
+        background-color: var(--brand-primary-hover);
         color: white;
     }
     .summary-card {

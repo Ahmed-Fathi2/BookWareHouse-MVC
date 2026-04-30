@@ -119,7 +119,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
         }
 
-        public Task<Result> RefundPaymentAsync(int orderId, string transactionId, decimal amount)
+        public Task<Result> RefundPaymentAsync(string merchantOrderId, string transactionId, decimal amount)
         {
             // not implemented yet
             throw new NotImplementedException();
@@ -145,7 +145,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
             {
                 Status = PaymentWebhookStatus.SUCCESS.ToString(), 
                 TransactionId = session.PaymentIntentId,
-                OrderId = orderId
+                MerchantOrderId = order.MerchantOrderId
             };
             return webHookVM;
 
@@ -171,7 +171,7 @@ namespace BookWarehouse.Infrastructure.Services.Payment
 
             var webHookVM = new WebHookVM
             {
-                OrderId = orderId,
+                MerchantOrderId = order.MerchantOrderId,
                 TransactionId = paymentIntent.Id,
                 Status = PaymentWebhookStatus.FAILURE.ToString()    
             };

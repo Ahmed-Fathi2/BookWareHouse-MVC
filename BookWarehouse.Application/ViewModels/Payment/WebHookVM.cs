@@ -9,7 +9,8 @@ namespace BookWarehouse.Application.ViewModels.Payment
         public string Status { get; set; }
         public string TransactionId { get; set; }
 
-        public int OrderId { get; set; }
-     
+        public string MerchantOrderId { get; set; }
+
+
     }
 }

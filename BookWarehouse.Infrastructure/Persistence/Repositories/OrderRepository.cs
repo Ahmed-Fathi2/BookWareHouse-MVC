@@ -22,12 +22,11 @@ namespace BookWarehouse.Infrastructure.Persistence.Repositories
                 
         }
 
-        public async Task<Order?> GetOrderById(int orderId)
+        public async Task<Order?> GetOrderById(string merchantOrderId)
         {
             var order = await _dbContext.Orders
                             .AsTracking()
-                            .FirstOrDefaultAsync(x => x.Id == orderId);
-
+                            .FirstOrDefaultAsync(x => x.MerchantOrderId == merchantOrderId);
             return order;
 
         }

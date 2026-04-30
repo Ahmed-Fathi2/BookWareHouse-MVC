@@ -29,6 +29,8 @@ namespace BookWarehouse.Domain.Entities
         public string? SessionId { get; set; }
         public string? PaymentIntentId { get; set; }
 
+        public string MerchantOrderId { get; set; } = string.Empty;
+
         public string CartSignature { get; set; } = string.Empty; 
         // A hash of the cart contents at the time of order placement, used to verify cart integrity during payment processing
 

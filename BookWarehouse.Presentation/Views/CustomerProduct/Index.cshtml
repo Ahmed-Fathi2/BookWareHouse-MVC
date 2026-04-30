@@ -9,7 +9,7 @@
 }
 
 <form method="get" asp-controller="CustomerProduct" asp-action="Index" id="filterForm">
-    <div class="container-fluid px-md-5 py-5" style="background-color: #f8f9fa; min-height: 100vh;">
+    <div class="container-fluid px-md-5 py-5" style="background-color: var(--bg-main); min-height: 100vh;">
         <!-- HEADER ROW -->
         <div class="d-flex flex-wrap justify-content-between align-items-end mb-4">
             <div>
@@ -111,11 +111,11 @@
                                     <div class="position-absolute top-0 start-0 m-3 d-flex flex-column gap-1" style="z-index: 2;">
                                         @if(product.ListPrice > 0 && product.ListPrice > product.Price)
                                         {
-                                            <span class="badge bg-primary px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">SALE</span>
+                                            <span class="badge bg-badge-sale px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">SALE</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-primary px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">NEW</span>
+                                            <span class="badge bg-badge-new px-3 py-1 rounded-pill shadow-sm fw-bold" style="font-size: 0.65rem; letter-spacing: 0.5px;">NEW</span>
                                         }
                                     </div>
                                     
@@ -127,7 +127,7 @@
                                     }
                                     else
                                     {
-                                        <img src="~/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: contain; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                                        <img src="/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: contain; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
                                     }
                                 </div>
 
@@ -218,12 +218,12 @@
     }
     .dropdown-item:hover {
         background-color: #f8fafc;
-        color: #4f46e5 !important;
+        color: var(--brand-primary) !important;
         font-weight: 600;
         transform: translateX(4px);
     }
     .dropdown-item.active {
-        box-shadow: inset 3px 0 0 #4f46e5;
+        box-shadow: inset 3px 0 0 var(--brand-primary);
     }
 
     /* Remove arrows/spinners from number inputs */

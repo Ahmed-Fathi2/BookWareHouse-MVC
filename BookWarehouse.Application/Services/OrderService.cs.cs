@@ -32,7 +32,7 @@ namespace BookWarehouse.Application.Services
 
             var cartItems = cartItemsResult.Value;
 
-            Domain.Entities.Order order;
+            Order order;
 
             // DB Transaction (ONLY DB)
             await _unitOfWork.BeginTransactionAsync();
@@ -123,10 +123,10 @@ namespace BookWarehouse.Application.Services
         public async Task HandlePaymentResult(WebHookVM webHookVM)
         {
 
-            var order = await _unitOfWork.OrderRepository.GetByIdAsync(webHookVM.OrderId);
+            var order = await _unitOfWork.OrderRepository.GetOrderById(webHookVM.MerchantOrderId);
             if (order == null)
             {
-                _logger.LogWarning("Received webhook for non-existent order with id {OrderId}", webHookVM.OrderId);
+                _logger.LogWarning("Received webhook for non-existent order with merchant order id {MerchantOrderId}", webHookVM.MerchantOrderId);
                 return;
             }
 
@@ -258,7 +258,7 @@ namespace BookWarehouse.Application.Services
 
         public async Task<Result> CancelOrderAsync(int orderId)
         {
-            var order = await _unitOfWork.OrderRepository.GetOrderById(orderId);
+            var order = await _unitOfWork.OrderRepository.GetByIdAsync(orderId);
             if (order == null)
                 return Result.Failure(new Error("Order not found", "Order.NotFound"));
 
@@ -267,7 +267,7 @@ namespace BookWarehouse.Application.Services
 
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
-                var refundResult = await _paymentService.RefundPaymentAsync(order.Id, order.PaymentIntentId!, order.OrderTotal);
+                var refundResult = await _paymentService.RefundPaymentAsync(order.MerchantOrderId, order.PaymentIntentId!, order.OrderTotal);
                 if (!refundResult.IsSuccess)
                     return Result.Failure(new Error("Refund failed: " + refundResult.Error.Description, "Order.RefundFailed"));
 

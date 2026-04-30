@@ -10,6 +10,9 @@ namespace BookWarehouse.Application.Comman.MappingConfiguration
         {
             config.NewConfig<Category, CategoryReadEditVM>()
                 .Map(dest => dest.NumOfProducts, src => src.Products.Count);
+
+
+        
         }
     }
 }

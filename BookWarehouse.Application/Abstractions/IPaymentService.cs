@@ -13,6 +13,6 @@ namespace BookWarehouse.Application.Abstractions
         Task<Result<WebHookVM>> HandleWebhookAsync(string body, string signature);
 
         // Refund method (optional)
-         Task<Result> RefundPaymentAsync(int orderId, string transactionId, decimal amount);
+         Task<Result> RefundPaymentAsync(string merchantOrderId, string transactionId, decimal amount);
     }
 }

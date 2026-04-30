@@ -5,9 +5,12 @@ using BookWarehouse.Application.ViewModels.Category;
 using BookWarehouse.Domain.Entities;
 using BookWarehouse.Domain.Repositories;
 using Mapster;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BookWarehouse.Application.Services
 {
@@ -21,16 +24,17 @@ namespace BookWarehouse.Application.Services
         }
 
      
-
         public async Task<Result<IEnumerable<CategoryReadEditVM>>> GetAllCategories()
         {
-            var categories = await _unitOfWork.CategoryRepository.GetAllAsync(filter:x=>!x.IsDeleted,includes:[x => x.Products]);
+            var query = await _unitOfWork.CategoryRepository.GetAllAsync(filter: x => !x.IsDeleted);
 
-            var response= categories.Adapt<IEnumerable<CategoryReadEditVM>>();
+            var response = await query.ProjectToType<CategoryReadEditVM>().ToListAsync(); //Projection : select specific columns from db not all  
+    
 
-            return  Result.Success(response);
+            return Result.Success((IEnumerable<CategoryReadEditVM>)response);
         }
 
+  
         public async Task<Result<CategoryReadEditVM>> GetCategoryById(int id)
         {
             var category = await _unitOfWork.CategoryRepository.GetByIdAsync(id);

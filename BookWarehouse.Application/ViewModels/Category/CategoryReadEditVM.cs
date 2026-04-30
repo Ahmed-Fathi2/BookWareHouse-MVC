@@ -32,5 +32,7 @@ namespace BookWarehouse.Application.ViewModels.Category
         public int NumOfProducts { get; set; }
 
         public bool IsDeleted { get; set; }
+
+ 
     }
 }
