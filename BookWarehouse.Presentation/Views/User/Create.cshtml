@@ -1,0 +1,79 @@
+@model BookWarehouse.Application.ViewModels.User.CreateUserVM
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create New User";
+    var roles = ViewBag.Roles as IEnumerable<string> ?? new List<string>();
+}
+
+<div class="container-fluid mt-4 mb-5 pb-5 px-md-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-person-plus-fill me-2"></i>Add User</h2>
+            <p class="text-muted mb-0">Create a new user and assign a specific role.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg shadow-sm">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-xxl-11 mx-auto">
+            <div class="card border border-light shadow-sm" style="border-radius: 12px; background-color: #ffffff;">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="border-radius: 8px;"></div>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">First Name <span class="text-danger">*</span></label>
+                                <input asp-for="FirstName" class="form-control form-control-lg bg-light border-0" placeholder="e.g. John" style="border-radius: 8px; font-size: 1rem;" autofocus />
+                                <span asp-validation-for="FirstName" class="text-danger small mt-1 d-block fw-semibold"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">Last Name <span class="text-danger">*</span></label>
+                                <input asp-for="LastName" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Doe" style="border-radius: 8px; font-size: 1rem;" />
+                                <span asp-validation-for="LastName" class="text-danger small mt-1 d-block fw-semibold"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">Email Address <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control form-control-lg bg-light border-0" placeholder="name@example.com" style="border-radius: 8px; font-size: 1rem;" />
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Password" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">Password <span class="text-danger">*</span></label>
+                            <input asp-for="Password" type="password" class="form-control form-control-lg bg-light border-0" placeholder="••••••••" style="border-radius: 8px; font-size: 1rem;" />
+                            <span asp-validation-for="Password" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Role" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">Assign Role <span class="text-danger">*</span></label>
+                            <select asp-for="Role" class="form-select form-select-lg bg-light border-0" style="border-radius: 8px; font-size: 1rem;">
+                                <option value="" disabled selected>-- Select a Role --</option>
+                                @foreach (var role in roles)
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Role" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+
+                        <div class="mt-5 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px;">
+                                <i class="bi bi-person-check-fill"></i> Save User
+                            </button>
+                            <a asp-action="Index" class="btn btn-light btn-lg border" style="border-radius: 8px; font-weight: 600;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

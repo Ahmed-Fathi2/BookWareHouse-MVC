@@ -1,13 +1,19 @@
 @model BookWarehouse.Application.ViewModels.Category.CategoryReadEditVM
 
-<div class="container mt-5 mb-5 pb-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0 mb-4">
-                <div class="card-header bg-primary text-white py-4 px-5 border-0 text-center">
-                    <h2 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Edit Category</h2>
-                    <p class="mb-0 text-white-50 mt-1">Make changes and update the category specifics.</p>
-                </div>
+<div class="container-fluid mt-4 mb-5 pb-5 px-md-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-pencil-square me-2"></i>Edit Category</h2>
+            <p class="text-muted mb-0">Make changes and update the category specifics.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-lg shadow-sm">
+            <i class="bi bi-arrow-left"></i> Back to List
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-xxl-11 mx-auto">
+            <div class="card border border-light shadow-sm mb-4" style="border-radius: 12px; background-color: #ffffff;">
                 <div class="card-body p-4 p-md-5">
                     <form method="post" asp-controller="Category" asp-action="SaveEdit" asp-route-id="@Model.Id" enctype="multipart/form-data">
                         <input type="hidden" asp-for="ImageUrl" />

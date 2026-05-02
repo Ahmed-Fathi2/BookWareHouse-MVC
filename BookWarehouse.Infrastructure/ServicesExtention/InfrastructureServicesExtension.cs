@@ -36,6 +36,8 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IRoleSeeder, RoleSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserManagementService, UserManagementService>();
             services.AddScoped<IEmailService, EmailService>();
             //services.AddScoped<IExternalAuthService, ExternalAuthService>();
 

@@ -24,10 +24,19 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <div class="admin-wrapper">
+        <!-- Mobile Header -->
+        <div class="d-md-none d-flex justify-content-between align-items-center p-3 bg-white border-bottom sticky-top w-100" style="z-index: 1040;">
+            <div class="fs-5 fw-bold text-primary"><i class="bi bi-book-half me-2"></i> Readify</div>
+            <button class="btn btn-light shadow-none border-0 p-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebar" aria-controls="adminSidebar">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+        </div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="bi bi-book-half me-2"></i> Readify
+        <aside class="sidebar offcanvas-md offcanvas-start" tabindex="-1" id="adminSidebar" aria-labelledby="adminSidebarLabel">
+            <div class="sidebar-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-book-half me-2"></i> Readify</span>
+                <button type="button" class="btn-close d-md-none" data-bs-dismiss="offcanvas" data-bs-target="#adminSidebar" aria-label="Close"></button>
             </div>
             
             <div class="sidebar-content">
@@ -57,6 +66,16 @@
 
                     <a class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "DashBoard" && ViewContext.RouteData.Values["Action"]?.ToString() == "CustomerDetails" ? "active" : "")" asp-controller="DashBoard" asp-action="CustomerDetails">
                         <i class="bi bi-people-fill"></i> Customers
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "User" ? "active" : "")" asp-controller="User" asp-action="Index">
+                        <i class="bi bi-people"></i> Users
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link-admin @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Role" ? "active" : "")" asp-controller="Role" asp-action="Create">
+                        <i class="bi bi-shield-lock-fill"></i> Roles
                     </a>
                 </div>
             </div>

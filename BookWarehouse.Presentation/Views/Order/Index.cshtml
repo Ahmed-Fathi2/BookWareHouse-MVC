@@ -155,7 +155,7 @@ else
                         
                         <!-- Top Info Row -->
                         <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-bottom" style="border-color: #f1f5f9 !important;">
-                            <div class="d-flex gap-5">
+                            <div class="d-flex flex-wrap gap-3 gap-md-5">
                                 <div>
                                     <span class="d-block text-muted fw-bold mb-1" style="font-size: 0.65rem; letter-spacing: 0.5px;">ORDER ID</span>
                                     <span class="fw-bolder text-dark" style="font-size: 0.95rem;">ORD-@order.Id</span>
@@ -237,8 +237,8 @@ else
                         </div>
 
                         <!-- Bottom Footer Row -->
-                        <div class="px-3 py-3 bg-white border-top d-flex justify-content-between align-items-center" style="border-color: #f1f5f9 !important;">
-                            <div class="text-muted fw-medium text-truncate pe-3" style="font-size: 0.85rem; max-width: 70%;">
+                        <div class="px-3 py-3 bg-white border-top d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3" style="border-color: #f1f5f9 !important;">
+                            <div class="text-muted fw-medium text-truncate pe-sm-3 w-100" style="font-size: 0.85rem; max-width: 100%;">
                                 @if(order.Items != null && order.Items.Any())
                                 {
                                     @order.Items.First().Title
@@ -303,7 +303,7 @@ else
                 const searchForm = document.getElementById('searchForm');
                 let searchTimeout;
 
-                if (searchInput) {
+                if (searchInput && searchForm) {
                     // Restore cursor to the end of the input if there is a value
                     const val = searchInput.value;
                     if (val) {
@@ -312,26 +312,12 @@ else
                         searchInput.value = val;
                     }
 
+                    // Keep it extremely simple: ANY input triggers a submit after 500ms
                     searchInput.addEventListener('input', function () {
                         clearTimeout(searchTimeout);
-                        const trimVal = this.value.trim();
-                        
-                        if (trimVal === '') {
-                            // Prevent request if input is empty
-                            return;
-                        }
-
                         searchTimeout = setTimeout(() => {
                             searchForm.submit();
-                        }, 600); // 600ms debounce
-                    });
-                }
-
-                if (searchForm) {
-                    searchForm.addEventListener('submit', function (e) {
-                        if (searchInput && searchInput.value.trim() === '') {
-                            e.preventDefault();
-                        }
+                        }, 500);
                     });
                 }
             });

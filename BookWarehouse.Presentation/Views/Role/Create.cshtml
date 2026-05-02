@@ -1,0 +1,47 @@
+@model BookWarehouse.Application.ViewModels.Role.CreateRoleVM
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Create New Role";
+}
+
+<div class="container-fluid mt-4 mb-5 pb-5 px-md-2">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold text-primary mb-1"><i class="bi bi-shield-lock-fill me-2"></i>Create Role</h2>
+            <p class="text-muted mb-0">Add a new role to the system to manage user permissions.</p>
+        </div>
+        <a asp-controller="DashBoard" asp-action="Index" class="btn btn-outline-secondary btn-lg shadow-sm">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-xxl-11 mx-auto">
+            <div class="card border border-light shadow-sm" style="border-radius: 12px; background-color: #ffffff;">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="border-radius: 8px;"></div>
+                        
+                        <div class="mb-4">
+                            <label asp-for="RoleName" class="form-label fw-bold text-dark mb-2" style="font-size: 0.95rem; letter-spacing: 0.5px;">Role Name <span class="text-danger">*</span></label>
+                            <input asp-for="RoleName" class="form-control form-control-lg bg-light border-0" placeholder="e.g. Moderator, Editor" style="border-radius: 8px; font-size: 1rem;" autofocus />
+                            <span asp-validation-for="RoleName" class="text-danger small mt-1 d-block fw-semibold"></span>
+                        </div>
+
+                        <div class="mt-5 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg px-4 d-flex align-items-center gap-2 shadow-sm" style="border-radius: 8px;">
+                                <i class="bi bi-plus-circle"></i> Create Role
+                            </button>
+                            <a asp-controller="DashBoard" asp-action="Index" class="btn btn-light btn-lg border" style="border-radius: 8px; font-weight: 600;">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
