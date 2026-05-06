@@ -1,4 +1,4 @@
-﻿using BookWarehouse.Domain.Entities;
+using BookWarehouse.Domain.Entities;
 using BookWarehouse.Infrastructure.Persistence.Context;
 using System;
 using System.Collections.Generic;
@@ -64,6 +64,42 @@ namespace BookWarehouse.Infrastructure.Persistence.Seeders
                     Name = "Self-Help",
                     DisplayOrder = 6,
                     Description = "Books that help improve personal development."
+                },
+                new Category
+                {
+                    Name = "Technology",
+                    DisplayOrder = 7,
+                    Description = "Books related to computer science and modern technology."
+                },
+                new Category
+                {
+                    Name = "Biographies",
+                    DisplayOrder = 8,
+                    Description = "Detailed descriptions of a person's life."
+                },
+                new Category
+                {
+                    Name = "Fantasy",
+                    DisplayOrder = 9,
+                    Description = "Books containing magical and supernatural elements."
+                },
+                new Category
+                {
+                    Name = "Mystery & Thriller",
+                    DisplayOrder = 10,
+                    Description = "Books filled with suspense, crimes, and unexpected plot twists."
+                },
+                new Category
+                {
+                    Name = "Business & Economics",
+                    DisplayOrder = 11,
+                    Description = "Books about finance, markets, and entrepreneurship."
+                },
+                new Category
+                {
+                    Name = "Cooking & Food",
+                    DisplayOrder = 12,
+                    Description = "Cookbooks, recipes, and culinary history."
                 }
             };
 

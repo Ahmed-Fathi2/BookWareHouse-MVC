@@ -34,6 +34,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.AddScoped<IDataBaseSeeder, DataBaseSeeder>();
             services.AddScoped<ICategorySeeder, CategorySeeder>();
             services.AddScoped<IRoleSeeder, RoleSeeder>();
+            services.AddScoped<IProductSeeder, ProductSeeder>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IRoleService, RoleService>();
