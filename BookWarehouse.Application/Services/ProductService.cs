@@ -123,7 +123,7 @@ namespace BookWarehouse.Application.Services
                     return Result.Failure(new Error("Error during Uploading", "Error uploading image"));
 
                 // delete old image
-                _fileService.Delete(webRootPath, productEditVM.ImageUrl!);
+                //_fileService.Delete(webRootPath, productEditVM.ImageUrl!);
 
                 productEditVM.ImageUrl = uploadResult.Value;
 
