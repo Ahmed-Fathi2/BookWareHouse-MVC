@@ -95,10 +95,10 @@
                                 <span class="d-none d-sm-inline fw-semibold" style="font-size: 0.95rem;">@displayName</span>
                                 <i class="bi bi-chevron-down" style="font-size: 0.75rem;"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-3" aria-labelledby="userMenu" style="border-radius: 12px; min-width: 150px; padding: 0.5rem;">
+                            <ul class="dropdown-menu dropdown-menu-lg-end shadow-sm border-0 mt-3" aria-labelledby="userMenu" style="border-radius: 12px; min-width: 150px; padding: 0.5rem;">
                                 <li>
                                     <a class="dropdown-item py-2 fw-medium text-danger d-flex align-items-center gap-2 rounded transition" onmouseover="this.style.backgroundColor='#fee2e2'" onmouseout="this.style.backgroundColor='transparent'" asp-controller="Auth" asp-action="Logout">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                        <i class="bi bi-box-arrow-right flex-shrink-0"></i> <span class="text-wrap">Logout</span>
                                     </a>
                                 </li>
                             </ul>
@@ -153,10 +153,10 @@
                 <div class="col-lg-4 col-md-4">
                     <h6 class="fw-bold mb-3 text-dark">Stay Connected</h6>
                     <p class="text-muted mb-3" style="font-size: 0.95rem;">Subscribe to our newsletter for updates and exclusive offers.</p>
-                    <div class="input-group mb-3 shadow-sm" style="max-width: 300px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color);">
+                    <form asp-controller="Home" asp-action="Index" method="get" class="input-group mb-3 shadow-sm" style="max-width: 300px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color);">
                         <input type="email" class="form-control border-0 shadow-none bg-white" placeholder="Email address" aria-label="Email address" style="font-size: 0.95rem; height: 45px;">
-                        <button class="btn btn-primary border-0 rounded-0 px-3 m-0" type="button" style="font-weight: 500;">Subscribe</button>
-                    </div>
+                        <button class="btn btn-primary border-0 rounded-0 px-3 m-0" type="submit" style="font-weight: 500;">Subscribe</button>
+                    </form>
                 </div>
             </div>
             <hr class="my-4" style="border-color: var(--border-color); opacity: 1;">

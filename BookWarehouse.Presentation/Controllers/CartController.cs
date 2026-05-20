@@ -115,9 +115,6 @@ namespace BookWarehouse.Presentation.Controllers
 
             var origin = $"{Request.Scheme}://{Request.Host}";
 
-            //var origin = "https://ecommerce-mvc-dev-fth4c6d6gfepe2cz.spaincentral-01.azurewebsites.net";
-
-            //var origin = "https://brethren-kilobyte-deflected.ngrok-free.dev";
 
             var sessionUrlResult = await _orderService.PlaceOrderAsync(origin,checkoutVM);
             if (!sessionUrlResult.IsSuccess)

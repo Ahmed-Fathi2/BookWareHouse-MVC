@@ -191,7 +191,8 @@ body {
 .main-content {
     margin-left: var(--sidebar-width);
     flex: 1;
-    padding: 1rem 1.5rem;
+    padding: 1rem;
+    min-width: 0;
 }
 
 .dashboard-header {
@@ -428,15 +429,15 @@ table.dataTable {
 table.dataTable thead th {
     background-color: #f8fafc !important;
     border-bottom: 1px solid var(--border-color) !important;
-    padding: 0.75rem 1rem !important;
+    padding: 0.75rem !important;
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.025em;
 }
 
 table.dataTable td {
-    padding: 0.75rem 1rem !important;
-    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.85rem;
     vertical-align: middle;
     border-bottom: 1px solid #f1f5f9 !important;
     border-top: none !important;

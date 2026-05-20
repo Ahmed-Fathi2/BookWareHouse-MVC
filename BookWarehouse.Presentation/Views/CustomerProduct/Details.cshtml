@@ -21,7 +21,7 @@
                 }
                 else
                 {
-                    <img src="/@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded-4" style="max-height: 500px; object-fit: contain;" />
+                    <img src="/@Model.ImageUrl" alt="@Model.Title" class="img-fluid rounded-4" style="max-height: 500px; object-fit: contain;" fetchpriority="high" decoding="async" />
                 }
                 <div class="position-absolute top-0 start-0 m-4">
                     <span class="badge text-white px-3 py-2 fs-6 shadow-sm border border-light" style="background-color: var(--accent-coral); border-radius: 20px;">@Model.CategoryName</span>
@@ -49,20 +49,20 @@
                     <!-- Pricing Table -->
                     <div class="mb-4">
                         <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-3">Quantity Pricing</p>
-                        <div class="d-flex justify-content-between align-items-center border border-2 rounded-4 p-3 bg-light shadow-sm">
-                            <div class="text-center px-2 flex-fill">
-                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">1-50 units</div>
-                                <div class="text-primary fw-bolder fs-4">$@Model.Price</div>
+                        <div class="d-flex justify-content-between align-items-center border border-2 rounded-4 p-2 p-sm-3 bg-light shadow-sm gap-1">
+                            <div class="text-center flex-fill" style="min-width: 0;">
+                                <div class="text-muted mb-1" style="font-size: 0.75rem; font-weight: 700;">1-50 units</div>
+                                <div class="text-primary fw-bolder fs-5 text-break">$@Model.Price</div>
                             </div>
-                            <div class="border-end border-2" style="height: 50px;"></div>
-                            <div class="text-center px-2 flex-fill">
-                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">51-100 units</div>
-                                <div class="text-primary fw-bolder fs-4">$@Model.Price50</div>
+                            <div class="border-end border-2" style="height: 40px;"></div>
+                            <div class="text-center flex-fill" style="min-width: 0;">
+                                <div class="text-muted mb-1" style="font-size: 0.75rem; font-weight: 700;">51-100 units</div>
+                                <div class="text-primary fw-bolder fs-5 text-break">$@Model.Price50</div>
                             </div>
-                            <div class="border-end border-2" style="height: 50px;"></div>
-                            <div class="text-center px-2 flex-fill">
-                                <div class="text-muted mb-1" style="font-size: 0.85rem; font-weight: 700;">100+ units</div>
-                                <div class="text-primary fw-bolder fs-4">$@Model.Price100</div>
+                            <div class="border-end border-2" style="height: 40px;"></div>
+                            <div class="text-center flex-fill" style="min-width: 0;">
+                                <div class="text-muted mb-1" style="font-size: 0.75rem; font-weight: 700;">100+ units</div>
+                                <div class="text-primary fw-bolder fs-5 text-break">$@Model.Price100</div>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="mb-3">
                         <p class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2">Description</p>
                         <p class="text-secondary lh-lg fs-6" style="white-space: pre-line; margin-bottom: 0;">
-                            @(string.IsNullOrWhiteSpace(Model.Description) ? "No description available for this book." : Model.Description)
+                            @(string.IsNullOrWhiteSpace(Model.Description) ? "No description available for this book." : Model.Description.Trim())
                         </p>
                     </div>
                     
@@ -79,38 +79,29 @@
         </div>
 
         <!-- Action Buttons & Count Footer -->
-        <div class="bg-white border-top px-4 py-3 px-xl-5 pb-xl-4 pt-xl-3">
+        <div class="bg-white border-top px-4 py-4 px-xl-5 pb-xl-4 pt-xl-4">
             <form method="post"
                   asp-controller="Cart"
                   asp-action="AddToCart"
                   asp-route-ProductId="@Model.Id"
                   class="m-0">
                 
-                <div class="d-flex align-items-end justify-content-between flex-wrap gap-4">
+                <div class="d-flex flex-column gap-4">
 
-                    <!-- Back to list - far left -->
-                    <div class="d-flex align-items-center">
-                        <a asp-controller="CustomerProduct" asp-action="Index"
-                           class="text-secondary text-decoration-none d-flex align-items-center transition-all border-0 bg-transparent"
-                           style="font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;"
-                           onmouseover="this.classList.replace('text-secondary', 'text-primary')"
-                           onmouseout="this.classList.replace('text-primary', 'text-secondary')">
-                            <i class="bi bi-arrow-left fw-bolder me-2" style="font-size: 1.4rem;"></i> Back
-                        </a>
-                    </div>
-
-                    <!-- Right Controls: Quantity & Add to Cart -->
-                    <div class="d-flex align-items-end gap-4 gap-md-5 flex-wrap ms-auto">
+                    <!-- Top row: Quantity & Add to Cart -->
+                    <div class="d-flex flex-wrap align-items-end gap-3 w-100">
+                        
                         <!-- Quantity Counter -->
                         <div>
                             <label for="countInput" class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-2 d-block ms-1">Quantity</label>
-                            <div class="d-flex align-items-center bg-light shadow-sm"
-                                 style="border: 1px solid #dee2e6; border-radius: 12px; overflow: hidden; height: 50px; width: 130px;">
-                                <button class="btn btn-light border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill"
+                            <div class="d-flex align-items-center bg-white shadow-sm"
+                                 style="border: 2px solid #e2e8f0; border-radius: 14px; overflow: hidden; height: 54px; width: 140px;">
+                                <button class="btn btn-white border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill transition"
                                         type="button"
+                                        onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'"
                                         onclick="let el=document.getElementById('countInput'); if(el.value>1) el.value=parseInt(el.value)-1;"
-                                        style="font-size: 1.2rem; background: transparent;">
-                                    <i class="bi bi-dash fw-bold text-dark"></i>
+                                        style="font-size: 1.3rem;">
+                                    <i class="bi bi-dash fw-bold text-secondary"></i>
                                 </button>
                                 <input type="number"
                                        id="countInput"
@@ -118,25 +109,38 @@
                                        value="1"
                                        min="1"
                                        max="200"
-                                       class="form-control border-0 text-center fw-bolder fs-5 h-100 p-0 bg-transparent text-dark"
-                                       style="box-shadow: none; width: 45px; -moz-appearance: textfield;" />
-                                <button class="btn btn-light border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill"
+                                       class="form-control border-0 text-center fw-bolder fs-4 h-100 p-0 bg-transparent text-dark"
+                                       style="box-shadow: none; width: 50px; -moz-appearance: textfield;" />
+                                <button class="btn btn-white border-0 px-2 h-100 d-flex align-items-center justify-content-center flex-fill transition"
                                         type="button"
+                                        onmouseover="this.style.backgroundColor='#f8fafc'" onmouseout="this.style.backgroundColor='transparent'"
                                         onclick="let el=document.getElementById('countInput'); el.value=parseInt(el.value)+1;"
-                                        style="font-size: 1.2rem; background: transparent;">
-                                    <i class="bi bi-plus fw-bold text-dark"></i>
+                                        style="font-size: 1.3rem;">
+                                    <i class="bi bi-plus fw-bold text-secondary"></i>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Add to Cart Button -->
-                        <div style="min-width: 200px;">
+                        <div class="flex-grow-1" style="min-width: 200px;">
                             <button type="submit"
-                                    class="btn btn-primary d-flex align-items-center justify-content-center px-4 w-100 shadow-sm text-uppercase"
-                                    style="border-radius: 12px; font-size: 1.1rem; font-weight: 800; height: 50px; letter-spacing: 1px;">
-                                <i class="bi bi-cart-plus-fill me-2 fs-1"></i> Add to Cart
+                                    class="btn btn-primary d-flex align-items-center justify-content-center px-4 w-100 shadow-sm text-uppercase transition"
+                                    style="border-radius: 14px; font-size: 1.1rem; font-weight: 800; height: 54px; letter-spacing: 1px;">
+                                <i class="bi bi-cart-plus-fill me-2 fs-3"></i> Add to Cart
                             </button>
                         </div>
+                        
+                    </div>
+
+                    <!-- Bottom row: Back to list -->
+                    <div class="d-flex justify-content-center justify-content-sm-start mt-2">
+                        <a asp-controller="CustomerProduct" asp-action="Index"
+                           class="text-secondary text-decoration-none d-inline-flex align-items-center transition-all border-0 bg-transparent px-3 py-2 rounded-3"
+                           style="font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;"
+                           onmouseover="this.classList.replace('text-secondary', 'text-primary'); this.style.backgroundColor='#f8fafc';"
+                           onmouseout="this.classList.replace('text-primary', 'text-secondary'); this.style.backgroundColor='transparent';">
+                            <i class="bi bi-arrow-left fw-bolder me-2" style="font-size: 1.2rem;"></i> Back to Products
+                        </a>
                     </div>
 
                 </div>

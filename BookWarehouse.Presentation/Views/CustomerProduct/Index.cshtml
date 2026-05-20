@@ -127,7 +127,7 @@
                                     }
                                     else
                                     {
-                                        <img src="/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: cover; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" />
+                                        <img src="/@product.ImageUrl" alt="@product.Title" class="w-100 h-100" style="object-fit: cover; display: block; mix-blend-mode: multiply;" onerror="this.onerror=null; this.src='/images/placeholder.jpg';" loading="lazy" decoding="async" />
                                     }
                                 </div>
 
@@ -170,8 +170,8 @@
                 @if (Model.Products.TotalPages > 1)
                 {
                     <div class="d-flex justify-content-center mt-5">
-                        <nav aria-label="Page navigation">
-                            <ul class="pagination mb-0 d-flex align-items-center bg-white shadow-sm rounded-3 p-1" style="border: 1px solid #f1f5f9;">
+                        <nav aria-label="Page navigation" class="w-100">
+                            <ul class="pagination mb-0 d-flex flex-wrap justify-content-center align-items-center bg-white shadow-sm rounded-3 p-2 gap-1" style="border: 1px solid #f1f5f9;">
                                 <li class="page-item @(!Model.Products.IsPrevious ? "disabled" : "")">
                                     <button type="submit" name="PageNumber" value="@(Model.Products.PageNumber - 1)" class="page-link border-0 text-secondary fw-bold px-3 py-2 rounded-2 mx-1" style="background-color: #f8fafc;" aria-label="Previous" @(!Model.Products.IsPrevious ? "disabled" : "")>
                                         <span aria-hidden="true">&laquo;</span>

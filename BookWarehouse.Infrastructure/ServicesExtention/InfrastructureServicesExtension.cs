@@ -60,6 +60,9 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
             services.Configure<UploadImageSetting>
                 (configuration.GetSection(nameof(UploadImageSetting)));
 
+            services.Configure<EmailSettings>
+                (configuration.GetSection(nameof(EmailSettings)));
+
             services.Configure<StripeSetting>
                 (configuration.GetSection(nameof(Stripe)));
 
@@ -88,7 +91,7 @@ namespace BookWarehouse.Infrastructure.ServicesExtention
              {
 
                  // Default SignIn settings.
-                 options.SignIn.RequireConfirmedEmail = true;
+                 options.SignIn.RequireConfirmedEmail = false;
                  options.SignIn.RequireConfirmedPhoneNumber = false;
 
                  //Password settings.

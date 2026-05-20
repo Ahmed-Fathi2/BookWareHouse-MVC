@@ -1,4 +1,6 @@
-﻿using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Abstractions;
+using BookWarehouse.Application.Comman.Settings;
+using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using System;
@@ -8,13 +10,15 @@ using System.Text;
 
 namespace BookWarehouse.Infrastructure.Services
 {
-    public class EmailService : IEmailService
+    public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
     {
-        public async Task SendEmailAsync(string toEmail,string username ,string subjectEmail, string body)
+        private readonly EmailSettings _emailSettings = emailSettings.Value;
+
+        public async Task SendEmailAsync(string toEmail, string username, string subjectEmail, string body)
         {
-            var apiKey = "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";
+            var apiKey = _emailSettings.ApiKey;
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("ahmedmhmd0237@gmail.com", "Readify Store");
+            var from = new EmailAddress(_emailSettings.SenderEmail, _emailSettings.SenderName);
             var subject = subjectEmail;
             var to = new EmailAddress(toEmail, username);
             var plainTextContent = "";

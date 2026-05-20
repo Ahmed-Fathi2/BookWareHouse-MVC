@@ -93,7 +93,7 @@
 
     <div class="row gx-5">
         <!-- Left Column: Items -->
-        <div class="col-lg-8 mb-5 mb-lg-0">
+        <div class="@(Model.CartList.Any() ? "col-lg-8" : "col-lg-12") mb-5 mb-lg-0">
             <h1 class="fw-bolds mb-1 text-dark" style="font-weight: 800; font-family: 'Inter', sans-serif;">Your Cart</h1>
             <p class="text-secondary mb-4 fs-5">@Model.TotalItems items</p>
 
@@ -149,43 +149,46 @@
         </div>
 
         <!-- Right Column: Summary -->
-        <div class="col-lg-4">
-            <div class="summary-card card shadow-sm p-4 bg-white sticky-top" style="top: 2rem;">
-                <h4 class="fw-bold mb-4 text-dark">Order Summary</h4>
-                
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="text-muted fs-6">Subtotal</span>
-                    <span class="text-dark fw-bold fs-6" id="order-total">@Model.OrderTotal.ToString("c")</span>
-                </div>
-                
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="text-muted fs-6">Shipping</span>
-                    <span class="text-dark fw-bold fs-6 text-success">Free</span>
-                </div>
+        @if (Model.CartList.Any())
+        {
+            <div class="col-lg-4">
+                <div class="summary-card card shadow-sm p-4 bg-white sticky-top" style="top: 2rem;">
+                    <h4 class="fw-bold mb-4 text-dark">Order Summary</h4>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fs-6">Subtotal</span>
+                        <span class="text-dark fw-bold fs-6" id="order-total">@Model.OrderTotal.ToString("c")</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted fs-6">Shipping</span>
+                        <span class="text-dark fw-bold fs-6 text-success">Free</span>
+                    </div>
 
-                <div class="d-flex justify-content-between mb-4 pb-3 border-bottom">
-                    @* <span class="text-muted fs-6">Tax</span>
-                    <span class="text-dark fw-bold fs-6">$0.00</span> *@
-                </div>
+                    <div class="d-flex justify-content-between mb-4 pb-3 border-bottom">
+                        @* <span class="text-muted fs-6">Tax</span>
+                        <span class="text-dark fw-bold fs-6">$0.00</span> *@
+                    </div>
 
-                <div class="d-flex justify-content-between mb-4 mt-2">
-                    <h5 class="fw-bold text-dark mb-0" style="font-size: 1.3rem;">Total</h5>
-                    <h5 class="fw-bold text-dark mb-0" id="order-total-final" style="font-size: 1.3rem;">@Model.OrderTotal.ToString("c")</h5>
-                </div>
+                    <div class="d-flex justify-content-between mb-4 mt-2">
+                        <h5 class="fw-bold text-dark mb-0" style="font-size: 1.3rem;">Total</h5>
+                        <h5 class="fw-bold text-dark mb-0" id="order-total-final" style="font-size: 1.3rem;">@Model.OrderTotal.ToString("c")</h5>
+                    </div>
 
-                @* <a asp-action="Checkout" asp-controller="Cart" asp-route-orderTotal="@Model.OrderTotal" class="btn btn-checkout btn-lg w-100 py-3 mt-2">
-                    Checkout
-                </a> *@
+                    @* <a asp-action="Checkout" asp-controller="Cart" asp-route-orderTotal="@Model.OrderTotal" class="btn btn-checkout btn-lg w-100 py-3 mt-2">
+                        Checkout
+                    </a> *@
 
-                <a asp-action="Checkout" asp-controller="Cart" class="btn btn-checkout btn-lg w-100 py-3 mt-2 d-flex justify-content-center text-decoration-none">
-                    Proceed to Checkout
-                </a>
-                
-                <div class="mt-4 text-center">
-                    <p class="text-muted small mb-0"><i class="bi bi-shield-check text-success me-1"></i> Secure Checkout</p>
+                    <a asp-action="Checkout" asp-controller="Cart" class="btn btn-checkout btn-lg w-100 py-3 mt-2 d-flex justify-content-center text-decoration-none">
+                        Proceed to Checkout
+                    </a>
+                    
+                    <div class="mt-4 text-center">
+                        <p class="text-muted small mb-0"><i class="bi bi-shield-check text-success me-1"></i> Secure Checkout</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </div>
 
