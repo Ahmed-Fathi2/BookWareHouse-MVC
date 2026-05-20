@@ -5,8 +5,8 @@ The project simulates a real-world e-commerce platform with secure authenticatio
 
 ## Live Demo
 
-- Live Demo: https://lnkd.in/di9Bf2tK
-- GitHub Repository: https://lnkd.in/d_zmnkhq
+- Live Demo: https://ecommerce-mvc-dev-fth4c6d6gfepe2cz.spaincentral-01.azurewebsites.net
+- GitHub Repository: https://github.com/Ahmed-Fathi2/BookWareHouse-MVC.git
 
 ---
 
